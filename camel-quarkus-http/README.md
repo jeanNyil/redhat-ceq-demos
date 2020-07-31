@@ -88,8 +88,8 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         Author: Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
         Date:   Fri Jul 31 17:41:52 2020 +0200
     [...]
-   Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-http@sha256:1d551cc7a9d2aeab55ae202eaef1cc5f39843f72d08939a9e692783670766d33
-Push successful
+    Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-http@sha256:1d551cc7a9d2aeab55ae202eaef1cc5f39843f72d08939a9e692783670766d33
+    Push successful
     ```
 4. Create a non-secure route to expose the camel-quarkus-http service outside the OpenShift cluster
     ```zsh
