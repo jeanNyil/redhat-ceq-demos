@@ -52,17 +52,14 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 ```
 ```zsh
 [...]
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-http@sha256:03fc80f93fc3d1e6d88123ac2e984fc207a314f2e6fe8483d8a2ec714ea6186a
+[INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0-SNAPSHOT-runner.jar
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.cluster-fc38.sandbox840.opentlc.com:6443/' successfully contacted.
+[...]
+[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.cluster-fc38.sandbox840.opentlc.com:6443/ in namespace:camel-quarkus.
+[...]
+[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-http@sha256:3b09519ea46094a6e5c9381e67956cb64697e0151efe1c64fda89b2756f14386
 [INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Push successful
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.cluster-fc38.sandbox840.opentlc.com:6443/ in namespace: camel-quarkus.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ServiceAccount camel-quarkus-http.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Service camel-quarkus-http.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ImageStream camel-quarkus-http.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ImageStream openjdk-11-rhel7.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: BuildConfig camel-quarkus-http.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: DeploymentConfig camel-quarkus-http.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Route camel-quarkus-http.
-[INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 80162ms
 [...]
 ```
 
@@ -86,13 +83,13 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     oc logs bc/camel-quarkus-http -f
     ```
     ```zsh
-    Cloning "https://github.com/jeanNyil/camel-quarkus-http.git" ...
-	Commit:	a64bd7ab398de4e848b751cc1da0011cee61a9a8 (Minor update)
-	Author:	Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
-	Date:	Sat Jul 25 04:01:40 2020 +0200
+    Cloning "https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git" ...
+        Commit: be8d82141951e547ac05fc7cba2aeaa2f163ee64 (Added Camel-Quarkus-Http demo project)
+        Author: Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
+        Date:   Fri Jul 31 17:41:52 2020 +0200
     [...]
-    Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-http@sha256:87e8a529dab92c425d9aef86f716d6643d96552d6029eafd014f434becf78da2
-    Push successful
+   Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-http@sha256:1d551cc7a9d2aeab55ae202eaef1cc5f39843f72d08939a9e692783670766d33
+Push successful
     ```
 4. Create a non-secure route to expose the camel-quarkus-http service outside the OpenShift cluster
     ```zsh
@@ -185,29 +182,21 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     curl -w '\n' $URL/metrics
     ```
     ```zsh
+    [...]
     # HELP application_camel_context_exchanges_total The total number of exchanges for a route or Camel Context
     # TYPE application_camel_context_exchanges_total counter
-    application_camel_context_exchanges_total{camelContext="camel-quarkus-http"} 11.0
+    application_camel_context_exchanges_total{camelContext="camel-quarkus-http"} 9.0
+    [...]
     # HELP application_camel_route_exchanges_total The total number of exchanges for a route or Camel Context
     # TYPE application_camel_route_exchanges_total counter
-    application_camel_route_exchanges_total{camelContext="camel-quarkus-http",routeId="legumes-restful-route"} 4.0
-    [...]
-    # HELP application_camel_route_failuresHandled_total The total number of failures handled for a route or Camel Context
-    # TYPE application_camel_route_failuresHandled_total counter
-    application_camel_route_failuresHandled_total{camelContext="camel-quarkus-http",routeId="fruits-restful-route"} 0.0
-    application_camel_route_exchanges_completed_total{camelContext="camel-quarkus-http",routeId="legumes-restful-route"} 4.0
-    [...]
-    # HELP application_camel_route_failuresHandled_total The total number of failures handled for a route or Camel Context
-    # TYPE application_camel_route_failuresHandled_total counter
-    application_camel_route_failuresHandled_total{camelContext="camel-quarkus-http",routeId="fruits-restful-route"} 0.0
-    application_camel_route_exchanges_completed_total{camelContext="camel-quarkus-http",routeId="legumes-restful-route"} 4.0
+    application_camel_route_exchanges_total{camelContext="camel-quarkus-http",routeId="fruits-restful-route"} 7.0
+    application_camel_route_exchanges_total{camelContext="camel-quarkus-http",routeId="legumes-restful-route"} 2.0
     [...]
     ```
 
 ## Testing using [Postman](https://www.postman.com/)
 
 Import the provided Postman Collection for testing: [tests/Camel-Quarkus-Http.postman_collection.json](./tests/Camel-Quarkus-Http.postman_collection.json) 
-
 ![Camel-Quarkus-Http.postman_collection.png](../_images/Camel-Quarkus-Http.postman_collection.png)
 
 ## Creating a native executable
