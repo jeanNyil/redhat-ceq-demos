@@ -10,5 +10,6 @@ If you want to learn more:
 - about **Red Hat Build of Quarkus**, please visit: https://access.redhat.com/documentation/en-us/red_hat_build_of_quarkus .
 - about **Apache Camel Quarkus**, please visit: https://camel.apache.org/camel-quarkus/latest/index.html .
 
-_Apache Camel Quarkus_ project examples:
+### _Apache Camel Quarkus_ project examples
+
 * [camel-quarkus-http](camel-quarkus-http): exposing a RESTful service using the _Apache Camel Quarkus Platform-HTTP_ extension.
