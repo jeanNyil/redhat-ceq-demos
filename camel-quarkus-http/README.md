@@ -22,10 +22,10 @@ You can run your application in dev mode that enables live coding using:
 ## Packaging and running the application locally
 
 The application can be packaged using `./mvnw package`.
-It produces the `camel-quarkus-http-1.0-SNAPSHOT-runner.jar` file in the `/target` directory.
+It produces the `camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar` file in the `/target` directory.
 Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/lib` directory.
 
-The application is now runnable using `java -jar target/camel-quarkus-http-1.0-SNAPSHOT-runner.jar`.
+The application is now runnable using `java -jar target/camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar`.
 
 ## Packaging and running the application on Red Hat OpenShift
 
@@ -52,7 +52,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 ```
 ```zsh
 [...]
-[INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0-SNAPSHOT-runner.jar
+[INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.cluster-fc38.sandbox840.opentlc.com:6443/' successfully contacted.
 [...]
 [INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.cluster-fc38.sandbox840.opentlc.com:6443/ in namespace:camel-quarkus.
@@ -205,6 +205,6 @@ You can create a native executable using: `./mvnw package -Pnative`.
 
 Or, if you don't have GraalVM installed, you can run the native executable build in a container using: `./mvnw package -Pnative -Dquarkus.native.container-build=true`.
 
-You can then execute your native executable with: `./target/camel-quarkus-http-1.0-SNAPSHOT-runner`
+You can then execute your native executable with: `./target/camel-quarkus-http-1.0.0-SNAPSHOT-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image.
