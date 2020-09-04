@@ -27,9 +27,13 @@ import org.apache.camel.model.dataformat.JsonLibrary;
 import io.github.jeannyil.quarkus.camel.models.Fruit;
 import io.github.jeannyil.quarkus.camel.models.Legume;
 
-/**
- * Camel route definitions.
- */
+/* Camel route definition
+
+/!\ The @ApplicationScoped annotation is required for @Inject and @ConfigProperty to work in a RouteBuilder. 
+	Note that the @ApplicationScoped beans are managed by the CDI container and their life cycle is thus a bit 
+	more complex than the one of the plain RouteBuilder. 
+	In other words, using @ApplicationScoped in RouteBuilder comes with some boot time penalty and you should 
+	therefore only annotate your RouteBuilder with @ApplicationScoped when you really need it. */
 public class CamelQuarkusHttpRoute extends RouteBuilder {
     private final Set<Fruit> fruits = Collections.synchronizedSet(new LinkedHashSet<>());
     private final Set<Legume> legumes = Collections.synchronizedSet(new LinkedHashSet<>());
