@@ -3,7 +3,7 @@
 This project leverages **Red Hat Build of Quarkus version 1.3**, the Supersonic Subatomic Java Framework.
 
 It exposes the following RESTful service endpoints  using the **Apache Camel Quarkus extensions**: 
-- `/fruits` : returns a list of hard-coded fruits (`name` and `description`) in JSON format. It also allows to add a `fruit` though the `POST` HTTP method
+- `/fruits` : returns a list of hard-coded fruits (`name` and `description`) in JSON format. It also allows to add a `fruit` through the `POST` HTTP method
 - `/legumes` : returns a list of hard-coded legumes (`name`and `description`) in JSON format.
 - `/health` : returns the _Camel Quarkus MicroProfile_ health checks
 - `/metrics` : the _Camel Quarkus MicroProfile_ metrics 
