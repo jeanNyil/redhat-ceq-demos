@@ -1,8 +1,8 @@
 # Camel-Quarkus-Http
 
-This project leverages **Red Hat Build of Quarkus version 1.3**, the Supersonic Subatomic Java Framework.
+This project leverages **Red Hat build of Quarkus 1.7.x**, the Supersonic Subatomic Java Framework.
 
-It exposes the following RESTful service endpoints  using the **Apache Camel Quarkus extensions**: 
+It exposes the following RESTful service endpoints  using the **Apache Camel Quarkus Platform extension**: 
 - `/fruits` : returns a list of hard-coded fruits (`name` and `description`) in JSON format. It also allows to add a `fruit` through the `POST` HTTP method
 - `/legumes` : returns a list of hard-coded legumes (`name`and `description`) in JSON format.
 - `/health` : returns the _Camel Quarkus MicroProfile_ health checks
@@ -52,14 +52,14 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 ```
 ```zsh
 [...]
-[INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.cluster-fc38.sandbox840.opentlc.com:6443/' successfully contacted.
+[INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/upstream-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.cluster-1c4f.sandbox1482.opentlc.com:6443/' successfully contacted.
 [...]
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.cluster-fc38.sandbox840.opentlc.com:6443/ in namespace:camel-quarkus.
+[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.cluster-1c4f.sandbox1482.opentlc.com:6443/ in namespace:camel-quarkus.
 [...]
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-http@sha256:3b09519ea46094a6e5c9381e67956cb64697e0151efe1c64fda89b2756f14386
+[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-http@sha256:5cc56e5b72d56a637a163f8972ca27f90296bc265dd1d30c1c72e14a62f2ad93
 [INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Push successful
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.cluster-fc38.sandbox840.opentlc.com:6443/ in namespace: camel-quarkus.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.cluster-1c4f.sandbox1482.opentlc.com:6443/ in namespace: camel-quarkus.
 [...]
 ```
 
@@ -67,31 +67,31 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 
 1. Make sure the latest supported OpenJDK 11 image is imported in OpenShift
     ```zsh
-    oc import-image --confirm openjdk/openjdk-11-rhel7 \
-    --from=registry.access.redhat.com/openjdk/openjdk-11-rhel7 \
+    oc import-image --confirm openjdk-11-ubi8 \
+    --from=registry.access.redhat.com/ubi8/openjdk-11 \
     -n openshift
     ```
 2. Create the `camel-quarkus-http` OpenShift application from the git repository
     ```zsh
-    oc new-app https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git \
+    oc new-app https://github.com/jeanNyil/upstream-quarkus-camel-demos.git \
     --context-dir=camel-quarkus-http \
     --name=camel-quarkus-http \
-    --image-stream="openshift/openjdk-11-rhel7"
+    --image-stream="openshift/openjdk-11-ubi8"
     ```
 3. Follow the log of the S2I build
     ```zsh
     oc logs bc/camel-quarkus-http -f
     ```
     ```zsh
-    Cloning "https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git" ...
-        Commit: be8d82141951e547ac05fc7cba2aeaa2f163ee64 (Added Camel-Quarkus-Http demo project)
-        Author: Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
-        Date:   Fri Jul 31 17:41:52 2020 +0200
+    Cloning "https://github.com/jeanNyil/upstream-quarkus-camel-demos.git" ...
+        Commit:	70efd37c8bd29fd799dc3f4b6699aed34742afda (Initial creation)
+        Author:	Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
+        Date:	Fri Sep 4 13:56:39 2020 +0200
     [...]
-    Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-http@sha256:1d551cc7a9d2aeab55ae202eaef1cc5f39843f72d08939a9e692783670766d33
+    Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-http-s2i@sha256:a8dfcb3c5ad978825b2b5fdf0b4a98cef1365ebb82666f27927d831e1f757761
     Push successful
     ```
-4. Create a non-secure route to expose the camel-quarkus-http service outside the OpenShift cluster
+4. Create a non-secure route to expose the `camel-quarkus-http` service outside the OpenShift cluster
     ```zsh
     oc expose svc/camel-quarkus-http
     ```
@@ -143,41 +143,63 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         "status": "UP",
         "checks": [
             {
-                "name": "camel",
-                "status": "UP",
-                "data": {
-                    "contextStatus": "Started",
-                    "name": "camel-quarkus-http"
-                }
-            },
-            {
                 "name": "camel-liveness-checks",
-                "status": "UP",
-                "data": {
-                    "route:legumes-restful-route": "UP",
-                    "route:fruits-restful-route": "UP"
-                }
+                "status": "UP"
             },
             {
-                "name": "camel",
+                "name": "camel-context-check",
                 "status": "UP",
                 "data": {
                     "contextStatus": "Started",
-                    "name": "camel-quarkus-http"
+                    "name": "camel-1"
                 }
             },
             {
                 "name": "camel-readiness-checks",
-                "status": "UP",
-                "data": {
-                    "route:legumes-restful-route": "UP",
-                    "route:fruits-restful-route": "UP"
-                }
+                "status": "UP"
             }
         ]
     }
     ```
-5. Test the `/metrics` endpoint
+5. Test the `/health/live` endpoint
+    ```zsh
+    curl -w '\n' $URL/health/live
+    ```
+    ```json
+    {
+        "status": "UP",
+        "checks": [
+            {
+                "name": "camel-liveness-checks",
+                "status": "UP"
+            }
+        ]
+    }
+    ```
+6. Test the `/health/ready` endpoint
+    ```zsh
+    curl -w '\n' $URL/health/ready
+    ```
+    ```json
+    {
+        "status": "UP",
+        "checks": [
+            {
+                "name": "camel-context-check",
+                "status": "UP",
+                "data": {
+                    "contextStatus": "Started",
+                    "name": "camel-1"
+                }
+            },
+            {
+                "name": "camel-readiness-checks",
+                "status": "UP"
+            }
+        ]
+    }
+    ```
+7. Test the `/metrics` endpoint
     ```zsh
     curl -w '\n' $URL/metrics
     ```
@@ -185,12 +207,12 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     [...]
     # HELP application_camel_context_exchanges_total The total number of exchanges for a route or Camel Context
     # TYPE application_camel_context_exchanges_total counter
-    application_camel_context_exchanges_total{camelContext="camel-quarkus-http"} 9.0
+    application_camel_context_exchanges_total{camelContext="camel-1"} 14.0
     [...]
     # HELP application_camel_route_exchanges_total The total number of exchanges for a route or Camel Context
     # TYPE application_camel_route_exchanges_total counter
-    application_camel_route_exchanges_total{camelContext="camel-quarkus-http",routeId="fruits-restful-route"} 7.0
-    application_camel_route_exchanges_total{camelContext="camel-quarkus-http",routeId="legumes-restful-route"} 2.0
+    application_camel_route_exchanges_total{camelContext="camel-1",routeId="fruits-restful-route"} 9.0
+    application_camel_route_exchanges_total{camelContext="camel-1",routeId="legumes-restful-route"} 5.0
     [...]
     ```
 
