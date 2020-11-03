@@ -253,7 +253,7 @@ If you want to learn more about building native executables, please consult http
 
 2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `camel-quarkus-native`
     ```zsh
-    oc new-project camel-quarkus --display-name="Apache Camel Quarkus Native Services"
+    oc new-project camel-quarkus-native --display-name="Apache Camel Quarkus Native Services"
     ```
 
 3. Build a Linux executable using a container build. Compiling a Quarkus application to a native executable consumes a lot of memory during analysis and optimization. You can limit the amount of memory used during native compilation by setting the `quarkus.native.native-image-xmx` configuration property. Setting low memory limits might increase the build time.
