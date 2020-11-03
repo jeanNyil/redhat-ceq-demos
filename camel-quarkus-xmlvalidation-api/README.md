@@ -276,7 +276,7 @@ If you want to learn more about building native executables, please consult http
     ```
 
 4. Create the `camel-quarkus-xmlvalidation-api` container image using the _OpenShift Docker build_ strategy. This strategy creates a container using a build configuration in the cluster.
-    1. Create a build config based on the src/main/docker/Dockerfile.native file:
+    1. Create a build config based on the [`src/main/docker/Dockerfile.native`](./src/main/docker/Dockerfile.native) file:
         ```zsh
         cat src/main/docker/Dockerfile.native | oc new-build \
         --name camel-quarkus-xmlvalidation-api --strategy=docker --dockerfile -
