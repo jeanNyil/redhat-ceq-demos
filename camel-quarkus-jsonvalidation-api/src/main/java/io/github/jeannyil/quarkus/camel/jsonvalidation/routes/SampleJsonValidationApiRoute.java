@@ -27,13 +27,13 @@ public class SampleJsonValidationApiRoute extends RouteBuilder {
 		/**
 		 * Catch unexpected exceptions
 		 */
-		onException(Exception.class).id("handle-all-other-exceptions")
+		/*onException(Exception.class).id("handle-all-other-exceptions")
 			.handled(true)
 			.maximumRedeliveries(0)
 			.log(LoggingLevel.ERROR, logName, ">>> ${routeId} - Caught exception: ${exception.stacktrace}").id("log-api-unexpected")
 			.to("direct:common-500").id("to-common-500")
 			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]").id("log-api-unexpected-response")
-		;
+		;*/
 		
 		
 		/**
