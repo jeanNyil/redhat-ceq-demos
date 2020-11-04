@@ -38,7 +38,7 @@ The application is now runnable using `java -jar target/camel-quarkus-xmlvalidat
     ```
 2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `camel-quarkus`
     ```zsh
-    oc new-project camel-quarkus --display-name="Apache Camel Quarkus Apps"
+    oc new-project camel-quarkus-jvm --display-name="Apache Camel Quarkus Apps - JVM Mode"
     ```
 3. Use either the _**S2I binary workflow**_ or _**S2I source workflow**_ to deploy the `Camel-Quarkus-XmlValidation-Api.postman_collection` app as described below.
 
@@ -237,7 +237,7 @@ If you want to learn more about building native executables, please consult http
 
 2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `camel-quarkus-native`
     ```zsh
-    oc new-project camel-quarkus-native --display-name="Apache Camel Quarkus Native Services"
+    oc new-project camel-quarkus-native --display-name="Apache Camel Quarkus Apps - Native Mode"
     ```
 
 3. Build a Linux executable using a container build. Compiling a Quarkus application to a native executable consumes a lot of memory during analysis and optimization. You can limit the amount of memory used during native compilation by setting the `quarkus.native.native-image-xmx` configuration property. Setting low memory limits might increase the build time.
@@ -309,3 +309,35 @@ If you want to learn more about building native executables, please consult http
     kn service list camel-quarkus-xmlvalidation-api
     ```
     The output in the column called "READY" reads `True` if the service is ready.
+
+## Start-up time comparison on the same OpenShift cluster
+
+### JVM mode
+
+```zsh
+[...]
+2020-11-04 19:45:48,218 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
+2020-11-04 19:45:48,219 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
+2020-11-04 19:45:48,219 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-xml-route started and consuming from: direct://validateMembershipXML
+2020-11-04 19:45:48,222 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: api-doc-route started and consuming from: platform-http:///validateMembershipXML/api-doc
+2020-11-04 19:45:48,225 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: xml-validation-api-route started and consuming from: platform-http:///validateMembershipXML
+2020-11-04 19:45:48,226 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
+2020-11-04 19:45:48,226 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.255 seconds
+2020-11-04 19:45:48,311 INFO  [io.quarkus] (main) camel-quarkus-xmlvalidation-api 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.7.5.Final-redhat-00007) started in 1.476s. Listening on: http://0.0.0.0:8080
+[...]
+```
+
+### Native mode
+
+```zsh
+[...]
+2020-11-04 20:06:01,688 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: api-doc-route started and consuming from: platform-http:///validateMembershipXML/api-doc
+2020-11-04 20:06:01,688 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: xml-validation-api-route started and consuming from: platform-http:///validateMembershipXML
+2020-11-04 20:06:01,688 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-xml-route started and consuming from: direct://validateMembershipXML
+2020-11-04 20:06:01,688 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
+2020-11-04 20:06:01,688 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
+2020-11-04 20:06:01,689 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
+2020-11-04 20:06:01,689 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.003 seconds
+2020-11-04 20:06:01,694 INFO  [io.quarkus] (main) camel-quarkus-xmlvalidation-api 1.0.0-SNAPSHOT native (powered by Quarkus 1.7.5.Final-redhat-00007) started in 0.069s. Listening on: http://0.0.0.0:8080
+[...]
+```

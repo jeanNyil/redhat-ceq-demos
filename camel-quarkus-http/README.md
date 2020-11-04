@@ -39,7 +39,7 @@ The application is now runnable using `java -jar target/camel-quarkus-http-1.0.0
     ```
 2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `camel-quarkus`
     ```zsh
-    oc new-project camel-quarkus --display-name="Apache Camel Quarkus Apps"
+    oc new-project camel-quarkus-jvm --display-name="Apache Camel Quarkus Apps - JVM Mode"
     ```
 3. Use either the _**S2I binary workflow**_ or _**S2I source workflow**_ to deploy the `camel-quarkus-http` app as described below.
 
@@ -253,7 +253,7 @@ If you want to learn more about building native executables, please consult http
 
 2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `camel-quarkus-native`
     ```zsh
-    oc new-project camel-quarkus-native --display-name="Apache Camel Quarkus Native Services"
+    oc new-project camel-quarkus-native --display-name="Apache Camel Quarkus Apps - Native Mode"
     ```
 
 3. Build a Linux executable using a container build. Compiling a Quarkus application to a native executable consumes a lot of memory during analysis and optimization. You can limit the amount of memory used during native compilation by setting the `quarkus.native.native-image-xmx` configuration property. Setting low memory limits might increase the build time.
@@ -325,3 +325,29 @@ If you want to learn more about building native executables, please consult http
     kn service list camel-quarkus-http
     ```
     The output in the column called "READY" reads `True` if the service is ready.
+
+## Start-up time comparison on the same OpenShift cluster
+
+### JVM mode
+
+```zsh
+[...]
+2020-11-04 19:50:51,266 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: fruits-restful-route started and consuming from: platform-http:///fruits
+2020-11-04 19:50:51,267 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: legumes-restful-route started and consuming from: platform-http:///legumes
+2020-11-04 19:50:51,268 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 2 routes, of which 2 are started
+2020-11-04 19:50:51,268 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.125 seconds
+2020-11-04 19:50:51,397 INFO  [io.quarkus] (main) camel-quarkus-http 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.7.5.Final-redhat-00007) started in 1.317s. Listening on: http://0.0.0.0:8080
+[...]
+```
+
+### Native mode
+
+```zsh
+[...]
+2020-11-04 20:02:06,244 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: fruits-restful-route started and consuming from: platform-http:///fruits
+2020-11-04 20:02:06,244 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: legumes-restful-route started and consuming from: platform-http:///legumes
+2020-11-04 20:02:06,244 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 2 routes, of which 2 are started
+2020-11-04 20:02:06,244 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.001 seconds
+2020-11-04 20:02:06,253 INFO  [io.quarkus] (main) camel-quarkus-http 1.0.0-SNAPSHOT native (powered by Quarkus 1.7.5.Final-redhat-00007) started in 0.054s. Listening on: http://0.0.0.0:8080
+[...]
+```
