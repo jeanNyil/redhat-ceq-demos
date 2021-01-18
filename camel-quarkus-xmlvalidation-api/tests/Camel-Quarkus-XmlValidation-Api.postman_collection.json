@@ -135,7 +135,7 @@
 						"localhost"
 					],
 					"port": "8080",
-					"path": [
+					"path": [ 
 						"metrics"
 					]
 				}
