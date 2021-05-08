@@ -19,10 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<p:membership xmlns:p=\"http://www.github.com/jeanNyil/schemas/membership/v1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <p:requestType>API</p:requestType>\n  <p:requestID>5948</p:requestID>\n  <p:memberID>85623617</p:memberID>\n  <p:status>A</p:status>\n  <p:enrolmentDate>2020-09-05</p:enrolmentDate>\n  <p:changedBy>JaLiLa</p:changedBy>\n  <p:forcedLevelCode>69</p:forcedLevelCode>\n  <p:vipOnInvitation>Y</p:vipOnInvitation>\n  <p:startDate>2020-09-05</p:startDate>\n  <p:endDate>2100-09-05</p:endDate>\n</p:membership>",
-					"options": {
-						"raw": {}
-					}
+					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<p:membership xmlns:p=\"http://www.github.com/jeanNyil/schemas/membership/v1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <p:requestType>API</p:requestType>\n  <p:requestID>5948</p:requestID>\n  <p:memberID>85623617</p:memberID>\n  <p:status>A</p:status>\n  <p:enrolmentDate>2020-09-05</p:enrolmentDate>\n  <p:changedBy>JaLiLa</p:changedBy>\n  <p:forcedLevelCode>69</p:forcedLevelCode>\n  <p:vipOnInvitation>Y</p:vipOnInvitation>\n  <p:startDate>2020-09-05</p:startDate>\n  <p:endDate>2100-09-05</p:endDate>\n</p:membership>"
 				},
 				"url": {
 					"raw": "http://localhost:8080/validateMembershipXML",
@@ -52,10 +49,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<p:membership xmlns:p=\"http://www.github.com/jeanNyil/schemas/membership/v1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <p:requestType>API</p:requestType>\n  <p:requestID>5948</p:requestID>\n  <p:memberID>85623617</p:memberID>\n  <p:status>A</p:status>\n  <p:enrolmentDate>20-09-05</p:enrolmentDate>\n  <p:changedBy>jeanNyil</p:changedBy>\n  <p:forcedLevelCode>69</p:forcedLevelCode>\n  <p:vipOnInvitation>Y</p:vipOnInvitation>\n  <p:startDate>2020-09-05</p:startDate>\n  <p:endDate>2100-09-05</p:endDate>\n</p:membership>",
-					"options": {
-						"raw": {}
-					}
+					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<p:membership xmlns:p=\"http://www.github.com/jeanNyil/schemas/membership/v1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <p:requestType>API</p:requestType>\n  <p:requestID>5948</p:requestID>\n  <p:memberID>85623617</p:memberID>\n  <p:status>A</p:status>\n  <p:enrolmentDate>20-09-05</p:enrolmentDate>\n  <p:changedBy>jeanNyil</p:changedBy>\n  <p:forcedLevelCode>69</p:forcedLevelCode>\n  <p:vipOnInvitation>Y</p:vipOnInvitation>\n  <p:startDate>2020-09-05</p:startDate>\n  <p:endDate>2100-09-05</p:endDate>\n</p:membership>"
 				},
 				"url": {
 					"raw": "http://localhost:8080/validateMembershipXML",
@@ -72,7 +66,12 @@
 			"response": []
 		},
 		{
-			"name": "Get OpenAPI Specification - JSON",
+			"name": "Get OpenAPI Specification",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
 			"request": {
 				"method": "GET",
 				"header": [
@@ -83,41 +82,14 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/validateMembershipXML/api-doc",
+					"raw": "http://localhost:8080/openapi.json",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"validateMembershipXML",
-						"api-doc"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get OpenAPI Specification - YAML",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "text/yaml",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:8080/validateMembershipXML/api-doc",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"validateMembershipXML",
-						"api-doc"
+						"openapi.json"
 					]
 				}
 			},
@@ -125,9 +97,20 @@
 		},
 		{
 			"name": "GET Microprofile Camel Metrics",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept-encoding": true
+				}
+			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "http://localhost:8080/metrics",
 					"protocol": "http",
@@ -135,7 +118,7 @@
 						"localhost"
 					],
 					"port": "8080",
-					"path": [ 
+					"path": [
 						"metrics"
 					]
 				}
@@ -201,6 +184,5 @@
 			},
 			"response": []
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

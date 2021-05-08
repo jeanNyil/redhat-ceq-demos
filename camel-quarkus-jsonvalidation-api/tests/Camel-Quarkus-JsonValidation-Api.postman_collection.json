@@ -19,10 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"requestType\": \"API\",\n    \"requestID\": 5948,\n    \"memberID\": 85623617,\n    \"status\": \"A\",\n    \"enrolmentDate\": \"2020-09-05\",\n    \"changedBy\": \"JaLiLa\",\n    \"forcedLevelCode\": \"69\",\n    \"vipOnInvitation\": \"Y\",\n    \"startDate\": \"2020-09-05\",\n    \"endDate\": \"2100-09-05\"\n}",
-					"options": {
-						"raw": {}
-					}
+					"raw": "{\n    \"requestType\": \"API\",\n    \"requestID\": 5948,\n    \"memberID\": 85623617,\n    \"status\": \"A\",\n    \"enrolmentDate\": \"2020-09-05\",\n    \"changedBy\": \"JaLiLa\",\n    \"forcedLevelCode\": \"69\",\n    \"vipOnInvitation\": \"Y\",\n    \"startDate\": \"2020-09-05\",\n    \"endDate\": \"2100-09-05\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:8080/validateMembershipJSON",
@@ -52,10 +49,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"requestType\": \"API\",\n    \"requestID\": 5948,\n    \"memberID\": 85623617,\n    \"status\": \"BADSTATUS\",\n    \"enrolmentDate\": \"2020-09-05\",\n    \"changedBy\": \"jeanNyil\",\n    \"vipOnInvitation\": \"Y\",\n    \"startDate\": \"2020-09-05\",\n    \"endDate\": \"2100-09-05\"\n}",
-					"options": {
-						"raw": {}
-					}
+					"raw": "{\n    \"requestType\": \"API\",\n    \"requestID\": 5948,\n    \"memberID\": 85623617,\n    \"status\": \"BADSTATUS\",\n    \"enrolmentDate\": \"2020-09-05\",\n    \"changedBy\": \"jeanNyil\",\n    \"vipOnInvitation\": \"Y\",\n    \"startDate\": \"2020-09-05\",\n    \"endDate\": \"2100-09-05\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:8080/validateMembershipJSON",
@@ -72,7 +66,12 @@
 			"response": []
 		},
 		{
-			"name": "Get OpenAPI Specification - JSON",
+			"name": "Get OpenAPI Specification",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
 			"request": {
 				"method": "GET",
 				"header": [
@@ -83,41 +82,14 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/validateMembershipJSON/api-doc",
+					"raw": "http://localhost:8080/openapi.json",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"validateMembershipJSON",
-						"api-doc"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get OpenAPI Specification - YAML",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "text/yaml",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:8080/validateMembershipJSON/api-doc",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"validateMembershipJSON",
-						"api-doc"
+						"openapi.json"
 					]
 				}
 			},
@@ -125,9 +97,20 @@
 		},
 		{
 			"name": "GET Microprofile Camel Metrics",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "http://localhost:8080/metrics",
 					"protocol": "http",
@@ -201,6 +184,5 @@
 			},
 			"response": []
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
