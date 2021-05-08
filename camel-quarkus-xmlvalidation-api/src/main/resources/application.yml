@@ -70,7 +70,7 @@ quarkus:
             # large, eviction of previously selected resources could be triggered
             # with <code>excludePatterns</code>.
             resources:
-                include-patterns: xml-schema/*
+                include-patterns: xml-schema/*,openapi/*
 
     # Register for indexing
     # Reference: https://camel.apache.org/camel-quarkus/latest/user-guide/native-mode.html#reflection
