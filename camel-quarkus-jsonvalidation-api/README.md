@@ -4,6 +4,7 @@ This project leverages **Red Hat build of Quarkus 1.7.x**, the Supersonic Subato
 
 It exposes the following RESTful service endpoints  using the **Apache Camel Quarkus Platform extension**: 
 - `/validateMembershipJSON` : validates a sample `Membership` JSON instance through the `POST` HTTP method.
+- `/openapi.json`: returns the OpenAPI 3.0 specification for the service.
 - `/health` : returns the _Camel Quarkus MicroProfile_ health checks
 - `/metrics` : the _Camel Quarkus MicroProfile_ metrics
 
@@ -52,14 +53,14 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 ```zsh
 [...]
 [INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/upstream-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner.jar
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.cluster-f7d5.sandbox81.opentlc.com:6443/' successfully contacted.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.cluster-ce1b.sandbox753.opentlc.com:6443/' successfully contacted.
 [...]
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.cluster-f7d5.sandbox81.opentlc.com:6443/ in namespace:camel-quarkus.
+[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.cluster-ce1b.sandbox753.opentlc.com:6443/ in namespace:camel-quarkus.
 [...]
 [INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-jsonvalidation-api@sha256:5cc56e5b72d56a637a163f8972ca27f90296bc265dd1d30c1c72e14a62f2ad93
 [INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-jsonvalidation-api@sha256:bd6a27e22810ce84c38ddee840d4f07d84f25a710953e602cd363947a60733e4
 [INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Push successful
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.cluster-f7d5.sandbox81.opentlc.com:6443/ in namespace: camel-quarkus.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.cluster-ce1b.sandbox753.opentlc.com:6443/ in namespace: camel-quarkus.
 [...]
 ```
 
@@ -115,8 +116,254 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         }
     }
     ```
-
-3. Test the `/health` endpoint
+3. Test the `/openapi.json` endpoint
+    ```zsh
+    curl -w '\n' $URL/openapi.json
+    ```
+    ```json
+    {
+        "openapi": "3.0.2",
+        "info": {
+            "title": "Sample JSON Validation API",
+            "version": "1.0.0",
+            "description": "A simple API to test the Camel json-schema-validator component",
+            "contact": {
+                "name": "Jean Nyilimbibi"
+            },
+            "license": {
+                "name": "MIT License",
+                "url": "https://opensource.org/licenses/MIT"
+            }
+        },
+        "servers": [
+            {
+                "url": "http://camel-quarkus-json-validation-api.apps.cluster-ce1b.sandbox753.opentlc.com",
+                "description": "API Backend URL"
+            }
+        ],
+        "paths": {
+            "/validateMembershipJSON": {
+                "post": {
+                    "requestBody": {
+                        "description": "A `Membership` JSON instance to be validated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Membership"
+                                }
+                            }
+                        },
+                        "required": true
+                    },
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ValidationResult"
+                                    },
+                                    "examples": {
+                                        "validationResult_200": {
+                                            "value": {
+                                                "validationResult": {
+                                                    "status": "OK"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "description": "`Membership`JSON data validated"
+                        },
+                        "400": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ValidationResult"
+                                    },
+                                    "examples": {
+                                        "validationResult_400": {
+                                            "value": {
+                                                "validationResult": {
+                                                    "status": "KO",
+                                                    "errorMessage": "JSon validation error with 2 errors. Exchange[ID-sample-json-validation-api-1-nxgnq-1620389968195-0-427]"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "description": "`Membership`JSON data not valid"
+                        },
+                        "500": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/Error"
+                                    },
+                                    "examples": {
+                                        "error_500": {
+                                            "value": {
+                                                "error": {
+                                                    "id": "500",
+                                                    "description": "Internal Server Error",
+                                                    "messages": [
+                                                        "java.lang.Exception: Mocked error message"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "description": "Internal server error"
+                        }
+                    },
+                    "operationId": "validateMembershipJSON",
+                    "summary": "Validate Membership JSON instance",
+                    "description": "Validates a `Membership` JSON instance",
+                    "x-codegen-request-body-name": "body"
+                }
+            }
+        },
+        "components": {
+            "schemas": {
+                "Membership": {
+                    "description": "Membership data ",
+                    "required": [
+                        "changedBy",
+                        "endDate",
+                        "enrolmentDate",
+                        "memberID",
+                        "requestID",
+                        "requestType",
+                        "vipOnInvitation"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "requestType": {
+                            "type": "string"
+                        },
+                        "requestID": {
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "memberID": {
+                            "format": "int32",
+                            "type": "integer"
+                        },
+                        "status": {
+                            "maxLength": 1,
+                            "minLength": 1,
+                            "enum": [
+                                "A",
+                                "B",
+                                "C"
+                            ],
+                            "type": "string"
+                        },
+                        "enrolmentDate": {
+                            "format": "date",
+                            "type": "string"
+                        },
+                        "changedBy": {
+                            "type": "string"
+                        },
+                        "forcedLevelCode": {
+                            "type": "string"
+                        },
+                        "vipOnInvitation": {
+                            "maxLength": 1,
+                            "minLength": 1,
+                            "enum": [
+                                "N",
+                                "Y"
+                            ],
+                            "type": "string"
+                        },
+                        "startDate": {
+                            "format": "date",
+                            "type": "string"
+                        },
+                        "endDate": {
+                            "format": "date",
+                            "type": "string"
+                        }
+                    },
+                    "example": {
+                        "requestType": "API",
+                        "requestID": 5948,
+                        "memberID": 85623617,
+                        "status": "A",
+                        "enrolmentDate": "2019-06-16",
+                        "changedBy": "jeanNyil",
+                        "forcedLevelCode": "69",
+                        "vipOnInvitation": "Y",
+                        "startDate": "2019-06-16",
+                        "endDate": "2100-06-16"
+                    }
+                },
+                "ValidationResult": {
+                    "description": "Validation Result   ",
+                    "type": "object",
+                    "properties": {
+                        "validationResult": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "maxLength": 2,
+                                    "minLength": 2,
+                                    "enum": [
+                                        "OK",
+                                        "KO"
+                                    ],
+                                    "type": "string"
+                                },
+                                "errorMessage": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "example": "{\n    \"validationResult\": {\n        \"status\": \"KO\",\n        \"errorMessage\": \"6 errors found\"\n    }\n}"
+                },
+                "Error": {
+                    "description": "Error message structure",
+                    "type": "object",
+                    "properties": {
+                        "error": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "description": {
+                                    "type": "string"
+                                },
+                                "messages": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "example": {
+                        "error": {
+                            "id": "500",
+                            "description": "Internal Server Error",
+                            "messages": [
+                                "java.lang.Exception: Mocked error message"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+    ```
+4. Test the `/health` endpoint
     ```zsh
     curl -w '\n' $URL/health
     ```
@@ -143,7 +390,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         ]
     }
     ```
-4. Test the `/health/live` endpoint
+5. Test the `/health/live` endpoint
     ```zsh
     curl -w '\n' $URL/health/live
     ```
@@ -158,7 +405,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         ]
     }
     ```
-5. Test the `/health/ready` endpoint
+6. Test the `/health/ready` endpoint
     ```zsh
     curl -w '\n' $URL/health/ready
     ```
@@ -181,7 +428,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         ]
     }
     ```
-6. Test the `/metrics` endpoint
+7. Test the `/metrics` endpoint
     ```zsh
     curl -w '\n' $URL/metrics
     ```
@@ -193,9 +440,9 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     [...]
     # HELP application_camel_route_exchanges_total The total number of exchanges for a route or Camel Context
     # TYPE application_camel_route_exchanges_total counter
-    application_camel_route_exchanges_total{camelContext="camel-1",routeId="api-doc-route"} 0.0
     application_camel_route_exchanges_total{camelContext="camel-1",routeId="common-500-http-code-route"} 0.0
     application_camel_route_exchanges_total{camelContext="camel-1",routeId="custom-http-error-route"} 0.0
+    application_camel_route_exchanges_total{camelContext="camel-1",routeId="get-openapi-spec-route"} 2.0
     application_camel_route_exchanges_total{camelContext="camel-1",routeId="json-validation-api-route"} 20.0
     application_camel_route_exchanges_total{camelContext="camel-1",routeId="validate-membership-json-route"} 20.0
     [...]
@@ -317,14 +564,15 @@ If you want to learn more about building native executables, please consult http
 
 ```zsh
 [...]
-2020-11-04 19:48:07,913 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: api-doc-route started and consuming from: platform-http:///validateMembershipJSON/api-doc
-2020-11-04 19:48:07,917 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: json-validation-api-route started and consuming from: platform-http:///validateMembershipJSON
-2020-11-04 19:48:07,917 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
-2020-11-04 19:48:07,917 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
-2020-11-04 19:48:07,918 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-json-route started and consuming from: direct://validateMembershipJSON
-2020-11-04 19:48:07,919 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
-2020-11-04 19:48:07,919 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.181 seconds
-2020-11-04 19:48:07,997 INFO  [io.quarkus] (main) camel-quarkus-jsonvalidation-api 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.7.5.Final-redhat-00007) started in 1.333s. Listening on: http://0.0.0.0:8080
+2021-05-07 23:11:22,445 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
+2021-05-07 23:11:22,446 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
+2021-05-07 23:11:22,446 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-json-route started and consuming from: direct://validateMembershipJSON
+2021-05-07 23:11:22,452 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: get-openapi-spec-route started and consuming from: platform-http:///openapi.json
+2021-05-07 23:11:22,452 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: json-validation-api-route started and consuming from: platform-http:///validateMembershipJSON
+2021-05-07 23:11:22,453 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
+2021-05-07 23:11:22,453 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.184 seconds
+2021-05-07 23:11:22,536 INFO  [io.quarkus] (main) camel-quarkus-jsonvalidation-api 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.7.5.Final-redhat-00007) started in 1.336s. Listening on: http://0.0.0.0:8080
+2021-05-07 23:11:22,537 INFO  [io.quarkus] (main) Profile prod activated.
 [...]
 ```
 
@@ -332,13 +580,14 @@ If you want to learn more about building native executables, please consult http
 
 ```zsh
 [...]
-2020-11-04 19:59:36,122 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
-2020-11-04 19:59:36,122 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
-2020-11-04 19:59:36,122 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: api-doc-route started and consuming from: platform-http:///validateMembershipJSON/api-doc
-2020-11-04 19:59:36,122 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: json-validation-api-route started and consuming from: platform-http:///validateMembershipJSON
-2020-11-04 19:59:36,122 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-json-route started and consuming from: direct://validateMembershipJSON
-2020-11-04 19:59:36,122 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
-2020-11-04 19:59:36,123 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.002 seconds
-2020-11-04 19:59:36,131 INFO  [io.quarkus] (main) camel-quarkus-jsonvalidation-api 1.0.0-SNAPSHOT native (powered by Quarkus 1.7.5.Final-redhat-00007) started in 0.074s. Listening on: http://0.0.0.0:8080
+2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
+2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
+2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: get-openapi-spec-route started and consuming from: platform-http:///openapi.json
+2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: json-validation-api-route started and consuming from: platform-http:///validateMembershipJSON
+2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-json-route started and consuming from: direct://validateMembershipJSON
+2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
+2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.001 seconds
+2021-05-08 00:07:57,320 INFO  [io.quarkus] (main) camel-quarkus-jsonvalidation-api 1.0.0-SNAPSHOT native (powered by Quarkus 1.7.5.Final-redhat-00007) started in 0.083s. Listening on: http://0.0.0.0:8080
+2021-05-08 00:07:57,320 INFO  [io.quarkus] (main) Profile prod activated.
 [...]
 ```

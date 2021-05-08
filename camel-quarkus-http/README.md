@@ -53,13 +53,13 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 ```zsh
 [...]
 [INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/upstream-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.cluster-f7d5.sandbox81.opentlc.com:6443/' successfully contacted.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.cluster-ce1b.sandbox753.opentlc.com:6443/' successfully contacted.
 [...]
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.cluster-f7d5.sandbox81.opentlc.com:6443/ in namespace:camel-quarkus.
+[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.cluster-ce1b.sandbox753.opentlc.com:6443/ in namespace:camel-quarkus.
 [...]
 [INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-http@sha256:5cc56e5b72d56a637a163f8972ca27f90296bc265dd1d30c1c72e14a62f2ad93
 [INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Push successful
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.cluster-f7d5.sandbox81.opentlc.com:6443/ in namespace: camel-quarkus.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.cluster-ce1b.sandbox753.opentlc.com:6443/ in namespace: camel-quarkus.
 [...]
 ```
 
@@ -336,7 +336,7 @@ If you want to learn more about building native executables, please consult http
 2020-11-04 19:50:51,267 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: legumes-restful-route started and consuming from: platform-http:///legumes
 2020-11-04 19:50:51,268 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 2 routes, of which 2 are started
 2020-11-04 19:50:51,268 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.125 seconds
-2020-11-04 19:50:51,397 INFO  [io.quarkus] (main) camel-quarkus-http 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.7.5.Final-redhat-00007) started in 1.317s. Listening on: http://0.0.0.0:8080
+2020-11-04 19:50:51,397 INFO  [io.quarkus] (main) camel-quarkus-http 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.11.6.Final-redhat-00001) started in 1.317s. Listening on: http://0.0.0.0:8080
 [...]
 ```
 

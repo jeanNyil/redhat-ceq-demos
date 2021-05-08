@@ -4,6 +4,7 @@ This project leverages **Red Hat build of Quarkus 1.7.x**, the Supersonic Subato
 
 It exposes the following RESTful service endpoints  using the **Apache Camel Quarkus Platform extension**: 
 - `/validateMembershipXML` : validates a sample `Membership` XML instance through the `POST` HTTP method.
+- `/openapi.json`: returns the OpenAPI 3.0 specification for the service.
 - `/health` : returns the _Camel Quarkus MicroProfile_ health checks
 - `/metrics` : the _Camel Quarkus MicroProfile_ metrics
 
@@ -52,13 +53,13 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 ```zsh
 [...]
 [INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/upstream-quarkus-camel-demos/camel-quarkus-xmlvalidation-api/target/camel-quarkus-xmlvalidation-api-1.0.0-SNAPSHOT-runner.jar
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.cluster-f7d5.sandbox81.opentlc.com:6443/' successfully contacted.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.cluster-ce1b.sandbox753.opentlc.com:6443/' successfully contacted.
 [...]
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.cluster-f7d5.sandbox81.opentlc.com:6443/ in namespace:camel-quarkus.
+[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.cluster-ce1b.sandbox753.opentlc.com:6443/ in namespace:camel-quarkus.
 [...]
 [INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-xmlvalidation-api@sha256:3d3d8060f906acb8d942fb28283cbbc344377ab20d982cd1eec2041a8f20f521
 [INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Push successful
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.cluster-f7d5.sandbox81.opentlc.com:6443/ in namespace: camel-quarkus.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.cluster-ce1b.sandbox753.opentlc.com:6443/ in namespace: camel-quarkus.
 [...]
 ```
 
@@ -114,8 +115,175 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         }
     }
     ```
-
-3. Test the `/health` endpoint
+3. Test the `/openapi.json` endpoint
+    ```zsh
+    curl -w '\n' $URL/openapi.json
+    ```
+    ```json
+    {
+        "openapi": "3.0.2",
+        "info": {
+            "title": "Sample XML Validation API",
+            "version": "1.0.0",
+            "description": "A simple API to test the Camel XML validator component",
+            "contact": {
+                "name": "Jean Nyilimbibi"
+            },
+            "license": {
+                "name": "MIT License",
+                "url": "https://opensource.org/licenses/MIT"
+            }
+        },
+        "servers": [
+            {
+                "url": "https://camel-quarkus-xml-validation-api.apps.cluster-ce1b.sandbox753.opentlc.com"
+            }
+        ],
+        "paths": {
+            "/validateMembershipXML": {
+                "post": {
+                    "requestBody": {
+                        "description": "A `Membership` XML instance to be validated.",
+                        "content": {
+                            "text/xml": {
+                                "schema": {
+                                    "type": "string"
+                                },
+                                "examples": {
+                                    "Membership": {
+                                        "value": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<p:membership xmlns:p=\"http://www.github.com/jeanNyil/schemas/membership/v1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <p:requestType>API</p:requestType>\n  <p:requestID>5948</p:requestID>\n  <p:memberID>85623617</p:memberID>\n  <p:status>A</p:status>\n  <p:enrolmentDate>2019-06-29</p:enrolmentDate>\n  <p:changedBy>jeanNyil</p:changedBy>\n  <p:forcedLevelCode>69</p:forcedLevelCode>\n  <p:vipOnInvitation>Y</p:vipOnInvitation>\n  <p:startDate>2019-06-29</p:startDate>\n  <p:endDate>2100-06-29</p:endDate>\n</p:membership>"
+                                    }
+                                }
+                            }
+                        },
+                        "required": true
+                    },
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ValidationResult"
+                                    },
+                                    "examples": {
+                                        "validationResult_200": {
+                                            "value": {
+                                                "validationResult": {
+                                                    "status": "OK"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "description": "`Membership` XML data validated"
+                        },
+                        "400": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ValidationResult"
+                                    },
+                                    "examples": {
+                                        "validationResult_400": {
+                                            "value": {
+                                                "validationResult": {
+                                                    "status": "KO",
+                                                    "errorMessage": "Validation failed for: com.sun.org.apache.xerces.internal.jaxp.validation.SimpleXMLSchema@493de94f\nerrors: [\norg.xml.sax.SAXParseException: cvc-datatype-valid.1.2.1: '20-06-29' is not a valid value for 'date'., Line : 7, Column : 46\norg.xml.sax.SAXParseException: cvc-type.3.1.3: The value '20-06-29' of element 'p:enrolmentDate' is not valid., Line : 7, Column : 46\n]. Exchange[ID-sample-xml-validation-api-1-2gh7r-1620389968693-0-4]"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "description": "`Membership` XML data not valid"
+                        },
+                        "500": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/Error"
+                                    },
+                                    "examples": {
+                                        "error_500": {
+                                            "value": {
+                                                "error": {
+                                                    "id": "500",
+                                                    "description": "Internal Server Error",
+                                                    "messages": [
+                                                        "java.lang.Exception: Mocked error message"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "description": "Internal server error"
+                        }
+                    },
+                    "operationId": "validateMembershipXML",
+                    "summary": "Validate Membership XML instance",
+                    "description": "Validates a `Membership` instance",
+                    "x-codegen-request-body-name": "body"
+                }
+            }
+        },
+        "components": {
+            "schemas": {
+                "ValidationResult": {
+                    "description": "Validation Result   ",
+                    "type": "object",
+                    "properties": {
+                        "validationResult": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "maxLength": 2,
+                                    "minLength": 2,
+                                    "enum": [
+                                        "OK",
+                                        "KO"
+                                    ],
+                                    "type": "string"
+                                },
+                                "errorMessage": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "example": "{\n\t\"validationResult\": {\n\t\t\"status\": \"KO\",\n\t\t\"errorMessage\": \"Validation failed for: com.sun.org.apache.xerces.internal.jaxp.validation.SimpleXMLSchema@5f86796e\\nerrors: [\\norg.xml.sax.SAXParseException: cvc-datatype-valid.1.2.1: '20-06-29' is not a valid value for 'date'., Line : 7, Column : 46\\norg.xml.sax.SAXParseException: cvc-type.3.1.3: The value '20-06-29' of element 'p:enrolmentDate' is not valid., Line : 7, Column : 46\\n]. Exchange[ID-jeansmacbookair-home-1561803539861-1-1]\"\n\t}\n}"
+                },
+                "Error": {
+                    "description": "Error message structure",
+                    "type": "object",
+                    "properties": {
+                        "error": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "description": {
+                                    "type": "string"
+                                },
+                                "messages": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "example": "{\n\t\"error\": {\n\t\t\"id\": \"500\",\n\t\t\"description\": \"Internal Server Error\",\n\t\t\"messages\": [\n\t\t\t\"java.lang.Exception: Mocked error message\"\n\t\t]\n\t}\n}"
+                }
+            }
+        }
+    }
+    ```
+4. Test the `/health` endpoint
     ```zsh
     curl -w '\n' $URL/health
     ```
@@ -142,7 +310,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         ]
     }
     ```
-4. Test the `/health/live` endpoint
+5. Test the `/health/live` endpoint
     ```zsh
     curl -w '\n' $URL/health/live
     ```
@@ -157,7 +325,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         ]
     }
     ```
-5. Test the `/health/ready` endpoint
+6. Test the `/health/ready` endpoint
     ```zsh
     curl -w '\n' $URL/health/ready
     ```
@@ -180,7 +348,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         ]
     }
     ```
-6. Test the `/metrics` endpoint
+7. Test the `/metrics` endpoint
     ```zsh
     curl -w '\n' $URL/metrics
     ```
@@ -192,9 +360,9 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     [...]
     # HELP application_camel_route_exchanges_total The total number of exchanges for a route or Camel Context
     # TYPE application_camel_route_exchanges_total counter
-    application_camel_route_exchanges_total{camelContext="camel-1",routeId="api-doc-route"} 0.0
     application_camel_route_exchanges_total{camelContext="camel-1",routeId="common-500-http-code-route"} 0.0
     application_camel_route_exchanges_total{camelContext="camel-1",routeId="custom-http-error-route"} 0.0
+    application_camel_route_exchanges_total{camelContext="camel-1",routeId="get-openapi-spec-route"} 5.0
     application_camel_route_exchanges_total{camelContext="camel-1",routeId="validate-membership-xml-route"} 30.0
     application_camel_route_exchanges_total{camelContext="camel-1",routeId="xml-validation-api-route"} 30.0
     [...]
@@ -316,14 +484,15 @@ If you want to learn more about building native executables, please consult http
 
 ```zsh
 [...]
-2020-11-04 19:45:48,218 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
-2020-11-04 19:45:48,219 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
-2020-11-04 19:45:48,219 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-xml-route started and consuming from: direct://validateMembershipXML
-2020-11-04 19:45:48,222 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: api-doc-route started and consuming from: platform-http:///validateMembershipXML/api-doc
-2020-11-04 19:45:48,225 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: xml-validation-api-route started and consuming from: platform-http:///validateMembershipXML
-2020-11-04 19:45:48,226 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
-2020-11-04 19:45:48,226 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.255 seconds
-2020-11-04 19:45:48,311 INFO  [io.quarkus] (main) camel-quarkus-xmlvalidation-api 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.7.5.Final-redhat-00007) started in 1.476s. Listening on: http://0.0.0.0:8080
+2021-05-08 08:23:59,391 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: get-openapi-spec-route started and consuming from: platform-http:///openapi.json
+2021-05-08 08:23:59,392 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: xml-validation-api-route started and consuming from: platform-http:///validateMembershipXML
+2021-05-08 08:23:59,392 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
+2021-05-08 08:23:59,393 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
+2021-05-08 08:23:59,393 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-xml-route started and consuming from: direct://validateMembershipXML
+2021-05-08 08:23:59,393 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
+2021-05-08 08:23:59,394 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.228 seconds
+2021-05-08 08:23:59,475 INFO  [io.quarkus] (main) camel-quarkus-xmlvalidation-api 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.7.5.Final-redhat-00007) started in 1.345s. Listening on: http://0.0.0.0:8080
+2021-05-08 08:23:59,475 INFO  [io.quarkus] (main) Profile prod activated.
 [...]
 ```
 
@@ -331,13 +500,14 @@ If you want to learn more about building native executables, please consult http
 
 ```zsh
 [...]
-2020-11-04 20:06:01,688 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: api-doc-route started and consuming from: platform-http:///validateMembershipXML/api-doc
-2020-11-04 20:06:01,688 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: xml-validation-api-route started and consuming from: platform-http:///validateMembershipXML
-2020-11-04 20:06:01,688 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-xml-route started and consuming from: direct://validateMembershipXML
-2020-11-04 20:06:01,688 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
-2020-11-04 20:06:01,688 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
-2020-11-04 20:06:01,689 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
-2020-11-04 20:06:01,689 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.003 seconds
-2020-11-04 20:06:01,694 INFO  [io.quarkus] (main) camel-quarkus-xmlvalidation-api 1.0.0-SNAPSHOT native (powered by Quarkus 1.7.5.Final-redhat-00007) started in 0.069s. Listening on: http://0.0.0.0:8080
+2021-05-08 08:18:18,197 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-xml-route started and consuming from: direct://validateMembershipXML
+2021-05-08 08:18:18,197 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: get-openapi-spec-route started and consuming from: platform-http:///openapi.json
+2021-05-08 08:18:18,197 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: xml-validation-api-route started and consuming from: platform-http:///validateMembershipXML
+2021-05-08 08:18:18,197 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
+2021-05-08 08:18:18,197 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
+2021-05-08 08:18:18,197 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
+2021-05-08 08:18:18,198 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.002 seconds
+2021-05-08 08:18:18,217 INFO  [io.quarkus] (main) camel-quarkus-xmlvalidation-api 1.0.0-SNAPSHOT native (powered by Quarkus 1.7.5.Final-redhat-00007) started in 0.099s. Listening on: http://0.0.0.0:8080
+2021-05-08 08:18:18,217 INFO  [io.quarkus] (main) Profile prod activated.
 [...]
 ```
