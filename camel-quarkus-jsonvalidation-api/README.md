@@ -2,7 +2,7 @@
 
 This project leverages **Red Hat build of Quarkus 1.7.x**, the Supersonic Subatomic Java Framework.
 
-It exposes the following RESTful service endpoints  using the **Apache Camel Quarkus Platform extension**: 
+It exposes the following RESTful service endpoints  using **Apache Camel REST DSL** and the **Apache Camel Quarkus Platform HTTP** extension:
 - `/validateMembershipJSON` : validates a sample `Membership` JSON instance through the `POST` HTTP method.
 - `/openapi.json`: returns the OpenAPI 3.0 specification for the service.
 - `/health` : returns the _Camel Quarkus MicroProfile_ health checks
