@@ -218,7 +218,8 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 
 ## Testing using [Postman](https://www.postman.com/)
 
-Import the provided Postman Collection for testing: [tests/Camel-Quarkus-Http.postman_collection.json](./tests/Camel-Quarkus-Http.postman_collection.json) 
+Import the provided Postman Collection for testing: [tests/Camel-Quarkus-Http.postman_collection.json](./tests/Camel-Quarkus-Http.postman_collection.json)
+ 
 ![Camel-Quarkus-Http.postman_collection.png](../_images/Camel-Quarkus-Http.postman_collection.png)
 
 ## Creating a native executable
