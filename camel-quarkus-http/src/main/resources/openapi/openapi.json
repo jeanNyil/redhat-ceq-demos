@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "http://camel-quarkus-http-camel-quarkus-native.apps.cluster-ce1b.sandbox753.opentlc.com",
+            "url": "http://camel-quarkus-http-camel-quarkus-native.apps.jeannyil.sandbox753.opentlc.com",
             "description": "API Backend URL"
         }
     ],
