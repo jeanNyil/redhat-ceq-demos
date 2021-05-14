@@ -39,7 +39,7 @@ public class SampleXmlValidationApiRoute extends RouteBuilder {
 		
 		
 		/**
-		 * REST configuration with Camel servlet component
+		 * REST configuration with Camel Quarkus Platform HTTP component
 		 */
 		restConfiguration()
 			.component("platform-http")
