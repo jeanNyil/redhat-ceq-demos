@@ -9,7 +9,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * 
- * Error Response helper bean 
+ * Validation Result helper bean 
  *
  */
 @ApplicationScoped
