@@ -76,7 +76,10 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     oc new-app https://github.com/jeanNyil/upstream-quarkus-camel-demos.git \
     --context-dir=camel-quarkus-xmlvalidation-api \
     --name=camel-quarkus-xmlvalidation-api \
-    --image-stream="openshift/openjdk-11-ubi8"
+    --image-stream="openshift/openjdk-11-ubi8" \
+    --labels=app.kubernetes.io/name=camel-quarkus-xmlvalidation-api \
+    --labels=app.kubernetes.io/version=1.0.0 \
+    --labels=app.openshift.io/runtime=quarkus
     ```
 3. Follow the log of the S2I build
     ```zsh

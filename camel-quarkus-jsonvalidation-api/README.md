@@ -53,14 +53,14 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 ```zsh
 [...]
 [INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/upstream-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner.jar
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.jeannyil.sandbox753.opentlc.com:6443/' successfully contacted.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.jeannyil.sandbox438.opentlc.com:6443/' successfully contacted.
 [...]
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.jeannyil.sandbox753.opentlc.com:6443/ in namespace:camel-quarkus.
+[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.jeannyil.sandbox438.opentlc.com:6443/ in namespace:camel-quarkus.
 [...]
 [INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-jsonvalidation-api@sha256:5cc56e5b72d56a637a163f8972ca27f90296bc265dd1d30c1c72e14a62f2ad93
 [INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-jsonvalidation-api@sha256:bd6a27e22810ce84c38ddee840d4f07d84f25a710953e602cd363947a60733e4
 [INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Push successful
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.jeannyil.sandbox753.opentlc.com:6443/ in namespace: camel-quarkus.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.jeannyil.sandbox438.opentlc.com:6443/ in namespace: camel-quarkus.
 [...]
 ```
 
@@ -77,7 +77,10 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     oc new-app https://github.com/jeanNyil/upstream-quarkus-camel-demos.git \
     --context-dir=camel-quarkus-jsonvalidation-api \
     --name=camel-quarkus-jsonvalidation-api \
-    --image-stream="openshift/openjdk-11-ubi8"
+    --image-stream="openshift/openjdk-11-ubi8" \
+    --labels=app.kubernetes.io/name=camel-quarkus-jsonvalidation-api \
+    --labels=app.kubernetes.io/version=1.0.0 \
+    --labels=app.openshift.io/runtime=quarkus
     ```
 3. Follow the log of the S2I build
     ```zsh
@@ -137,7 +140,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         },
         "servers": [
             {
-                "url": "http://camel-quarkus-json-validation-api.apps.jeannyil.sandbox753.opentlc.com",
+                "url": "http://camel-quarkus-json-validation-api.apps.jeannyil.sandbox438.opentlc.com",
                 "description": "API Backend URL"
             }
         ],
