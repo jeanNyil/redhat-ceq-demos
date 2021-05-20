@@ -63,8 +63,8 @@ pipeline {
               }
             }
             environment {
-                srcTag = 'latest'
-                destTag = 'promoteTest'
+                srcTag = '1.0.0'
+                destTag = '1.0.0-promoteTest'
             }
             steps {
                 echo "Deploy ${MODULE_NAME} to ${TEST_PROJECT} "
@@ -111,8 +111,8 @@ pipeline {
         }
         stage('Pushing to Prod') {
             environment {
-                srcTag = 'latest'
-                destTag = 'promoteProd'
+                srcTag = '1.0.0'
+                destTag = '1.0.0-promoteProd'
             }
             when {
               expression {
