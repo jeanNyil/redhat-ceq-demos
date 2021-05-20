@@ -49,9 +49,9 @@ pipeline {
                     echo "Waiting for deployment to complete prior starting smoke testing"
                     sleep 60
                     retry(5) {
-                        serviceName = 'camel-quarkus-jsonvalidation-api:8080'
+                        serviceName = 'camel-quarkus-jsonvalidation-api'
                         smokeTestOperation = 'openapi.json'
-                        makeGetRequest("http://${serviceName}/${smokeTestOperation}")
+                        makeGetRequest("http://${serviceName}.${DEV_PROJECT}.svc:8080/${smokeTestOperation}")
                     }
                 }
             }
@@ -81,9 +81,9 @@ pipeline {
             steps {
                 script {
                     retry(5) {
-                        serviceName = 'camel-quarkus-jsonvalidation-api:8080'
+                        serviceName = 'camel-quarkus-jsonvalidation-api'
                         smokeTestOperation = 'openapi.json'
-                        makeGetRequest("http://${serviceName}/${smokeTestOperation}")
+                        makeGetRequest("http://${serviceName}.${TEST_PROJECT}.svc:8080/${smokeTestOperation}")
                     }
                 }
             }
@@ -134,9 +134,9 @@ pipeline {
             steps {
                 script {
                     retry(5) {
-                        serviceName = 'camel-quarkus-jsonvalidation-api:8080'
+                        serviceName = 'camel-quarkus-jsonvalidation-api'
                         smokeTestOperation = 'openapi.json'
-                        makeGetRequest("http://${serviceName}/${smokeTestOperation}")
+                        makeGetRequest("http://${serviceName}.${PROD_PROJECT}.svc:8080/${smokeTestOperation}")
                     }
                 }
             }
