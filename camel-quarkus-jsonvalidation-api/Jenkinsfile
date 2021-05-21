@@ -1,9 +1,6 @@
-pipeline {
-    agent {
-        node {
-            label 'maven'
-        }
-    }
+#!groovy
+
+node("maven") {
     parameters{
         string (defaultValue: 'image-registry.openshift-image-registry.svc:5000', name:'IMAGE_REGISTRY', description:'container image registry')
         string (defaultValue: 'rh-dev', name:'IMAGE_NAMESPACE', description:'namespace where image is deployed')
@@ -12,7 +9,7 @@ pipeline {
         string (defaultValue: 'rh-prod', name:'PROD_PROJECT', description:'Production project')
         string (defaultValue: 'https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git', name:'GIT_REPO', description:'Git source')
         string (defaultValue: 'master', name:'GIT_BRANCH', description:'Git branch in the source git')
-        booleanParam (defaultValue: false, name:'SELECT_DEPLOY_TO_PROD', description:'Approval to deploy to Production (default: no deployment to production)')
+        booleanParam (defaultValue: true, name:'SELECT_DEPLOY_TO_PROD', description:'Approval to deploy to Production (default: no deployment to production)')
     }
     environment {
         MODULE_NAME = 'camel-quarkus-jsonvalidation-api'
