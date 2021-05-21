@@ -1,6 +1,7 @@
 #!groovy
 
 node("maven") {
+
     parameters{
         string (defaultValue: 'image-registry.openshift-image-registry.svc:5000', name:'IMAGE_REGISTRY', description:'container image registry')
         string (defaultValue: 'rh-dev', name:'IMAGE_NAMESPACE', description:'namespace where image is deployed')
@@ -11,134 +12,142 @@ node("maven") {
         string (defaultValue: 'master', name:'GIT_BRANCH', description:'Git branch in the source git')
         booleanParam (defaultValue: true, name:'SELECT_DEPLOY_TO_PROD', description:'Approval to deploy to Production (default: no deployment to production)')
     }
+
     environment {
         MODULE_NAME = 'camel-quarkus-jsonvalidation-api'
     }
-    stages {
-        stage ('source') {
-            steps {
-                git url: params.GIT_REPO, branch: params.GIT_BRANCH
-            }
-        }
-        stage('Build Service') {
-            when {
-              expression {
-                  params.SELECT_DEPLOY_TO_PROD == false
-              }
-            }
-            steps {
-                echo "Building.. ${MODULE_NAME} "
-                build(env.MODULE_NAME)
 
-                echo "Deploying ${MODULE_NAME} to ${DEV_PROJECT}"
-                deploy(env.MODULE_NAME, params.DEV_PROJECT)
+    stage ('source') {
+        steps {
+            git url: params.GIT_REPO, branch: params.GIT_BRANCH
+        }
+    }
+    
+    stage('Build Service') {
+        when {
+            expression {
+                params.SELECT_DEPLOY_TO_PROD == false
             }
         }
-        stage('Dev-Env smoke-test') {
-            when {
-              expression {
-                  params.SELECT_DEPLOY_TO_PROD == false
-              }
-            }
-            steps {
-                script {
+        steps {
+            echo "Building.. ${MODULE_NAME} "
+            build(env.MODULE_NAME)
 
-                    echo "Waiting for deployment to complete prior starting smoke testing"
-                    sleep 60
-                    retry(5) {
-                        serviceName = 'camel-quarkus-jsonvalidation-api'
-                        smokeTestOperation = 'openapi.json'
-                        makeGetRequest("http://${serviceName}.${DEV_PROJECT}.svc:8080/${smokeTestOperation}")
-                    }
-                }
-            }
+            echo "Deploying ${MODULE_NAME} to ${DEV_PROJECT}"
+            deploy(env.MODULE_NAME, params.DEV_PROJECT)
         }
-        stage('Pushing to Test') {
-            when {
-              expression {
-                  params.SELECT_DEPLOY_TO_PROD == false
-              }
-            }
-            environment {
-                srcTag = '1.0.0'
-                destTag = '1.0.0-promoteTest'
-            }
-            steps {
-                echo "Deploy ${MODULE_NAME} to ${TEST_PROJECT} "
-                promoteServiceSetup(env.MODULE_NAME,params.IMAGE_REGISTRY, params.IMAGE_NAMESPACE, env.destTag, params.TEST_PROJECT)
-                promoteService(params.IMAGE_NAMESPACE, params.TEST_PROJECT,env.MODULE_NAME, env.srcTag, env.destTag)
-            }
-        }
-      stage('Test-Env smoke-test') {
-            when {
-              expression {
-                  params.SELECT_DEPLOY_TO_PROD == false
-              }
-            }
-            steps {
-                script {
-                    retry(5) {
-                        serviceName = 'camel-quarkus-jsonvalidation-api'
-                        smokeTestOperation = 'openapi.json'
-                        makeGetRequest("http://${serviceName}.${TEST_PROJECT}.svc:8080/${smokeTestOperation}")
-                    }
-                }
-            }
-        }
-        stage('Wait for user to select module to push to production.') {
-            when {
-                expression {
-                    params.SELECT_DEPLOY_TO_PROD == true
-                }
-            }
-            steps {
-                script {
-                    try {
-                        timeout (time:2, unit:'HOURS') {
-                            env.userProdApproval = input(id: 'userInput', message: "Do you approve this build to promote to production?")
-                            env.userProdApproval = 'Approved'
-                        }
-                    } catch (exception) {
-                      env.userProdApproval='---'
-                    }
+    }
 
-                    println("User approval to production " + env.userProdApproval);
-                }
+    stage('Dev-Env smoke-test') {
+        when {
+            expression {
+                params.SELECT_DEPLOY_TO_PROD == false
             }
         }
-        stage('Pushing to Prod') {
-            environment {
-                srcTag = '1.0.0'
-                destTag = '1.0.0-promoteProd'
-            }
-            when {
-              expression {
-                env.userProdApproval == 'Approved'
-              }
-            }
-            steps {
-                echo "Deploy ${MODULE_NAME} to ${PROD_PROJECT} "
-                promoteServiceSetup(env.MODULE_NAME,params.IMAGE_REGISTRY, params.IMAGE_NAMESPACE, env.destTag, params.PROD_PROJECT)
-                promoteService(params.IMAGE_NAMESPACE, params.PROD_PROJECT, env.MODULE_NAME,  env.srcTag, env.destTag)
-            }
-        }
-      stage('Prod-Env smoke-test') {
-            when {
-              expression {
-                    env.userProdApproval == 'Approved'
-              }
-            }
-            steps {
-                script {
-                    retry(5) {
-                        serviceName = 'camel-quarkus-jsonvalidation-api'
-                        smokeTestOperation = 'openapi.json'
-                        makeGetRequest("http://${serviceName}.${PROD_PROJECT}.svc:8080/${smokeTestOperation}")
-                    }
+        steps {
+            script {
+
+                echo "Waiting for deployment to complete prior starting smoke testing"
+                sleep 60
+                retry(5) {
+                    serviceName = 'camel-quarkus-jsonvalidation-api'
+                    smokeTestOperation = 'openapi.json'
+                    makeGetRequest("http://${serviceName}.${DEV_PROJECT}.svc:8080/${smokeTestOperation}")
                 }
             }
         }
     }
+
+    stage('Pushing to Test') {
+        when {
+            expression {
+                params.SELECT_DEPLOY_TO_PROD == false
+            }
+        }
+        environment {
+            srcTag = '1.0.0'
+            destTag = '1.0.0-promoteTest'
+        }
+        steps {
+            echo "Deploy ${MODULE_NAME} to ${TEST_PROJECT} "
+            promoteServiceSetup(env.MODULE_NAME,params.IMAGE_REGISTRY, params.IMAGE_NAMESPACE, env.destTag, params.TEST_PROJECT)
+            promoteService(params.IMAGE_NAMESPACE, params.TEST_PROJECT,env.MODULE_NAME, env.srcTag, env.destTag)
+        }
+    }
+
+    stage('Test-Env smoke-test') {
+        when {
+            expression {
+                params.SELECT_DEPLOY_TO_PROD == false
+            }
+        }
+        steps {
+            script {
+                retry(5) {
+                    serviceName = 'camel-quarkus-jsonvalidation-api'
+                    smokeTestOperation = 'openapi.json'
+                    makeGetRequest("http://${serviceName}.${TEST_PROJECT}.svc:8080/${smokeTestOperation}")
+                }
+            }
+        }
+    }
+
+    stage('Wait for user to select module to push to production.') {
+        when {
+            expression {
+                params.SELECT_DEPLOY_TO_PROD == true
+            }
+        }
+        steps {
+            script {
+                try {
+                    timeout (time:2, unit:'HOURS') {
+                        env.userProdApproval = input(id: 'userInput', message: "Do you approve this build to promote to production?")
+                        env.userProdApproval = 'Approved'
+                    }
+                } catch (exception) {
+                    env.userProdApproval='---'
+                }
+
+                println("User approval to production " + env.userProdApproval);
+            }
+        }
+    }
+
+    stage('Pushing to Prod') {
+        environment {
+            srcTag = '1.0.0'
+            destTag = '1.0.0-promoteProd'
+        }
+        when {
+            expression {
+            env.userProdApproval == 'Approved'
+            }
+        }
+        steps {
+            echo "Deploy ${MODULE_NAME} to ${PROD_PROJECT} "
+            promoteServiceSetup(env.MODULE_NAME,params.IMAGE_REGISTRY, params.IMAGE_NAMESPACE, env.destTag, params.PROD_PROJECT)
+            promoteService(params.IMAGE_NAMESPACE, params.PROD_PROJECT, env.MODULE_NAME,  env.srcTag, env.destTag)
+        }
+    }
+    
+    stage('Prod-Env smoke-test') {
+        when {
+            expression {
+                env.userProdApproval == 'Approved'
+            }
+        }
+        steps {
+            script {
+                retry(5) {
+                    serviceName = 'camel-quarkus-jsonvalidation-api'
+                    smokeTestOperation = 'openapi.json'
+                    makeGetRequest("http://${serviceName}.${PROD_PROJECT}.svc:8080/${smokeTestOperation}")
+                }
+            }
+        }
+    }
+    
 }
 
 def promoteServiceSetup(svcName, registry, imageNameSpace, tagName, projName) {
