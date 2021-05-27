@@ -3555,7 +3555,7 @@
 #
 # The docker image to use to do the image build
 #
-#quarkus.native.builder-image=registry.access.redhat.com/quarkus/mandrel-20-rhel8:20.1
+#quarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
 
 #
 # If the native image server should be restarted
