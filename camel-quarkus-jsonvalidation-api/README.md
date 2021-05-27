@@ -1,12 +1,12 @@
 # Camel-Quarkus-JsonValidation-Api project
 
-This project leverages **Red Hat build of Quarkus 1.7.x**, the Supersonic Subatomic Java Framework.
+This project leverages **Red Hat build of Quarkus 1.11.x**, the Supersonic Subatomic Java Framework.
 
 It exposes the following RESTful service endpoints  using **Apache Camel REST DSL** and the **Apache Camel Quarkus Platform HTTP** extension:
 - `/validateMembershipJSON` : validates a sample `Membership` JSON instance through the `POST` HTTP method.
 - `/openapi.json`: returns the OpenAPI 3.0 specification for the service.
-- `/health` : returns the _Camel Quarkus MicroProfile_ health checks
-- `/metrics` : the _Camel Quarkus MicroProfile_ metrics
+- `/q/health` : returns the _Camel Quarkus MicroProfile_ health checks
+- `/q/metrics` : the _Camel Quarkus MicroProfile_ metrics
 
 ## Prerequisites
 - JDK 11 installed with `JAVA_HOME` configured appropriately
@@ -366,9 +366,9 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         }
     }
     ```
-4. Test the `/health` endpoint
+4. Test the `/q/health` endpoint
     ```zsh
-    curl -w '\n' $URL/health
+    curl -w '\n' $URL/q/health
     ```
     ```json
     {
@@ -393,9 +393,9 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         ]
     }
     ```
-5. Test the `/health/live` endpoint
+5. Test the `/q/health/live` endpoint
     ```zsh
-    curl -w '\n' $URL/health/live
+    curl -w '\n' $URL/q/health/live
     ```
     ```json
     {
@@ -408,9 +408,9 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         ]
     }
     ```
-6. Test the `/health/ready` endpoint
+6. Test the `/q/health/ready` endpoint
     ```zsh
-    curl -w '\n' $URL/health/ready
+    curl -w '\n' $URL/q/health/ready
     ```
     ```json
     {
@@ -431,9 +431,9 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         ]
     }
     ```
-7. Test the `/metrics` endpoint
+7. Test the `/q/metrics` endpoint
     ```zsh
-    curl -w '\n' $URL/metrics
+    curl -w '\n' $URL/q/metrics
     ```
     ```zsh
     [...]
@@ -496,27 +496,27 @@ If you want to learn more about building native executables, please consult http
     1. For Docker use:
         ```zsh
         ./mvnw package -Pnative -Dquarkus.native.container-build=true \
-        -Dquarkus.native.builder-image=registry.access.redhat.com/quarkus/mandrel-20-rhel8:20.1 \
+        -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11 \
         -Dquarkus.native.native-image-xmx=6g
         ```
     2. For Podman use:
         ```zsh
         ./mvnw package -Pnative -Dquarkus.native.container-build=true \
         -Dquarkus.native.container-runtime=podman \
-        -Dquarkus.native.builder-image=registry.access.redhat.com/quarkus/mandrel-20-rhel8:20.1 \
+        -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11 \
         -Dquarkus.native.native-image-xmx=6g
         ```
     ```zsh
     [...]
     [INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building native image source jar: /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-native-image-source-jar/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner.jar
     [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Building native image from /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-native-image-source-jar/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner.jar
-    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Checking image status registry.access.redhat.com/quarkus/mandrel-20-rhel8:20.1
+    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Checking image status quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
     20.1: Pulling from quarkus/mandrel-20-rhel8
     Digest: sha256:f4914b8717883835a28f61b5bf25421671adc968474da7042c9ca93ab63251a2
-    Status: Image is up to date for registry.access.redhat.com/quarkus/mandrel-20-rhel8:20.1
-    registry.access.redhat.com/quarkus/mandrel-20-rhel8:20.1
+    Status: Image is up to date for quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
+    quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
     [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Running Quarkus native-image plugin on GraalVM Version 20.1.0.3_0-1 (Mandrel Distribution) (Java Version 11.0.9+11-LTS)
-    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] docker run -v /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-native-image-source-jar:/project:z --env LANG=C --rm registry.access.redhat.com/quarkus/mandrel-20-rhel8:20.1 -J-Dsun.nio.ch.maxUpdateArraySize=100 -J-Djava.util.logging.manager=org.jboss.logmanager.LogManager -J-Dvertx.logger-delegate-factory-class-name=io.quarkus.vertx.core.runtime.VertxLogDelegateFactory -J-Dvertx.disableDnsResolver=true -J-Dio.netty.leakDetection.level=DISABLED -J-Dio.netty.allocator.maxOrder=1 -J-Dcom.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize=true -J-Duser.language=en -J-Dfile.encoding=UTF-8 --initialize-at-build-time= -H:InitialCollectionPolicy=com.oracle.svm.core.genscavenge.CollectionPolicy\$BySpaceAndTime -H:+JNI -jar camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner.jar -H:FallbackThreshold=0 -H:+ReportExceptionStackTraces -J-Xmx6g -H:+AddAllCharsets -H:EnableURLProtocols=http,https --enable-all-security-services -H:-UseServiceLoaderFeature -H:+StackTrace camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner
+    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] docker run -v /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-native-image-source-jar:/project:z --env LANG=C --rm quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11 -J-Dsun.nio.ch.maxUpdateArraySize=100 -J-Djava.util.logging.manager=org.jboss.logmanager.LogManager -J-Dvertx.logger-delegate-factory-class-name=io.quarkus.vertx.core.runtime.VertxLogDelegateFactory -J-Dvertx.disableDnsResolver=true -J-Dio.netty.leakDetection.level=DISABLED -J-Dio.netty.allocator.maxOrder=1 -J-Dcom.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize=true -J-Duser.language=en -J-Dfile.encoding=UTF-8 --initialize-at-build-time= -H:InitialCollectionPolicy=com.oracle.svm.core.genscavenge.CollectionPolicy\$BySpaceAndTime -H:+JNI -jar camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner.jar -H:FallbackThreshold=0 -H:+ReportExceptionStackTraces -J-Xmx6g -H:+AddAllCharsets -H:EnableURLProtocols=http,https --enable-all-security-services -H:-UseServiceLoaderFeature -H:+StackTrace camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner
     [...]
     [INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 811047ms
     [INFO] ------------------------------------------------------------------------
@@ -575,7 +575,7 @@ If you want to learn more about building native executables, please consult http
 2021-05-07 23:11:22,452 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: json-validation-api-route started and consuming from: platform-http:///validateMembershipJSON
 2021-05-07 23:11:22,453 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
 2021-05-07 23:11:22,453 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.184 seconds
-2021-05-07 23:11:22,536 INFO  [io.quarkus] (main) camel-quarkus-jsonvalidation-api 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.7.5.Final-redhat-00007) started in 1.336s. Listening on: http://0.0.0.0:8080
+2021-05-07 23:11:22,536 INFO  [io.quarkus] (main) camel-quarkus-jsonvalidation-api 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.11.6.Final-redhat-00001) started in 1.336s. Listening on: http://0.0.0.0:8080
 2021-05-07 23:11:22,537 INFO  [io.quarkus] (main) Profile prod activated.
 [...]
 ```
@@ -591,7 +591,7 @@ If you want to learn more about building native executables, please consult http
 2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-json-route started and consuming from: direct://validateMembershipJSON
 2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
 2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.001 seconds
-2021-05-08 00:07:57,320 INFO  [io.quarkus] (main) camel-quarkus-jsonvalidation-api 1.0.0-SNAPSHOT native (powered by Quarkus 1.7.5.Final-redhat-00007) started in 0.083s. Listening on: http://0.0.0.0:8080
+2021-05-08 00:07:57,320 INFO  [io.quarkus] (main) camel-quarkus-jsonvalidation-api 1.0.0-SNAPSHOT native (powered by Quarkus 1.11.6.Final-redhat-00001) started in 0.083s. Listening on: http://0.0.0.0:8080
 2021-05-08 00:07:57,320 INFO  [io.quarkus] (main) Profile prod activated.
 [...]
 ```

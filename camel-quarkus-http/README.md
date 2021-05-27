@@ -1,12 +1,12 @@
 # Camel-Quarkus-Http
 
-This project leverages **Red Hat build of Quarkus 1.7.x**, the Supersonic Subatomic Java Framework.
+This project leverages **Red Hat build of Quarkus 1.11.x**, the Supersonic Subatomic Java Framework.
 
 It exposes the following RESTful service endpoints  using the **Apache Camel Quarkus Platform** extension: 
 - `/fruits` : returns a list of hard-coded fruits (`name` and `description`) in JSON format. It also allows to add a `fruit` through the `POST` HTTP method
 - `/legumes` : returns a list of hard-coded legumes (`name`and `description`) in JSON format.
-- `/health` : returns the _Camel Quarkus MicroProfile_ health checks
-- `/metrics` : the _Camel Quarkus MicroProfile_ metrics 
+- `/q/health` : returns the _Camel Quarkus MicroProfile_ health checks
+- `/q/metrics` : the _Camel Quarkus MicroProfile_ metrics 
 
 ## Prerequisites
 - JDK 11 installed with `JAVA_HOME` configured appropriately
@@ -137,9 +137,9 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         "description" : "Summer squash"
     } ]
     ```
-4. Test the `/health` endpoint
+4. Test the `/q/health` endpoint
     ```zsh
-    curl -w '\n' $URL/health
+    curl -w '\n' $URL/q/health
     ```
     ```json
     {
@@ -164,9 +164,9 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         ]
     }
     ```
-5. Test the `/health/live` endpoint
+5. Test the `/q/health/live` endpoint
     ```zsh
-    curl -w '\n' $URL/health/live
+    curl -w '\n' $URL/q/health/live
     ```
     ```json
     {
@@ -179,9 +179,9 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         ]
     }
     ```
-6. Test the `/health/ready` endpoint
+6. Test the `/q/health/ready` endpoint
     ```zsh
-    curl -w '\n' $URL/health/ready
+    curl -w '\n' $URL/q/health/ready
     ```
     ```json
     {
@@ -202,9 +202,9 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         ]
     }
     ```
-7. Test the `/metrics` endpoint
+7. Test the `/q/metrics` endpoint
     ```zsh
-    curl -w '\n' $URL/metrics
+    curl -w '\n' $URL/q/metrics
     ```
     ```zsh
     [...]
@@ -264,27 +264,27 @@ If you want to learn more about building native executables, please consult http
     1. For Docker use:
         ```zsh
         ./mvnw package -Pnative -Dquarkus.native.container-build=true \
-        -Dquarkus.native.builder-image=registry.access.redhat.com/quarkus/mandrel-20-rhel8:20.1 \
+        -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11 \
         -Dquarkus.native.native-image-xmx=6g
         ```
     2. For Podman use:
         ```zsh
         ./mvnw package -Pnative -Dquarkus.native.container-build=true \
         -Dquarkus.native.container-runtime=podman \
-        -Dquarkus.native.builder-image=registry.access.redhat.com/quarkus/mandrel-20-rhel8:20.1 \
+        -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11 \
         -Dquarkus.native.native-image-xmx=6g
         ```
     ```zsh
     [...]
     [INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building native image source jar: /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-SNAPSHOT-native-image-source-jar/camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar
     [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Building native image from /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-SNAPSHOT-native-image-source-jar/camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar
-    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Checking image status registry.access.redhat.com/quarkus/mandrel-20-rhel8:20.1
+    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Checking image status quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
     20.1: Pulling from quarkus/mandrel-20-rhel8
     Digest: sha256:572668ceda75bed91d2b1d268a97511b1ebc8ce00a4ae668e9505c033f42fb60
-    Status: Image is up to date for registry.access.redhat.com/quarkus/mandrel-20-rhel8:20.1
-    registry.access.redhat.com/quarkus/mandrel-20-rhel8:20.1
+    Status: Image is up to date for quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
+    quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
     [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Running Quarkus native-image plugin on GraalVM Version 20.1.0.4_0-1 (Mandrel Distribution) (Java Version 11.0.10+9-LTS)
-    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] docker run -v /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-SNAPSHOT-native-image-source-jar:/project:z --env LANG=C --rm registry.access.redhat.com/quarkus/mandrel-20-rhel8:20.1 -J-Dsun.nio.ch.maxUpdateArraySize=100 -J-Djava.util.logging.manager=org.jboss.logmanager.LogManager -J-Dvertx.logger-delegate-factory-class-name=io.quarkus.vertx.core.runtime.VertxLogDelegateFactory -J-Dvertx.disableDnsResolver=true -J-Dio.netty.leakDetection.level=DISABLED -J-Dio.netty.allocator.maxOrder=1 -J-Duser.language=en -J-Dfile.encoding=UTF-8 --initialize-at-build-time= -H:InitialCollectionPolicy=com.oracle.svm.core.genscavenge.CollectionPolicy\$BySpaceAndTime -H:+JNI -jar camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar -H:FallbackThreshold=0 -H:+ReportExceptionStackTraces -J-Xmx6g -H:+AddAllCharsets -H:EnableURLProtocols=http,https --enable-all-security-services -H:-UseServiceLoaderFeature -H:+StackTrace camel-quarkus-http-1.0.0-SNAPSHOT-runner
+    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] docker run -v /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-SNAPSHOT-native-image-source-jar:/project:z --env LANG=C --rm quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11 -J-Dsun.nio.ch.maxUpdateArraySize=100 -J-Djava.util.logging.manager=org.jboss.logmanager.LogManager -J-Dvertx.logger-delegate-factory-class-name=io.quarkus.vertx.core.runtime.VertxLogDelegateFactory -J-Dvertx.disableDnsResolver=true -J-Dio.netty.leakDetection.level=DISABLED -J-Dio.netty.allocator.maxOrder=1 -J-Duser.language=en -J-Dfile.encoding=UTF-8 --initialize-at-build-time= -H:InitialCollectionPolicy=com.oracle.svm.core.genscavenge.CollectionPolicy\$BySpaceAndTime -H:+JNI -jar camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar -H:FallbackThreshold=0 -H:+ReportExceptionStackTraces -J-Xmx6g -H:+AddAllCharsets -H:EnableURLProtocols=http,https --enable-all-security-services -H:-UseServiceLoaderFeature -H:+StackTrace camel-quarkus-http-1.0.0-SNAPSHOT-runner
     [...]
     [INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 274740ms
     [INFO] ------------------------------------------------------------------------
@@ -340,7 +340,7 @@ If you want to learn more about building native executables, please consult http
 2021-05-08 10:37:21,752 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: legumes-restful-route started and consuming from: platform-http:///legumes
 2021-05-08 10:37:21,753 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 2 routes, of which 2 are started
 2021-05-08 10:37:21,753 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.117 seconds
-2021-05-08 10:37:21,891 INFO  [io.quarkus] (main) camel-quarkus-http 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.7.5.Final-redhat-00007) started in 1.228s. Listening on: http://0.0.0.0:8080
+2021-05-08 10:37:21,891 INFO  [io.quarkus] (main) camel-quarkus-http 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.11.6.Final-redhat-00001) started in 1.228s. Listening on: http://0.0.0.0:8080
 2021-05-08 10:37:21,891 INFO  [io.quarkus] (main) Profile prod activated.
 [...]
 ```
@@ -353,7 +353,7 @@ If you want to learn more about building native executables, please consult http
 2021-05-08 10:56:28,748 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: legumes-restful-route started and consuming from: platform-http:///legumes
 2021-05-08 10:56:28,748 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 2 routes, of which 2 are started
 2021-05-08 10:56:28,748 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.001 seconds
-2021-05-08 10:56:28,766 INFO  [io.quarkus] (main) camel-quarkus-http 1.0.0-SNAPSHOT native (powered by Quarkus 1.7.5.Final-redhat-00007) started in 0.072s. Listening on: http://0.0.0.0:8080
+2021-05-08 10:56:28,766 INFO  [io.quarkus] (main) camel-quarkus-http 1.0.0-SNAPSHOT native (powered by Quarkus 1.11.6.Final-redhat-00001) started in 0.072s. Listening on: http://0.0.0.0:8080
 2021-05-08 10:56:28,766 INFO  [io.quarkus] (main) Profile prod activated.
 [...]
 ```
