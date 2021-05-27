@@ -22,10 +22,10 @@ You can run your application in dev mode that enables live coding using:
 ## Packaging and running the application locally
 
 The application can be packaged using `./mvnw package`.
-It produces the `camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar` file in the `/target` directory.
+It produces the `camel-quarkus-http-1.0.0-runner.jar` file in the `/target` directory.
 Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/lib` directory.
 
-The application is now runnable using `java -jar target/camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar`.
+The application is now runnable using `java -jar target/camel-quarkus-http-1.0.0-runner.jar`.
 
 ## Packaging and running the application on Red Hat OpenShift
 
@@ -52,15 +52,28 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 ```
 ```zsh
 [...]
-[INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/upstream-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar
+[INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-runner.jar
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.jeannyil.sandbox438.opentlc.com:6443/' successfully contacted.
 [...]
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.jeannyil.sandbox438.opentlc.com:6443/ in namespace:camel-quarkus.
+[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Performing openshift binary build with jar on server: https://api.jeannyil.sandbox438.opentlc.com:6443/ in namespace:camel-quarkus-jvm.
 [...]
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-http@sha256:5cc56e5b72d56a637a163f8972ca27f90296bc265dd1d30c1c72e14a62f2ad93
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Push successful
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.jeannyil.sandbox438.opentlc.com:6443/ in namespace: camel-quarkus.
-[...]
+[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-jvm/camel-quarkus-http@sha256:db6f7c6e388189156820ba60acaa36ed7f989ae7cab4f03627e6d400469a850c
+[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Push successful
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.jeannyil.sandbox438.opentlc.com:6443/ in namespace: camel-quarkus-jvm.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Service camel-quarkus-http.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ImageStream camel-quarkus-http.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ImageStream openjdk-11.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: BuildConfig camel-quarkus-http.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: DeploymentConfig camel-quarkus-http.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Route camel-quarkus-http.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-http-camel-quarkus-jvm.apps.jeannyil.sandbox438.opentlc.com
+[INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 88890ms
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:58 min
+[INFO] Finished at: 2021-05-27T11:54:19+02:00
+[INFO] ------------------------------------------------------------------------
 ```
 
 ### OpenShift S2I source workflow (recommended for PRODUCTION use)
@@ -73,7 +86,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     ```
 2. Create the `camel-quarkus-http` OpenShift application from the git repository
     ```zsh
-    oc new-app https://github.com/jeanNyil/upstream-quarkus-camel-demos.git \
+    oc new-app https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git \
     --context-dir=camel-quarkus-http \
     --name=camel-quarkus-http \
     --image-stream="openshift/openjdk-11-ubi8" \
@@ -86,12 +99,12 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     oc logs bc/camel-quarkus-http -f
     ```
     ```zsh
-    Cloning "https://github.com/jeanNyil/upstream-quarkus-camel-demos.git" ...
-        Commit:	70efd37c8bd29fd799dc3f4b6699aed34742afda (Initial creation)
-        Author:	Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
-        Date:	Fri Sep 4 13:56:39 2020 +0200
+    Cloning "https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git" ...
+            Commit: da04530f24460a522108fc510bbf56ea1869c840 (Upgraded to Red Hat build of Quarkus 1.11)
+            Author: Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
+            Date:   Thu May 27 12:02:54 2021 +0200
     [...]
-    Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-http-s2i@sha256:a8dfcb3c5ad978825b2b5fdf0b4a98cef1365ebb82666f27927d831e1f757761
+    Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-jvm/camel-quarkus-http@sha256:e24b806b432f40290e175bb75ad9c88f8ce6b3ef6f37ee4b51071b46405a451e
     Push successful
     ```
 4. Create a non-secure route to expose the `camel-quarkus-http` service outside the OpenShift cluster
@@ -233,7 +246,7 @@ You can create a native executable using: `./mvnw package -Pnative`.
 
 Or, if you don't have GraalVM installed, you can run the native executable build in a container using: `./mvnw package -Pnative -Dquarkus.native.container-build=true`.
 
-You can then execute your native executable with: `./target/camel-quarkus-http-1.0.0-SNAPSHOT-runner`
+You can then execute your native executable with: `./target/camel-quarkus-http-1.0.0-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image.
 
@@ -276,22 +289,18 @@ If you want to learn more about building native executables, please consult http
         ```
     ```zsh
     [...]
-    [INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building native image source jar: /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-SNAPSHOT-native-image-source-jar/camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar
-    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Building native image from /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-SNAPSHOT-native-image-source-jar/camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar
-    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Checking image status quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
-    20.1: Pulling from quarkus/mandrel-20-rhel8
-    Digest: sha256:572668ceda75bed91d2b1d268a97511b1ebc8ce00a4ae668e9505c033f42fb60
-    Status: Image is up to date for quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
-    quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
-    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Running Quarkus native-image plugin on GraalVM Version 20.1.0.4_0-1 (Mandrel Distribution) (Java Version 11.0.10+9-LTS)
-    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] docker run -v /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-SNAPSHOT-native-image-source-jar:/project:z --env LANG=C --rm quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11 -J-Dsun.nio.ch.maxUpdateArraySize=100 -J-Djava.util.logging.manager=org.jboss.logmanager.LogManager -J-Dvertx.logger-delegate-factory-class-name=io.quarkus.vertx.core.runtime.VertxLogDelegateFactory -J-Dvertx.disableDnsResolver=true -J-Dio.netty.leakDetection.level=DISABLED -J-Dio.netty.allocator.maxOrder=1 -J-Duser.language=en -J-Dfile.encoding=UTF-8 --initialize-at-build-time= -H:InitialCollectionPolicy=com.oracle.svm.core.genscavenge.CollectionPolicy\$BySpaceAndTime -H:+JNI -jar camel-quarkus-http-1.0.0-SNAPSHOT-runner.jar -H:FallbackThreshold=0 -H:+ReportExceptionStackTraces -J-Xmx6g -H:+AddAllCharsets -H:EnableURLProtocols=http,https --enable-all-security-services -H:-UseServiceLoaderFeature -H:+StackTrace camel-quarkus-http-1.0.0-SNAPSHOT-runner
+    [INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building native image source jar: /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-native-image-source-jar/camel-quarkus-http-1.0.0-runner.jar
+    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Building native image from /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-native-image-source-jar/camel-quarkus-http-1.0.0-runner.jar
     [...]
-    [INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 274740ms
+    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Running Quarkus native-image plugin on GraalVM Version 20.3.2.0-Final (Mandrel Distribution) (Java Version 11.0.11+9)
+    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] docker run -v /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-native-image-source-jar:/project:z --env LANG=C --rm quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11 -J-Djava.util.logging.manager=org.jboss.logmanager.LogManager -J-Dsun.nio.ch.maxUpdateArraySize=100 -J-Dvertx.logger-delegate-factory-class-name=io.quarkus.vertx.core.runtime.VertxLogDelegateFactory -J-Dvertx.disableDnsResolver=true -J-Dio.netty.leakDetection.level=DISABLED -J-Dio.netty.allocator.maxOrder=1 -J-Duser.language=en -J-Dfile.encoding=UTF-8 --initialize-at-build-time= -H:InitialCollectionPolicy=com.oracle.svm.core.genscavenge.CollectionPolicy\$BySpaceAndTime -H:+JNI -H:+AllowFoldMethods -jar camel-quarkus-http-1.0.0-runner.jar -H:FallbackThreshold=0 -H:+ReportExceptionStackTraces -J-Xmx6g -H:+AddAllCharsets -H:EnableURLProtocols=http,https --enable-all-security-services -H:-UseServiceLoaderFeature -H:+StackTrace camel-quarkus-http-1.0.0-runner
+    [...]
+    [INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 717650ms
     [INFO] ------------------------------------------------------------------------
     [INFO] BUILD SUCCESS
     [INFO] ------------------------------------------------------------------------
-    [INFO] Total time:  04:50 min
-    [INFO] Finished at: 2021-05-08T12:47:49+02:00
+    [INFO] Total time:  12:17 min
+    [INFO] Finished at: 2021-05-27T14:21:36+02:00
     [INFO] ------------------------------------------------------------------------
     ```
 
@@ -313,7 +322,7 @@ If you want to learn more about building native executables, please consult http
         Receiving source from STDIN as archive ...
         Replaced Dockerfile FROM image registry.access.redhat.com/ubi8/ubi-minimal:8.1
         [...]
-        Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-native/camel-quarkus-http@sha256:e1bc39707361f29a1bf3b80234da58361606718da2e2bd0a444a8f3912b59e55
+        Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-native/camel-quarkus-http@sha256:c894bb0368acdf857e317f10a3e27f5b052a988de8c014542ea839ea6ad4fbb0
         Push successful
         ```
 
@@ -336,24 +345,29 @@ If you want to learn more about building native executables, please consult http
 
 ```zsh
 [...]
-2021-05-08 10:37:21,751 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: fruits-restful-route started and consuming from: platform-http:///fruits
-2021-05-08 10:37:21,752 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: legumes-restful-route started and consuming from: platform-http:///legumes
-2021-05-08 10:37:21,753 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 2 routes, of which 2 are started
-2021-05-08 10:37:21,753 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.117 seconds
-2021-05-08 10:37:21,891 INFO  [io.quarkus] (main) camel-quarkus-http 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.11.6.Final-redhat-00001) started in 1.228s. Listening on: http://0.0.0.0:8080
-2021-05-08 10:37:21,891 INFO  [io.quarkus] (main) Profile prod activated.
+2021-05-27 10:10:38,433 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.7.0 (camel-1) is starting
 [...]
+2021-05-27 10:10:38,506 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: fruits-restful-route started and consuming from: platform-http:///fruits
+2021-05-27 10:10:38,507 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: legumes-restful-route started and consuming from: platform-http:///legumes
+2021-05-27 10:10:38,508 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 2 routes, of which 2 are started
+2021-05-27 10:10:38,508 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.7.0 (camel-1) started in 75ms
+2021-05-27 10:10:38,581 INFO  [io.quarkus] (main) camel-quarkus-http 1.0.0 on JVM (powered by Quarkus 1.11.6.Final-redhat-00001) started in 1.040s. Listening on: http://0.0.0.0:8080
+2021-05-27 10:10:38,581 INFO  [io.quarkus] (main) Profile prod activated.
+2021-05-27 10:10:38,581 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-core, camel-jackson, camel-microprofile-health, camel-microprofile-metrics, camel-platform-http, camel-support-common, cdi, config-yaml, kubernetes, mutiny, smallrye-context-propagation, smallrye-health, smallrye-metrics, vertx, vertx-web]
 ```
 
 ### Native mode
 
 ```zsh
 [...]
-2021-05-08 10:56:28,748 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: fruits-restful-route started and consuming from: platform-http:///fruits
-2021-05-08 10:56:28,748 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: legumes-restful-route started and consuming from: platform-http:///legumes
-2021-05-08 10:56:28,748 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 2 routes, of which 2 are started
-2021-05-08 10:56:28,748 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.001 seconds
-2021-05-08 10:56:28,766 INFO  [io.quarkus] (main) camel-quarkus-http 1.0.0-SNAPSHOT native (powered by Quarkus 1.11.6.Final-redhat-00001) started in 0.072s. Listening on: http://0.0.0.0:8080
-2021-05-08 10:56:28,766 INFO  [io.quarkus] (main) Profile prod activated.
+2021-05-27 12:59:44,863 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.7.0 (camel-1) is starting
+[...]
+2021-05-27 12:59:44,864 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: fruits-restful-route started and consuming from: platform-http:///fruits
+2021-05-27 12:59:44,864 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: legumes-restful-route started and consuming from: platform-http:///legumes
+2021-05-27 12:59:44,864 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 2 routes, of which 2 are started
+2021-05-27 12:59:44,864 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.7.0 (camel-1) started in 1ms
+2021-05-27 12:59:44,865 INFO  [io.quarkus] (main) camel-quarkus-http 1.0.0 native (powered by Quarkus 1.11.6.Final-redhat-00001) started in 0.020s. Listening on: http://0.0.0.0:8080
+2021-05-27 12:59:44,865 INFO  [io.quarkus] (main) Profile prod activated.
+2021-05-27 12:59:44,865 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-core, camel-jackson, camel-microprofile-health, camel-microprofile-metrics, camel-platform-http, camel-support-common, cdi, config-yaml, kubernetes, mutiny, smallrye-context-propagation, smallrye-health, smallrye-metrics, vertx, vertx-web]
 [...]
 ```

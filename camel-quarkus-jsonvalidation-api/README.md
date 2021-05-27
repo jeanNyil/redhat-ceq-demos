@@ -22,10 +22,10 @@ You can run your application in dev mode that enables live coding using:
 ## Packaging and running the application locally
 
 The application can be packaged using `./mvnw package`.
-It produces the `camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner.jar` file in the `/target` directory.
+It produces the `camel-quarkus-jsonvalidation-api-1.0.0-runner.jar` file in the `/target` directory.
 Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/lib` directory.
 
-The application is now runnable using `java -jar target/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner.jar`.
+The application is now runnable using `java -jar target/camel-quarkus-jsonvalidation-api-1.0.0-runner.jar`.
 
 ## Packaging and running the application on Red Hat OpenShift
 
@@ -52,16 +52,28 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 ```
 ```zsh
 [...]
-[INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/upstream-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner.jar
+[INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-runner.jar
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.jeannyil.sandbox438.opentlc.com:6443/' successfully contacted.
 [...]
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Performing s2i binary build with jar on server: https://api.jeannyil.sandbox438.opentlc.com:6443/ in namespace:camel-quarkus.
+[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Performing openshift binary build with jar on server: https://api.jeannyil.sandbox438.opentlc.com:6443/ in namespace:camel-quarkus-jvm.
 [...]
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-jsonvalidation-api@sha256:5cc56e5b72d56a637a163f8972ca27f90296bc265dd1d30c1c72e14a62f2ad93
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-jsonvalidation-api@sha256:bd6a27e22810ce84c38ddee840d4f07d84f25a710953e602cd363947a60733e4
-[INFO] [io.quarkus.container.image.s2i.deployment.S2iProcessor] Push successful
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.jeannyil.sandbox438.opentlc.com:6443/ in namespace: camel-quarkus.
-[...]
+[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-jvm/camel-quarkus-jsonvalidation-api@sha256:1d2060e5a79fd215309382536433a4c653b07a4e035882c1a94cf0193aeed42c
+[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Push successful
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.jeannyil.sandbox438.opentlc.com:6443/ in namespace: camel-quarkus-jvm.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Service camel-quarkus-jsonvalidation-api.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ImageStream camel-quarkus-jsonvalidation-api.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ImageStream openjdk-11.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: BuildConfig camel-quarkus-jsonvalidation-api.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: DeploymentConfig camel-quarkus-jsonvalidation-api.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Route camel-quarkus-jsonvalidation-api.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-jsonvalidation-api-camel-quarkus-jvm.apps.jeannyil.sandbox438.opentlc.com
+[INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 61842ms
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:12 min
+[INFO] Finished at: 2021-05-27T12:20:48+02:00
+[INFO] ------------------------------------------------------------------------
 ```
 
 ### OpenShift S2I source workflow (recommended for PRODUCTION use)
@@ -74,7 +86,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     ```
 2. Create the `camel-quarkus-jsonvalidation-api` OpenShift application from the git repository
     ```zsh
-    oc new-app https://github.com/jeanNyil/upstream-quarkus-camel-demos.git \
+    oc new-app https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git \
     --context-dir=camel-quarkus-jsonvalidation-api \
     --name=camel-quarkus-jsonvalidation-api \
     --image-stream="openshift/openjdk-11-ubi8" \
@@ -87,12 +99,12 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     oc logs bc/camel-quarkus-jsonvalidation-api -f
     ```
     ```zsh
-    Cloning "https://github.com/jeanNyil/upstream-quarkus-camel-demos.git" ...
-            Commit: 4911116e6cb9ace7304c7f8b77322b60d3b591f0 (Updated README)
+    Cloning "https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git" ...
+            Commit: 7da594c26cdcb2e85cd94032415d72726b6eb162 (Upgraded to Red Hat build of Quarkus 1.11)
             Author: Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
-            Date:   Mon Sep 7 20:34:02 2020 +0200
+            Date:   Thu May 27 12:32:37 2021 +0200
     [...]
-    Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus/camel-quarkus-jsonvalidation-api-s2i@sha256:f4d91fcda670edd3dd1a8dfa4860fbfbb3cf43a590c67addbec9dc240f4672d4
+    Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-jvm/camel-quarkus-jsonvalidation-api@sha256:75ba25fb35b1954ce10c6a4865facf32b56dbfeff43c709e58c82b6a0d5cd530
     Push successful
     ```
 4. Create a non-secure route to expose the `camel-quarkus-jsonvalidation-api` service outside the OpenShift cluster
@@ -465,7 +477,7 @@ You can create a native executable using: `./mvnw package -Pnative`.
 
 Or, if you don't have GraalVM installed, you can run the native executable build in a container using: `./mvnw package -Pnative -Dquarkus.native.container-build=true`.
 
-You can then execute your native executable with: `./target/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner`
+You can then execute your native executable with: `./target/camel-quarkus-jsonvalidation-api-1.0.0-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image.
 
@@ -508,22 +520,18 @@ If you want to learn more about building native executables, please consult http
         ```
     ```zsh
     [...]
-    [INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building native image source jar: /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-native-image-source-jar/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner.jar
-    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Building native image from /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-native-image-source-jar/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner.jar
-    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Checking image status quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
-    20.1: Pulling from quarkus/mandrel-20-rhel8
-    Digest: sha256:f4914b8717883835a28f61b5bf25421671adc968474da7042c9ca93ab63251a2
-    Status: Image is up to date for quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
-    quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
-    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Running Quarkus native-image plugin on GraalVM Version 20.1.0.3_0-1 (Mandrel Distribution) (Java Version 11.0.9+11-LTS)
-    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] docker run -v /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-native-image-source-jar:/project:z --env LANG=C --rm quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11 -J-Dsun.nio.ch.maxUpdateArraySize=100 -J-Djava.util.logging.manager=org.jboss.logmanager.LogManager -J-Dvertx.logger-delegate-factory-class-name=io.quarkus.vertx.core.runtime.VertxLogDelegateFactory -J-Dvertx.disableDnsResolver=true -J-Dio.netty.leakDetection.level=DISABLED -J-Dio.netty.allocator.maxOrder=1 -J-Dcom.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize=true -J-Duser.language=en -J-Dfile.encoding=UTF-8 --initialize-at-build-time= -H:InitialCollectionPolicy=com.oracle.svm.core.genscavenge.CollectionPolicy\$BySpaceAndTime -H:+JNI -jar camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner.jar -H:FallbackThreshold=0 -H:+ReportExceptionStackTraces -J-Xmx6g -H:+AddAllCharsets -H:EnableURLProtocols=http,https --enable-all-security-services -H:-UseServiceLoaderFeature -H:+StackTrace camel-quarkus-jsonvalidation-api-1.0.0-SNAPSHOT-runner
+    INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building native image source jar: /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-native-image-source-jar/camel-quarkus-jsonvalidation-api-1.0.0-runner.jar
+    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Building native image from /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-native-image-source-jar/camel-quarkus-jsonvalidation-api-1.0.0-runner.jar
     [...]
-    [INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 811047ms
+    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Running Quarkus native-image plugin on GraalVM Version 20.3.2.0-Final (Mandrel Distribution) (Java Version 11.0.11+9)
+    [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] docker run -v /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-native-image-source-jar:/project:z --env LANG=C --rm quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11 -J-Dsun.nio.ch.maxUpdateArraySize=100 -J-Djava.util.logging.manager=org.jboss.logmanager.LogManager -J-Dvertx.logger-delegate-factory-class-name=io.quarkus.vertx.core.runtime.VertxLogDelegateFactory -J-Dvertx.disableDnsResolver=true -J-Dio.netty.leakDetection.level=DISABLED -J-Dio.netty.allocator.maxOrder=1 -J-Dcom.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize=true -J-Duser.language=en -J-Dfile.encoding=UTF-8 --initialize-at-build-time= -H:InitialCollectionPolicy=com.oracle.svm.core.genscavenge.CollectionPolicy\$BySpaceAndTime -H:+JNI -H:+AllowFoldMethods -jar camel-quarkus-jsonvalidation-api-1.0.0-runner.jar -H:FallbackThreshold=0 -H:+ReportExceptionStackTraces -J-Xmx6g -H:+AddAllCharsets -H:EnableURLProtocols=http,https --enable-all-security-services -H:-UseServiceLoaderFeature -H:+StackTrace camel-quarkus-jsonvalidation-api-1.0.0-runner
+    [...]
+    [INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 1141555ms
     [INFO] ------------------------------------------------------------------------
     [INFO] BUILD SUCCESS
     [INFO] ------------------------------------------------------------------------
-    [INFO] Total time:  13:37 min
-    [INFO] Finished at: 2020-11-03T20:21:08+01:00
+    [INFO] Total time:  19:11 min
+    [INFO] Finished at: 2021-05-27T13:58:01+02:00
     [INFO] ------------------------------------------------------------------------
     ```
 
@@ -545,7 +553,7 @@ If you want to learn more about building native executables, please consult http
         Receiving source from STDIN as archive ...
         Replaced Dockerfile FROM image registry.access.redhat.com/ubi8/ubi-minimal:8.1
         [...]
-        Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-native/camel-quarkus-jsonvalidation-api@sha256:786f5f22ebbede61de91be7d3d41db9a155fd447cea3e0db414b042305c482dd
+        Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-native/camel-quarkus-jsonvalidation-api@sha256:af65ac4fd4d960b1403425ea465036b711b4be43b1d0381ba321e2d5214912e9
         Push successful
         ```
 
@@ -568,15 +576,18 @@ If you want to learn more about building native executables, please consult http
 
 ```zsh
 [...]
-2021-05-07 23:11:22,445 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
-2021-05-07 23:11:22,446 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
-2021-05-07 23:11:22,446 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-json-route started and consuming from: direct://validateMembershipJSON
-2021-05-07 23:11:22,452 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: get-openapi-spec-route started and consuming from: platform-http:///openapi.json
-2021-05-07 23:11:22,452 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: json-validation-api-route started and consuming from: platform-http:///validateMembershipJSON
-2021-05-07 23:11:22,453 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
-2021-05-07 23:11:22,453 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.184 seconds
-2021-05-07 23:11:22,536 INFO  [io.quarkus] (main) camel-quarkus-jsonvalidation-api 1.0.0-SNAPSHOT on JVM (powered by Quarkus 1.11.6.Final-redhat-00001) started in 1.336s. Listening on: http://0.0.0.0:8080
-2021-05-07 23:11:22,537 INFO  [io.quarkus] (main) Profile prod activated.
+2021-05-27 10:38:04,171 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.7.0 (camel-1) is starting
+[...]
+2021-05-27 10:38:04,252 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
+2021-05-27 10:38:04,253 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
+2021-05-27 10:38:04,253 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-json-route started and consuming from: direct://validateMembershipJSON
+2021-05-27 10:38:04,258 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: get-openapi-spec-route started and consuming from: platform-http:///openapi.json
+2021-05-27 10:38:04,258 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: json-validation-api-route started and consuming from: platform-http:///validateMembershipJSON
+2021-05-27 10:38:04,259 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
+2021-05-27 10:38:04,259 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.7.0 (camel-1) started in 88ms
+2021-05-27 10:38:04,328 INFO  [io.quarkus] (main) camel-quarkus-jsonvalidation-api 1.0.0 on JVM (powered by Quarkus 1.11.6.Final-redhat-00001) started in 1.088s. Listening on: http://0.0.0.0:8080
+2021-05-27 10:38:04,328 INFO  [io.quarkus] (main) Profile prod activated.
+2021-05-27 10:38:04,328 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-json-validator, camel-microprofile-health, camel-microprofile-metrics, camel-openapi-java, camel-platform-http, camel-rest, camel-suport-xalan, camel-support-common, camel-support-jackson-dataformat-xml, camel-xml-jaxb, cdi, config-yaml, kubernetes, mutiny, smallrye-context-propagation, smallrye-health, smallrye-metrics, vertx, vertx-web]
 [...]
 ```
 
@@ -584,14 +595,17 @@ If you want to learn more about building native executables, please consult http
 
 ```zsh
 [...]
-2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
-2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
-2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: get-openapi-spec-route started and consuming from: platform-http:///openapi.json
-2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: json-validation-api-route started and consuming from: platform-http:///validateMembershipJSON
-2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-json-route started and consuming from: direct://validateMembershipJSON
-2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
-2021-05-08 00:07:57,301 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.4.2 (camel-1) started in 0.001 seconds
-2021-05-08 00:07:57,320 INFO  [io.quarkus] (main) camel-quarkus-jsonvalidation-api 1.0.0-SNAPSHOT native (powered by Quarkus 1.11.6.Final-redhat-00001) started in 0.083s. Listening on: http://0.0.0.0:8080
-2021-05-08 00:07:57,320 INFO  [io.quarkus] (main) Profile prod activated.
+2021-05-27 12:57:16,930 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.7.0 (camel-1) is starting
+[...]
+2021-05-27 12:57:16,932 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: get-openapi-spec-route started and consuming from: platform-http:///openapi.json
+2021-05-27 12:57:16,932 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: json-validation-api-route started and consuming from: platform-http:///validateMembershipJSON
+2021-05-27 12:57:16,932 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: common-500-http-code-route started and consuming from: direct://common-500
+2021-05-27 12:57:16,932 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: custom-http-error-route started and consuming from: direct://custom-http-error
+2021-05-27 12:57:16,932 INFO  [org.apa.cam.imp.eng.InternalRouteStartupManager] (main) Route: validate-membership-json-route started and consuming from: direct://validateMembershipJSON
+2021-05-27 12:57:16,932 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Total 5 routes, of which 5 are started
+2021-05-27 12:57:16,932 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.7.0 (camel-1) started in 2ms
+2021-05-27 12:57:16,934 INFO  [io.quarkus] (main) camel-quarkus-jsonvalidation-api 1.0.0 native (powered by Quarkus 1.11.6.Final-redhat-00001) started in 0.025s. Listening on: http://0.0.0.0:8080
+2021-05-27 12:57:16,934 INFO  [io.quarkus] (main) Profile prod activated.
+2021-05-27 12:57:16,934 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-json-validator, camel-microprofile-health, camel-microprofile-metrics, camel-openapi-java, camel-platform-http, camel-rest, camel-suport-xalan, camel-support-common, camel-support-jackson-dataformat-xml, camel-xml-jaxb, cdi, config-yaml, kubernetes, mutiny, smallrye-context-propagation, smallrye-health, smallrye-metrics, vertx, vertx-web]
 [...]
 ```
