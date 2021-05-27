@@ -112,13 +112,14 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/metrics",
+					"raw": "http://localhost:8080/q/metrics",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"q",
 						"metrics"
 					]
 				}
@@ -131,13 +132,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/health",
+					"raw": "http://localhost:8080/q/health",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"q",
 						"health"
 					]
 				}
@@ -150,13 +152,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/health/live",
+					"raw": "http://localhost:8080/q/health/live",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"q",
 						"health",
 						"live"
 					]
@@ -170,13 +173,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/health/ready",
+					"raw": "http://localhost:8080/q/health/ready",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"q",
 						"health",
 						"ready"
 					]
