@@ -53,20 +53,20 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 ```zsh
 [...]
 [INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-runner.jar
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.jeannyil.sandbox438.opentlc.com:6443/' successfully contacted.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.jeannyil.sandbox235.opentlc.com:6443/' successfully contacted.
 [...]
-[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Performing openshift binary build with jar on server: https://api.jeannyil.sandbox438.opentlc.com:6443/ in namespace:camel-quarkus-jvm.
+[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Performing openshift binary build with jar on server: https://api.jeannyil.sandbox235.opentlc.com:6443/ in namespace:camel-quarkus-jvm.
 [...]
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-jvm/camel-quarkus-jsonvalidation-api@sha256:1d2060e5a79fd215309382536433a4c653b07a4e035882c1a94cf0193aeed42c
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Push successful
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.jeannyil.sandbox438.opentlc.com:6443/ in namespace: camel-quarkus-jvm.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.jeannyil.sandbox235.opentlc.com:6443/ in namespace: camel-quarkus-jvm.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Service camel-quarkus-jsonvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ImageStream camel-quarkus-jsonvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ImageStream openjdk-11.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: BuildConfig camel-quarkus-jsonvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: DeploymentConfig camel-quarkus-jsonvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Route camel-quarkus-jsonvalidation-api.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-jsonvalidation-api-camel-quarkus-jvm.apps.jeannyil.sandbox438.opentlc.com
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-jsonvalidation-api-camel-quarkus-jvm.apps.jeannyil.sandbox235.opentlc.com
 [INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 61842ms
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -152,7 +152,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         },
         "servers": [
             {
-                "url": "http://camel-quarkus-json-validation-api.apps.jeannyil.sandbox438.opentlc.com",
+                "url": "http://camel-quarkus-json-validation-api.apps.jeannyil.sandbox235.opentlc.com",
                 "description": "API Backend URL"
             }
         ],
