@@ -15,7 +15,7 @@ pipeline {
         string (defaultValue: 'rh-prod', name:'PROD_PROJECT', description:'Production project')
         string (defaultValue: 'https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git', name:'GIT_REPO', description:'Git source')
         string (defaultValue: 'master', name:'GIT_BRANCH', description:'Git branch in the source git')
-        booleanParam (defaultValue: true, name:'SELECT_DEPLOY_TO_PROD', description:'Approval to deploy to Production (default: no deployment to production)')
+        booleanParam (defaultValue: false, name:'SELECT_DEPLOY_TO_PROD', description:'Approval to deploy to Production (default: no deployment to production)')
     }
 
     environment {
