@@ -168,9 +168,9 @@ def promoteServiceSetup(svcName, registry, imageNameSpace, tagName, projName) {
     try {
         sh """ 
             oc create dc ${svcName} --image=${registry}/${imageNameSpace}/${svcName}:${tagName} -n ${projName} 2> /dev/null 
+            oc label -n ${projName} dc/${svcName} app.openshift.io/runtime=quarkus 2> /dev/null
             oc rollout pause dc ${svcName} -n ${projName}  2> /dev/null
             oc patch dc ${svcName} -p '{"spec": {"template": {"spec": {"containers": [{"name": "default-container","imagePullPolicy": "Always"}]}}}}' -n ${projName} 2> /dev/null
-            oc label -n ${projName} --overwrite dc ${svcName} app.openshift.io/runtime=quarkus 2> /dev/null
             oc rollout resume dc ${svcName} -n ${projName}  2> /dev/null
             oc expose dc ${svcName} --type=ClusterIP  --port=8080 --protocol=TCP --target-port=8080 -n ${projName}  2> /dev/null
             oc expose svc ${svcName} --name=${svcName} -n ${projName}  2> /dev/null
