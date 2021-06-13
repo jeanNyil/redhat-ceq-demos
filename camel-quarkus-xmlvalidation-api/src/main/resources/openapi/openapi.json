@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "https://camel-quarkus-xml-validation-api.apps.jeannyil.sandbox235.opentlc.com"
+            "url": "https://camel-quarkus-xml-validation-api.apps.jeannyil.sandbox1717.opentlc.com"
         }
     ],
     "paths": {
