@@ -1,11 +1,11 @@
 package io.github.jeannyil.quarkus.camel.jsonvalidation.routes;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
-
-import javax.ws.rs.core.Response;
 
 /* Route that validates a sample JSON instance against the Membership JSON schema.
    Expects the sample JSON as a Camel message body.

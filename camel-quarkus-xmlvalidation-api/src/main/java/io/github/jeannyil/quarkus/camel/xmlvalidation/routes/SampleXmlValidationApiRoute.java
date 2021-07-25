@@ -37,7 +37,6 @@ public class SampleXmlValidationApiRoute extends RouteBuilder {
 			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]").id("log-api-unexpected-response")
 		;*/
 		
-		
 		/**
 		 * REST configuration with Camel Quarkus Platform HTTP component
 		 */
