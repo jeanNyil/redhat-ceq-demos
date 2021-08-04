@@ -5526,3 +5526,632 @@
 # The size of the worker thread pool.
 #
 #quarkus.vertx.worker-pool-size=20
+
+#
+# If set to true then the container attempts to detect "unused removed beans" false positives during programmatic lookup at
+# runtime. You can disable this feature to conserve some memory when running your application in production.
+#
+# @see ArcConfig#removeUnusedBeans
+#
+#quarkus.arc.detect-unused-false-positives=true
+
+#
+# If set to true then the container attempts to detect usage of <i>wrong</i> annotations.
+#
+# A <i>wrong</i> annotation may lead to unexpected behavior in a Quarkus application. A typical example is
+# '@javax.ejb.Singleton' which is often confused with '@javax.inject.Singleton'. As a result a component
+# annotated with '@javax.ejb.Singleton' can be completely ignored.
+#
+#quarkus.arc.detect-wrong-annotations=true
+
+#
+# What to do if it is not possible to extract CSimple expressions from a route definition at build time.
+#
+#quarkus.camel.csimple.on-build-time-analysis-failure=warn
+
+#
+# What should happen if the application is started with a different build time configuration than it was compiled
+# against. This may be useful to prevent misconfiguration.
+#
+# If this is set to 'warn' the application will warn at start up.
+#
+# If this is set to 'fail' the application will fail at start up.
+#
+# Native tests leveraging<code>@io.quarkus.test.junit.TestProfile</code> are always run with
+# 'quarkus.configuration.build-time-mismatch-at-runtime = fail'.
+#
+#quarkus.configuration.build-time-mismatch-at-runtime=warn
+
+#
+# Represents the entire image string.
+# If set, then 'group', 'name', 'registry', 'tags', 'additionalTags'
+# are ignored
+#
+#quarkus.container-image.image=
+
+#
+# Whether or not Quarkus should disable it's ability to not do a full restart
+# when changes to classes are compatible with JVM instrumentation.
+# If this is set to true, Quarkus will always restart on changes and never perform class redefinition.
+#
+#quarkus.dev.instrumentation=true
+
+#
+# Whether or not to include the Liveness and Readiness Health endpoints in the generated OpenAPI document
+#
+#quarkus.health.openapi.included=false
+
+#
+# Determines whether the entire permission set is enabled, or not.
+#
+# By default, if the permission set is defined, it is enabled.
+#
+#quarkus.http.auth.permission.*.enabled=
+
+#
+# If responses should be compressed.
+#
+# Note that this will attempt to compress all responses, to avoid compressing
+# already compressed content (such as images) you need to set the following header:
+#
+# Content-Encoding: identity
+#
+# Which will tell vert.x not to compress the response.
+#
+#quarkus.http.enable-compression=false
+
+#
+# A common root path for non-application endpoints. Various extension-provided endpoints such as metrics, health,
+# and openapi are deployed under this path by default.
+#
+# * Relative path (Default, `q`) ->
+# Non-application endpoints will be served from
+# `${quarkus.http.root-path}/${quarkus.http.non-application-root-path}`.
+# * Absolute path (`/q`) ->
+# Non-application endpoints will be served from the specified path.
+# * `${quarkus.http.root-path}` -> Setting this path to the same value as HTTP root path disables
+# this root path. All extension-provided endpoints will be served from `${quarkus.http.root-path}`.
+#
+# @asciidoclet
+#
+#quarkus.http.non-application-root-path=q
+
+#
+# Provide redirect endpoints for extension-provided endpoints existing prior to Quarkus 1.11.
+# This will trigger HTTP 301 Redirects for the following:
+#
+# * `/graphql-ui`
+# * `/health`
+# * `/health-ui`
+# * `/metrics`
+# * `/openapi`
+# * `/swagger-ui`
+#
+# Default is `true` for Quarkus 1.11.x to facilitate transition to name-spaced URIs using
+# `${quarkus.http.non-application-root-path}`.
+#
+# Quarkus 1.13 will change the default to `false`,
+# and the config item will be removed in Quarkus 2.0.
+#
+# @asciidoclet
+#
+#quarkus.http.redirect-to-non-application-root-path=true
+
+#
+# An optional parameter to specify a provider of the key store file. If not given, the provider is automatically detected
+# based on the key store file type.
+#
+#quarkus.http.ssl.certificate.key-store-provider=
+
+#
+# An optional parameter to specify a provider of the trust store file. If not given, the provider is automatically detected
+# based on the trust store file type.
+#
+#quarkus.http.ssl.certificate.trust-store-provider=
+
+#
+# If enabled, Jackson will fail when encountering unknown properties.
+#
+# You can still override it locally with '@JsonIgnoreProperties(ignoreUnknown = false)'.
+#
+#quarkus.jackson.fail-on-unknown-properties=false
+
+#
+# If set, the config amp will mounted to the application container and its contents will be used for application
+# configuration.
+#
+#quarkus.knative.app-config-map=
+
+#
+# If set, the secret will mounted to the application container and its contents will be used for application configuration.
+#
+#quarkus.knative.app-secret=
+
+#
+# The hostnames to resolve to the ip
+#
+# @return The path.
+#
+#quarkus.knative.host-aliases.*.hostnames=
+
+#
+# The ip address
+#
+# @return The ip.
+#
+#quarkus.knative.host-aliases.*.ip=
+
+#
+# When true (the default), emit a set of annotations to identify
+# services that should be scraped by prometheus for metrics.
+#
+# In configurations that use the Prometheus operator with ServiceMonitor,
+# annotations may not be necessary.
+#
+#quarkus.knative.prometheus.annotations=true
+
+#
+# Define the annotation used to indicate the path to scrape.
+# By default, '/path' will be appended to the defined prefix.
+#
+#quarkus.knative.prometheus.path=
+
+#
+# Define the annotation used to indicate the port to scrape.
+# By default, '/port' will be appended to the defined prefix.
+#
+#quarkus.knative.prometheus.port=
+
+#
+# Define the annotation prefix used for scrape values, this value will be used
+# as the base for other annotation name defaults. Altering the base for generated
+# annotations can make it easier to define re-labeling rules and avoid unexpected
+# knock-on effects. The default value is 'prometheus.io'
+#
+# See Prometheus example:
+# https://github.com/prometheus/prometheus/blob/master/documentation/examples/prometheus-kubernetes.yml
+#
+#quarkus.knative.prometheus.prefix=prometheus.io
+
+#
+# Define the annotation used to indicate the scheme to use for scraping
+# By default, '/scheme' will be appended to the defined prefix.
+#
+#quarkus.knative.prometheus.scheme=
+
+#
+# Define the annotation used to indicate services that should be scraped.
+# By default, '/scrape' will be appended to the defined prefix.
+#
+#quarkus.knative.prometheus.scrape=
+
+#
+# CPU Requirements
+#
+#quarkus.knative.resources.limits.cpu=
+
+#
+# Memory Requirements
+#
+#quarkus.knative.resources.limits.memory=
+
+#
+# CPU Requirements
+#
+#quarkus.knative.resources.requests.cpu=
+
+#
+# Memory Requirements
+#
+#quarkus.knative.resources.requests.memory=
+
+#
+
+#
+#quarkus.knative.revision-name=
+
+#
+# LatestRevision may be optionally provided to indicate that the latest
+# ready Revision of the Configuration should be used for this traffic
+# target. When provided LatestRevision must be true if RevisionName is
+# empty.
+#
+#quarkus.knative.traffic.*.latest-revision=false
+
+#
+# Percent indicates that percentage based routing should be used and
+# the value indicates the percent of traffic that is be routed to this
+# Revision or Configuration. `0` (zero) mean no traffic, `100` means all
+# traffic.
+#
+#quarkus.knative.traffic.*.percent=100
+
+#
+# RevisionName of a specific revision to which to send this portion of traffic.
+#
+#quarkus.knative.traffic.*.revision-name=
+
+#
+# Tag is optionally used to expose a dedicated url for referencing
+# this target exclusively.
+#
+#quarkus.knative.traffic.*.tag=
+
+#
+# Kubernetes oauth token
+#
+#quarkus.kubernetes-client.token=
+
+#
+# If true, the 'app.kubernetes.io/version' label will be part of the selectors of Service and Deployment
+#
+#quarkus.kubernetes.add-version-to-label-selectors=true
+
+#
+# If set, the config amp will mounted to the application container and its contents will be used for application
+# configuration.
+#
+#quarkus.kubernetes.app-config-map=
+
+#
+# If set, the secret will mounted to the application container and its contents will be used for application configuration.
+#
+#quarkus.kubernetes.app-secret=
+
+#
+# If set to true, Quarkus will attempt to deploy the application to the target Kubernetes cluster
+#
+#quarkus.kubernetes.deploy=false
+
+#
+# The hostnames to resolve to the ip
+#
+# @return The path.
+#
+#quarkus.kubernetes.hostaliases.*.hostnames=
+
+#
+# The ip address
+#
+# @return The ip.
+#
+#quarkus.kubernetes.hostaliases.*.ip=
+
+#
+# When true (the default), emit a set of annotations to identify
+# services that should be scraped by prometheus for metrics.
+#
+# In configurations that use the Prometheus operator with ServiceMonitor,
+# annotations may not be necessary.
+#
+#quarkus.kubernetes.prometheus.annotations=true
+
+#
+# Define the annotation used to indicate the path to scrape.
+# By default, '/path' will be appended to the defined prefix.
+#
+#quarkus.kubernetes.prometheus.path=
+
+#
+# Define the annotation used to indicate the port to scrape.
+# By default, '/port' will be appended to the defined prefix.
+#
+#quarkus.kubernetes.prometheus.port=
+
+#
+# Define the annotation prefix used for scrape values, this value will be used
+# as the base for other annotation name defaults. Altering the base for generated
+# annotations can make it easier to define re-labeling rules and avoid unexpected
+# knock-on effects. The default value is 'prometheus.io'
+#
+# See Prometheus example:
+# https://github.com/prometheus/prometheus/blob/master/documentation/examples/prometheus-kubernetes.yml
+#
+#quarkus.kubernetes.prometheus.prefix=prometheus.io
+
+#
+# Define the annotation used to indicate the scheme to use for scraping
+# By default, '/scheme' will be appended to the defined prefix.
+#
+#quarkus.kubernetes.prometheus.scheme=
+
+#
+# Define the annotation used to indicate services that should be scraped.
+# By default, '/scrape' will be appended to the defined prefix.
+#
+#quarkus.kubernetes.prometheus.scrape=
+
+#
+# CPU Requirements
+#
+#quarkus.kubernetes.resources.limits.cpu=
+
+#
+# Memory Requirements
+#
+#quarkus.kubernetes.resources.limits.memory=
+
+#
+# CPU Requirements
+#
+#quarkus.kubernetes.resources.requests.cpu=
+
+#
+# Memory Requirements
+#
+#quarkus.kubernetes.resources.requests.memory=
+
+#
+# The minimum log level for this category.
+# By default all categories are configured with <code>DEBUG</code> minimum level.
+#
+# To get runtime logging below <code>DEBUG</code>, e.g. <code>TRACE</code>,
+# the minimum level has to be adjusted at build time, the right log level needs to be provided at runtime.
+#
+# As an example, to get <code>TRACE</code> logging,
+# minimum level needs to be at <code>TRACE</code> and the runtime log level needs to match that.
+#
+#quarkus.log.category.*.min-level=inherit
+
+#
+# Whether or not logging metrics are published in case a metrics extension is present.
+#
+#quarkus.log.metrics.enabled=false
+
+#
+# Defines the file encoding as in -Dfile.encoding=...
+#
+# Native image runtime uses the host's (i.e. build time) value of file.encoding
+# system property. We intentionally default this to UTF-8 to avoid platform specific
+# defaults to be picked up which can then result in inconsistent behavior in the
+# generated native executable.
+#
+#quarkus.native.file-encoding=UTF-8
+
+#
+# A comma separated list of globs to match resource paths that should <b>not</b> be added to the native image.
+#
+# Use slash ('/') as a path separator on all platforms. Globs must not start with slash.
+#
+# Please refer to 'includes' for details about the glob syntax.
+#
+# By default, no resources are excluded.
+#
+# Example: Given that you have 'src/main/resources/red.png'
+# and 'src/main/resources/foo/green.png' in your source tree and one of your dependency JARs contains
+# 'bar/blue.png' file, with the following configuration
+#
+# <pre>
+# quarkus.native.resources.includes = **&#47;*.png
+# quarkus.native.resources.excludes = foo/**,**&#47;green.png
+# </pre>
+#
+# the resource 'red.png' will be available in the native image while the resources 'foo/green.png'
+# and 'bar/blue.png' will not be available in the native image.
+#
+#quarkus.native.resources.excludes=
+
+#
+# If true, the 'app.kubernetes.io/version' label will be part of the selectors of Service and DeploymentConfig
+#
+#quarkus.openshift.add-version-to-label-selectors=true
+
+#
+# If set, the config amp will mounted to the application container and its contents will be used for application
+# configuration.
+#
+#quarkus.openshift.app-config-map=
+
+#
+# If set, the secret will mounted to the application container and its contents will be used for application configuration.
+#
+#quarkus.openshift.app-secret=
+
+#
+# The base image to be used when a container image is being produced for the jar build
+#
+#quarkus.openshift.base-jvm-image=registry.access.redhat.com/ubi8/openjdk-11
+
+#
+# The base image to be used when a container image is being produced for the native binary build
+#
+#quarkus.openshift.base-native-image=quay.io/quarkus/ubi-quarkus-native-binary-s2i:1.0
+
+#
+# The build config strategy to use.
+#
+#quarkus.openshift.build-strategy=binary
+
+#
+# The build timeout.
+#
+#quarkus.openshift.build-timeout=PT5M
+
+#
+# The OpenShift flavor / version to use.
+# Older versions of OpenShift have minor differrences in the labels and fields they support.
+# This option allows users to have their manifests automatically aligned to the OpenShift 'flavor' they use.
+#
+#quarkus.openshift.flavor=v4
+
+#
+# The hostnames to resolve to the ip
+#
+# @return The path.
+#
+#quarkus.openshift.host-aliases.*.hostnames=
+
+#
+# The ip address
+#
+# @return The ip.
+#
+#quarkus.openshift.host-aliases.*.ip=
+
+#
+# The directory where the jar is added during the assemble phase.
+# This is dependent on the S2I image and should be supplied if a non default image is used.
+#
+#quarkus.openshift.jar-directory=
+
+#
+# The resulting filename of the jar in the S2I image.
+# This option may be used if the selected S2I image uses a fixed name for the jar.
+#
+#quarkus.openshift.jar-file-name=
+
+#
+# Additional JVM arguments to pass to the JVM when starting the application
+#
+#quarkus.openshift.jvm-arguments=-Dquarkus.http.host=0.0.0.0,-Djava.util.logging.manager=org.jboss.logmanager.LogManager
+
+#
+# The default Dockerfile to use for jvm builds
+#
+#quarkus.openshift.jvm-dockerfile=src/main/docker/Dockerfile.jvm
+
+#
+# Additional arguments to pass when starting the native application
+#
+#quarkus.openshift.native-arguments=-Dquarkus.http.host=0.0.0.0
+
+#
+# The directory where the native binary is added during the assemble phase.
+# This is dependent on the S2I image and should be supplied if a non-default image is used.
+#
+#quarkus.openshift.native-binary-directory=
+
+#
+# The resulting filename of the native binary in the S2I image.
+# This option may be used if the selected S2I image uses a fixed name for the native binary.
+#
+#quarkus.openshift.native-binary-file-name=
+
+#
+# The default Dockerfile to use for native builds
+#
+#quarkus.openshift.native-dockerfile=src/main/docker/Dockerfile.native
+
+#
+# When true (the default), emit a set of annotations to identify
+# services that should be scraped by prometheus for metrics.
+#
+# In configurations that use the Prometheus operator with ServiceMonitor,
+# annotations may not be necessary.
+#
+#quarkus.openshift.prometheus.annotations=true
+
+#
+# Define the annotation used to indicate the path to scrape.
+# By default, '/path' will be appended to the defined prefix.
+#
+#quarkus.openshift.prometheus.path=
+
+#
+# Define the annotation used to indicate the port to scrape.
+# By default, '/port' will be appended to the defined prefix.
+#
+#quarkus.openshift.prometheus.port=
+
+#
+# Define the annotation prefix used for scrape values, this value will be used
+# as the base for other annotation name defaults. Altering the base for generated
+# annotations can make it easier to define re-labeling rules and avoid unexpected
+# knock-on effects. The default value is 'prometheus.io'
+#
+# See Prometheus example:
+# https://github.com/prometheus/prometheus/blob/master/documentation/examples/prometheus-kubernetes.yml
+#
+#quarkus.openshift.prometheus.prefix=prometheus.io
+
+#
+# Define the annotation used to indicate the scheme to use for scraping
+# By default, '/scheme' will be appended to the defined prefix.
+#
+#quarkus.openshift.prometheus.scheme=
+
+#
+# Define the annotation used to indicate services that should be scraped.
+# By default, '/scrape' will be appended to the defined prefix.
+#
+#quarkus.openshift.prometheus.scrape=
+
+#
+# CPU Requirements
+#
+#quarkus.openshift.resources.limits.cpu=
+
+#
+# Memory Requirements
+#
+#quarkus.openshift.resources.limits.memory=
+
+#
+# CPU Requirements
+#
+#quarkus.openshift.resources.requests.cpu=
+
+#
+# Memory Requirements
+#
+#quarkus.openshift.resources.requests.memory=
+
+#
+# If this is true (the default) then JSON is set to the default media type. If a method has no
+# produces/consumes and there is no builtin provider than can handle the type
+# then we will assume the response should be JSON.
+#
+# Note that this will only take effect if a JSON provider has been installed, such as quarkus-resteasy-jsonb
+# or quarkus-resteasy-jackson.
+#
+#quarkus.resteasy-json.json-default=true
+
+#
+# Ignore all explict JAX-RS {@link Application} classes.
+# As multiple JAX-RS applications are not supported, this can be used to effectively merge all JAX-RS applications.
+#
+#quarkus.resteasy.ignore-application-classes=false
+
+#
+# The size of the output stream response buffer. If a response is larger than this and no content-length
+# is provided then the request will be chunked.
+#
+# Larger values may give slight performance increases for large responses, at the expense of more memory usage.
+#
+#quarkus.resteasy.vertx.response-buffer-size=8191
+
+#
+# The relative path of the wellness health-checking endpoint.
+#
+#quarkus.smallrye-health.wellness-path=well
+
+#
+# Whether or not detailed JAX-RS metrics should be enabled.
+#
+# See <a href=
+# "https://github.com/eclipse/microprofile-metrics/blob/2.3.x/spec/src/main/asciidoc/required-metrics.adoc#optional-rest">MicroProfile
+# Metrics: Optional REST metrics</a>.
+#
+#quarkus.smallrye-metrics.jaxrs.enabled=false
+
+#
+# Enable trusting all certificates. Disable by default.
+#
+#quarkus.tls.trust-all=false
+
+#
+# The maximum amount of time in seconds that a successfully resolved address will be cached.
+#
+# If not set explicitly, resolved addresses may be cached forever.
+#
+#quarkus.vertx.resolver.cache-max-time-to-live=2147483647
+
+#
+# The minimum amount of time in seconds that a successfully resolved address will be cached.
+#
+#quarkus.vertx.resolver.cache-min-time-to-live=0
+
+#
+# The amount of time in seconds that an unsuccessful attempt to resolve an address will be cached.
+#
+#quarkus.vertx.resolver.cache-negative-time-to-live=0
