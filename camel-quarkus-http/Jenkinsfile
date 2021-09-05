@@ -58,7 +58,7 @@ pipeline {
                     sleep 60
                     retry(5) {
                         serviceName = 'camel-quarkus-http'
-                        smokeTestUriOperation = '/openapi.json'
+                        smokeTestUriOperation = '/fruits'
                         makeGetRequest("http://${serviceName}.${DEV_PROJECT}.svc:8080${smokeTestUriOperation}")
                     }
                 }
@@ -92,7 +92,7 @@ pipeline {
                 script {
                     retry(5) {
                         serviceName = 'camel-quarkus-http'
-                        smokeTestUriOperation = '/openapi.json'
+                        smokeTestUriOperation = '/fruits'
                         makeGetRequest("http://${serviceName}.${TEST_PROJECT}.svc:8080${smokeTestUriOperation}")
                     }
                 }
@@ -148,7 +148,7 @@ pipeline {
                 script {
                     retry(5) {
                         serviceName = 'camel-quarkus-http'
-                        smokeTestUriOperation = '/openapi.json'
+                        smokeTestUriOperation = '/fruits'
                         makeGetRequest("http://${serviceName}.${PROD_PROJECT}.svc:8080${smokeTestUriOperation}")
                     }
                 }
