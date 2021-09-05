@@ -159,6 +159,7 @@
                         "description": "Legumes found"
                     }
                 },
+                "operationId": "getLegumes",
                 "summary": "Returns a list of hard-coded legumes",
                 "description": "Returns a list of hard-coded legumes"
             }
