@@ -29,13 +29,13 @@ public class SampleXmlValidationApiRoute extends RouteBuilder {
 		/**
 		 * Catch unexpected exceptions
 		 */
-		/*onException(Exception.class).id("handle-all-other-exceptions")
+		onException(Exception.class)
 			.handled(true)
 			.maximumRedeliveries(0)
-			.log(LoggingLevel.ERROR, logName, ">>> ${routeId} - Caught exception: ${exception.stacktrace}").id("log-api-unexpected")
-			.to("direct:common-500").id("to-common-500")
-			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]").id("log-api-unexpected-response")
-		;*/
+			.log(LoggingLevel.ERROR, logName, ">>> ${routeId} - Caught exception: ${exception.stacktrace}")
+			.to("direct:common-500")
+			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]")
+		;
 		
 		/**
 		 * REST configuration with Camel Quarkus Platform HTTP component
@@ -77,12 +77,11 @@ public class SampleXmlValidationApiRoute extends RouteBuilder {
 				.id("get-openapi-spec-route")
 				.description("Gets the OpenAPI document for this service in JSON format")
 				.route()
-					.log(LoggingLevel.INFO, logName, ">>> ${routeId} - IN: headers:[${headers}] - body:[${body}]").id("log-openapi-doc-request")
-					.setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json")).id("set-content-type")
+					.log(LoggingLevel.INFO, logName, ">>> ${routeId} - IN: headers:[${headers}] - body:[${body}]")
+					.setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json"))
 					.setBody()
 						.constant("resource:classpath:openapi/openapi.json")
-						.id("setBody-for-openapi-document")
-					.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]").id("log-openapi-doc-response")
+					.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]")
 				.end()
 	  ;
 		

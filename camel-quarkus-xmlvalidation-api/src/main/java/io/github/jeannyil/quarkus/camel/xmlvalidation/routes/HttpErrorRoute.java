@@ -26,14 +26,13 @@ public class HttpErrorRoute extends RouteBuilder {
 		 */
 		from("direct:common-500")
 			.routeId("common-500-http-code-route")
-			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - IN: headers:[${headers}] - body:[${body}]").id("log-common-500-request")
-			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).id("set-common-500-http-code")
-			.setHeader(Exchange.HTTP_RESPONSE_TEXT, constant(Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase())).id("set-common-500-http-reason")
+			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - IN: headers:[${headers}] - body:[${body}]")
+			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+			.setHeader(Exchange.HTTP_RESPONSE_TEXT, constant(Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase()))
 			.setHeader(Exchange.CONTENT_TYPE, constant("application/json")).id("set-500-json-content-type")
 			.setBody()
 				.method("errorResponseHelper", 
 						"generateErrorResponse(${headers.CamelHttpResponseCode}, ${headers.CamelHttpResponseText}, ${exception})")
-				.id("set-500-errorresponse-object")
 			.end()
 			.marshal().json(JsonLibrary.Jackson, true).id("marshal-500-errorresponse-to-json")
 			.convertBodyTo(String.class).id("convert-500-errorresponse-to-string")
@@ -51,18 +50,17 @@ public class HttpErrorRoute extends RouteBuilder {
 		 */
 		from("direct:custom-http-error")
 			.routeId("custom-http-error-route")
-			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - IN: headers:[${headers}] - body:[${body}]").id("log-custom-http-error-request")
-			.setHeader(Exchange.HTTP_RESPONSE_CODE, simple("${exchangeProperty.httpStatusCode}")).id("set-custom-http-code")
-			.setHeader(Exchange.HTTP_RESPONSE_TEXT, simple("${exchangeProperty.httpStatusMsg}")).id("set-custom-http-msg")
-			.setHeader(Exchange.CONTENT_TYPE, constant("application/json")).id("set-custom-json-content-type")
+			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - IN: headers:[${headers}] - body:[${body}]")
+			.setHeader(Exchange.HTTP_RESPONSE_CODE, simple("${exchangeProperty.httpStatusCode}"))
+			.setHeader(Exchange.HTTP_RESPONSE_TEXT, simple("${exchangeProperty.httpStatusMsg}"))
+			.setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
 			.setBody()
 				.method("errorResponseHelper", 
 						"generateErrorResponse(${exchangeProperty.errorId}, ${exchangeProperty.errorDescription}, ${exchangeProperty.errorMessage})")
-				.id("set-custom-errorresponse-object")
 			.end()
-			.marshal().json(JsonLibrary.Jackson, true).id("marshal-custom-errorresponse-to-json")
-			.convertBodyTo(String.class).id("convert-custom-errorresponse-to-string")
-			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]").id("log-custom-http-error-response")
+			.marshal().json(JsonLibrary.Jackson, true)
+			.convertBodyTo(String.class)
+			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]")
 		;
 	}
 

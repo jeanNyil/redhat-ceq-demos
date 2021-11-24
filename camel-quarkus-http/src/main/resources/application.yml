@@ -35,7 +35,7 @@ quarkus:
         # If all character sets should be added to the native image. This increases image size
         add-all-charsets: true
         # The docker image to use to do the image build
-        builder-image: quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
+        builder-image: ${platform.quarkus.native.builder-image}
 
     ## Camel Quarkus
     camel:

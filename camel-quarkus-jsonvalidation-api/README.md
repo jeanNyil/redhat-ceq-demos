@@ -39,7 +39,7 @@ Be aware that it’s not an _über-jar_ as the dependencies are copied into the 
 
 The application is now runnable using:
 ```zsh
-java -jar target/quarkus-app/quarkus-run.jar -Dquarkus.kubernetes-config.enabled=false
+java -Dquarkus.kubernetes-config.enabled=false -jar target/quarkus-app/quarkus-run.jar
 ```
 
 If you want to build an _über-jar_, execute the following command:
@@ -49,7 +49,7 @@ If you want to build an _über-jar_, execute the following command:
 
 The application, packaged as an _über-jar_, is now runnable using:
 ```zsh
-java -jar target/camel-quarkus-jsonvalidation-api-1.0.0-runner.jar -Dquarkus.kubernetes-config.enabled=false
+java -Dquarkus.kubernetes-config.enabled=false -jar target/camel-quarkus-jsonvalidation-api-1.0.0-runner.jar
 ```
 
 According to your environment, you may want to customize the Jaeger collector endpoint by adding the following run-time _system properties_:
@@ -57,7 +57,7 @@ According to your environment, you may want to customize the Jaeger collector en
 
 Example:
 ```
-java -jar target/quarkus-app/quarkus-run.jar -Dquarkus.kubernetes-config.enabled=false -Dquarkus.jaeger.endpoint="http://localhost:14268/api/traces"
+java -Dquarkus.kubernetes-config.enabled=false -Dquarkus.jaeger.endpoint=http://localhost:14268/api/traces -jar target/quarkus-app/quarkus-run.jar
 ```
 
 ## Packaging and running the application on Red Hat OpenShift

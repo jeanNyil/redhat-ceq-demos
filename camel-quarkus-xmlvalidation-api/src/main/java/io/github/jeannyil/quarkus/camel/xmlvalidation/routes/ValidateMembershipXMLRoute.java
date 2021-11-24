@@ -25,13 +25,13 @@ public class ValidateMembershipXMLRoute extends RouteBuilder {
 		/**
 		 * Catch unexpected exceptions
 		 */
-		/*onException(Exception.class)
+		onException(Exception.class)
 			.handled(true)
 			.maximumRedeliveries(0)
 			.log(LoggingLevel.ERROR, logName, ">>> ${routeId} - Caught exception: ${exception.stacktrace}").id("log-validateMembershipXML-unexpected")
 			.to("direct:common-500").id("to-validateMembershipXML-500")
 			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]").id("log-validateMembershipXML-unexpected-response")
-		;*/
+		;
 		
 		/**
 		 * Catch the org.apache.camel.component.jsonvalidator.JsonValidationException exception
