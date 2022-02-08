@@ -14,10 +14,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>com.redhat.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>2.2.3.Final-redhat-00013</quarkus.platform.version>
-    <quarkus.camel.bom.artifact-id>io.quarkus.platform</quarkus.camel.bom.artifact-id>
-    <quarkus.camel.bom.group-id>quarkus-camel-bom</quarkus.camel.bom.group-id>
-    <quarkus.camel.bom.version>2.2.3.Final</quarkus.camel.bom.version>
+    <quarkus.platform.version>2.2.3.SP1-redhat-00002</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
   </properties>
   <dependencyManagement>
@@ -30,9 +27,9 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>${quarkus.camel.bom.artifact-id}</groupId>
-        <artifactId>${quarkus.camel.bom.group-id}</artifactId>
-        <version>${quarkus.camel.bom.version}</version>
+        <groupId>${quarkus.platform.group-id}</groupId>
+        <artifactId>quarkus-camel-bom</artifactId>
+        <version>${quarkus.platform.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

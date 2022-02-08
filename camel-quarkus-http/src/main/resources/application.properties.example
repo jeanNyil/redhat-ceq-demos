@@ -19,7 +19,7 @@
 #quarkus.arc.auto-inject-fields=true
 
 #
-# If set to true then 'javax.enterprise.inject.Produces' is automatically added to all methods that are
+# If set to true then 'javax.enterprise.inject.Produces' is automatically added to all non-void methods that are
 # annotated with a scope annotation, a stereotype or a qualifier, and are not annotated with 'Inject' or
 # 'Produces', and no parameter is annotated with 'Disposes', 'Observes' or 'ObservesAsync'.
 #
@@ -32,17 +32,40 @@
 #quarkus.arc.config-properties-default-naming-strategy=kebab-case
 
 #
-# The maven artifactId of the artifact to index
+# If set to true then the container attempts to detect "unused removed beans" false positives during programmatic lookup at
+# runtime. You can disable this feature to conserve some memory when running your application in production.
+#
+# @see ArcConfig#removeUnusedBeans
+#
+#quarkus.arc.detect-unused-false-positives=true
+
+#
+# If set to true then the container attempts to detect <i>wrong</i> usages of annotations and eventually fails the build to
+# prevent unexpected behavior of a Quarkus application.
+#
+# A typical example is '@javax.ejb.Singleton' which is often confused with '@javax.inject.Singleton'. As a
+# result a component annotated with '@javax.ejb.Singleton' would be completely ignored. Another example is an inner
+# class annotated with a scope annotation - this component would be again completely ignored.
+#
+#quarkus.arc.detect-wrong-annotations=true
+
+#
+# If set to true then the container monitors business method invocations and fired events during the development mode.
+#
+#quarkus.arc.dev-mode.monitoring-enabled=true
+
+#
+# The maven artifactId of the artifact.
 #
 #quarkus.arc.exclude-dependency.*.artifact-id=
 
 #
-# The maven classifier of the artifact to index
+# The maven classifier of the artifact.
 #
 #quarkus.arc.exclude-dependency.*.classifier=
 
 #
-# The maven groupId of the artifact to index
+# The maven groupId of the artifact.
 #
 #quarkus.arc.exclude-dependency.*.group-id=
 
@@ -60,6 +83,17 @@
 # methods are created from this type.
 #
 #quarkus.arc.exclude-types=
+
+#
+# The list of packages that will not be checked for split package issues.
+#
+# A package string representation can be:
+# 
+#  - a full name of the package, i.e. 'org.acme.foo'
+#  - a package name with suffix '.*', i.e. 'org.acme.*', which matches a package that starts with provided
+# value
+#
+#quarkus.arc.ignored-split-packages=
 
 #
 # 
@@ -103,6 +137,12 @@
 # {@link io.quarkus.arc.AlternativePriority} is overriden.
 #
 #quarkus.arc.selected-alternatives=
+
+#
+# If set to true then disable 'StartupEvent' and 'ShutdownEvent' observers declared on application bean classes
+# during the tests.
+#
+#quarkus.arc.test.disable-application-lifecycle-observers=false
 
 #
 # If set to true, the bytecode of unproxyable beans will be transformed. This ensures that a proxy/subclass
@@ -155,14 +195,64 @@
 #quarkus.banner.path=default_banner.txt
 
 #
+# If set to true, the workspace initialization will be based on the effective POMs
+# (i.e. properly interpolated, including support for profiles, etc) instead of the raw ones.
+#
+#quarkus.bootstrap.effective-model-builder=false
+
+#
+# Whether to throw an error, warn or silently ignore misaligned platform BOM imports
+#
+#quarkus.bootstrap.misaligned-platform-imports=error
+
+#
 # When set to true, the {@link CamelRuntime} will be started automatically.
 #
 #quarkus.camel.bootstrap.enabled=true
 
 #
+# What to do if it is not possible to extract CSimple expressions from a route definition at build time.
+#
+#quarkus.camel.csimple.on-build-time-analysis-failure=warn
+
+#
+# Whether to enable the bridging of Camel events to CDI events.
+#
+# This allows CDI observers to be configured for Camel events. E.g. those belonging to the
+# 'org.apache.camel.quarkus.core.events', 'org.apache.camel.quarkus.main.events' &
+# 'org.apache.camel.impl.event' packages.
+#
+# Note that this configuration item only has any effect when observers configured for Camel events
+# are present in the application.
+#
+#quarkus.camel.event-bridge.enabled=true
+
+#
 # Set whether to enable Camel health checks
 #
 #quarkus.camel.health.enabled=true
+
+#
+# The action to take when {@link CamelMain} encounters an unknown argument.
+#
+# fail - Prints the {@link CamelMain} usage statement and throws a {@link RuntimeException}
+# ignore - Suppresses any warnings and the application startup proceeds as normal
+# warn - Prints the {@link CamelMain} usage statement but allows the application startup to proceed as normal
+#
+#quarkus.camel.main.arguments.on-unknown=warn
+
+#
+# If 'true' all 'camel-main' features are enabled; otherwise no 'camel-main' features are
+# enabled. See described the
+# <a href="https://camel.apache.org/camel-quarkus/latest/user-guide/configuration.html">Configuration</a>
+# section of Camel Quarkus documentation for more details.
+#
+#quarkus.camel.main.enabled=true
+
+#
+# A timeout (with millisecond precision) to wait for {@link CamelMain#stop()} to finish
+#
+#quarkus.camel.main.shutdown.timeout=PT3S
 
 #
 # Set whether to enable the MicroProfileMetricsCamelContextEventNotifier for capturing metrics
@@ -231,9 +321,12 @@
 # <code>io.quarkus.runtime.annotations.RegisterForReflection</code> annotation
 # in your Java code.
 #
-# For this option to work properly, the artifacts containing the selected classes
-# must either contain a Jandex index ('META-INF/jandex.idx') or they must
-# be registered for indexing using the 'quarkus.index-dependency.*' family
+# For this option to work properly, at least one of the following conditions must be satisfied:
+# 
+#  - There are no wildcards (<code>*</code> or <code>/</code>) in the patterns
+#  - The artifacts containing the selected classes contain a Jandex index ('META-INF/jandex.idx')
+#  - The artifacts containing the selected classes are registered for indexing using the
+# 'quarkus.index-dependency.*' family
 # of options in 'application.properties' - e.g.
 #
 # <pre>
@@ -243,30 +336,43 @@
 #
 # where 'my-dep' is a label of your choice to tell Quarkus that
 # 'org.my-group' and with 'my-artifact' belong together.
+# 
 #
 #quarkus.camel.native.reflection.include-patterns=
 
 #
-# A comma separated list of Ant-path style patterns to match resources
-# that should be <strong>excluded</strong> from the native executable. By default,
-# resources not selected by quarkus itself are ignored. Then, inclusion
-# of additional resources could be triggered with
-# <code>includePatterns</code>. When the inclusion patterns is too
-# large, eviction of previously selected resources could be triggered
-# with <code>excludePatterns</code>.
+# If 'true', basic classes are registered for serialization; otherwise basic classes won't be registered
+# automatically for serialization in native mode.
+#
+# The list of classes automatically registered for serialization can be found in <a href=
+# "https://github.com/apache/camel-quarkus/blob/main/extensions-core/core/deployment/src/main/java/org/apache/camel/quarkus/core/deployment/CamelSerializationProcessor.java">CamelSerializationProcessor.BASE_SERIALIZATION_CLASSES</a>.
+#
+# Setting this to 'false' helps to reduce the size of the native image. In JVM mode, there is no real
+# benefit of setting this flag to 'true' except for making the behavior consistent with native mode.
+#
+#quarkus.camel.native.reflection.serialization-enabled=false
+
+#
+# Replaced by 'quarkus.native.resources.excludes' in Camel Quarkus 2.0.0.
+# Using this property throws an exception at build time.
 #
 #quarkus.camel.native.resources.exclude-patterns=
 
 #
-# A comma separated list of Ant-path style patterns to match resources
-# that should be <strong>included</strong> in the native executable. By default,
-# resources not selected by quarkus itself are ignored. Then, inclusion
-# of additional resources could be triggered with
-# <code>includePatterns</code>. When the inclusion patterns is too
-# large, eviction of previously selected resources could be triggered
-# with <code>excludePatterns</code>.
+# Replaced by 'quarkus.native.resources.includes' in Camel Quarkus 2.0.0.
+# Using this property throws an exception at build time.
 #
 #quarkus.camel.native.resources.include-patterns=
+
+#
+# Sets whether header keys need to be encoded
+#
+#quarkus.camel.opentracing.encoding=false
+
+#
+# Sets whether to disable tracing for endpoint URIs that match the given patterns
+#
+#quarkus.camel.opentracing.exclude-patterns=
 
 #
 # Enable automatic discovery of routes during static initialization.
@@ -393,6 +499,110 @@
 #quarkus.camel.service.registry.include-patterns=
 
 #
+# Artifacts that are loaded in a parent first manner. This can be used to work around issues where a given
+# class needs to be loaded by the system ClassLoader. Note that if you
+# make a library parent first all its dependencies should generally also be parent first.
+#
+# Artifacts should be configured as a comma separated list of artifact ids, with the group, artifact-id and optional
+# classifier separated by a colon.
+#
+# WARNING: This config property can only be set in application.properties
+#
+#quarkus.class-loading.parent-first-artifacts=
+
+#
+# Artifacts that are loaded in the runtime ClassLoader in dev mode, so they will be dropped
+# and recreated on change.
+#
+# This is an advanced option, it should only be used if you have a problem with
+# libraries holding stale state between reloads. Note that if you use this any library that depends on the listed libraries
+# will also need to be reloadable.
+#
+# This setting has no impact on production builds.
+#
+# Artifacts should be configured as a comma separated list of artifact ids, with the group, artifact-id and optional
+# classifier separated by a colon.
+#
+# WARNING: This config property can only be set in application.properties
+#
+#quarkus.class-loading.reloadable-artifacts=
+
+#
+# Artifacts that will never be loaded by the class loader, and will not be packed into the final application. This allows
+# you to explicitly remove artifacts from your application even though they may be present on the class path.
+#
+#quarkus.class-loading.removed-artifacts=
+
+#
+# Resources that should be removed/hidden from dependencies.
+#
+# This allows for classes and other resources to be removed from dependencies, so they
+# are not accessible to the application. This is a map of artifact id (in the form group:artifact)
+# to a list of resources to be removed.
+#
+# When running in dev and test mode these resources are hidden from the ClassLoader, when running
+# in production mode these files are removed from the jars that contain them.
+#
+# Note that if you want to remove a class you need to specify the class file name. e.g. to
+# remove <code>com.acme.Foo</code> you would specify <code>com/acme/Foo.class</code>.
+#
+# Note that for technical reasons this is not supported when running with JBang.
+#
+#quarkus.class-loading.removed-resources.*=
+
+#
+# Additional config locations to be loaded with the Config. The configuration support multiple locations
+# separated by a comma and each must represent a valid {@link java.net.URI}.
+#
+#quarkus.config.locations=
+
+#
+# Accepts a single configuration profile name. If a configuration property cannot be found in the current active
+# profile, the config performs the same lookup in the profile set by this configuration.
+#
+#quarkus.config.profile.parent=
+
+#
+# What should happen if the application is started with a different build time configuration than it was compiled
+# against. This may be useful to prevent misconfiguration.
+#
+# If this is set to 'warn' the application will warn at start up.
+#
+# If this is set to 'fail' the application will fail at start up.
+#
+# Native tests leveraging<code>@io.quarkus.test.junit.TestProfile</code> are always run with
+# 'quarkus.configuration.build-time-mismatch-at-runtime = fail'.
+#
+#quarkus.configuration.build-time-mismatch-at-runtime=warn
+
+#
+# Disable the testing status/prompt message at the bottom of the console
+# and log these messages to STDOUT instead.
+#
+# Use this option if your terminal does not support ANSI escape sequences.
+#
+#quarkus.console.basic=false
+
+#
+# If color should be enabled or disabled.
+#
+# If this is not present then an attempt will be made to guess if the terminal supports color
+#
+#quarkus.console.color=
+
+#
+# Disables the ability to enter input on the console.
+#
+#quarkus.console.disable-input=false
+
+#
+# If test results and status should be displayed in the console.
+#
+# If this is false results can still be viewed in the dev console.
+#
+#quarkus.console.enabled=true
+
+#
 # Additional tags of the container image.
 #
 #quarkus.container-image.additional-tags=
@@ -412,6 +622,13 @@
 # The group the container image will be part of
 #
 #quarkus.container-image.group=${user.name}
+
+#
+# Represents the entire image string.
+# If set, then 'group', 'name', 'registry', 'tags', 'additionalTags'
+# are ignored
+#
+#quarkus.container-image.image=
 
 #
 # Whether or not insecure registries are allowed
@@ -468,9 +685,24 @@
 #quarkus.default-locale=${user.language:en}-${user.country:}
 
 #
+# The number of history log entries to remember.
+#
+#quarkus.dev-ui.history-size=50
+
+#
+# Global flag that can be used to disable all Dev Services. If this is set to false then Dev Services will not be used.
+#
+#quarkus.devservices.enabled=true
+
+#
 # Whether or not extensions published health check should be enabled.
 #
 #quarkus.health.extensions.enabled=true
+
+#
+# Whether or not to include the Liveness and Readiness Health endpoints in the generated OpenAPI document
+#
+#quarkus.health.openapi.included=false
 
 #
 # The access log file base name, defaults to 'quarkus' which will give a log file
@@ -487,6 +719,11 @@
 # If access logging is enabled. By default this will log via the standard logging facility
 #
 #quarkus.http.access-log.enabled=false
+
+#
+# A regular expression that can be used to exclude some paths from logging.
+#
+#quarkus.http.access-log.exclude-pattern=
 
 #
 # The log directory to use when logging access to a file
@@ -506,26 +743,17 @@
 #quarkus.http.access-log.log-to-file=false
 
 #
-# The access log pattern:
+# The access log pattern.
 #
-# If this is the string 'common', 'combined' or 'long' then this will use one of the specified named formats:
-# 
-#  - 
-# common:<br />
-# %h %l %u %t "%r" %s %b
-# 
-#  - 
-# combined:<br />
-# %h %l %u %t "%r" %s %b "%{i,Referer}" "%{i,User-Agent}"
-# 
-#  - 
-# long:<br />
-# %r<br />
-# %{ALL_REQUEST_HEADERS}<br />
-# 
-# 
+# If this is the string `common`, `combined` or `long` then this will use one of the specified named formats:
+#
+# - common: `%h %l %u %t "%r" %s %b`
+# - combined: `%h %l %u %t "%r" %s %b "%{i,Referer}" "%{i,User-Agent}"`
+# - long: `%r\n%{ALL_REQUEST_HEADERS}`
 #
 # Otherwise consult the Quarkus documentation for the full list of variables that can be used.
+#
+# @asciidoclet
 #
 #quarkus.http.access-log.pattern=common
 
@@ -570,6 +798,12 @@
 #quarkus.http.auth.form.landing-page=/index.html
 
 #
+# Option to control the name of the cookie used to redirect the user back
+# to where he want to get access to.
+#
+#quarkus.http.auth.form.location-cookie=quarkus-redirect-location
+
+#
 # The login page
 #
 #quarkus.http.auth.form.login-page=/login.html
@@ -592,6 +826,16 @@
 #quarkus.http.auth.form.new-cookie-interval=PT1M
 
 #
+# The password field name.
+#
+#quarkus.http.auth.form.password-parameter=j_password
+
+#
+# The post location.
+#
+#quarkus.http.auth.form.post-location=/j_security_check
+
+#
 # Option to disable redirect to landingPage if there is no saved page to redirect back to. Form Auth POST is followed
 # by redirect to landingPage by default.
 #
@@ -603,6 +847,24 @@
 # When inactivity timeout is reached, cookie is not renewed and a new login is enforced.
 #
 #quarkus.http.auth.form.timeout=PT30M
+
+#
+# The username field name.
+#
+#quarkus.http.auth.form.username-parameter=j_username
+
+#
+# Path specific authentication mechanism which must be used to authenticate a user.
+# It needs to match {@link HttpCredentialTransport} authentication scheme such as 'basic', 'bearer', 'form', etc.
+#
+#quarkus.http.auth.permission.*.auth-mechanism=
+
+#
+# Determines whether the entire permission set is enabled, or not.
+#
+# By default, if the permission set is defined, it is enabled.
+#
+#quarkus.http.auth.permission.*.enabled=
 
 #
 # The methods that this permission set applies to. If this is not set then they apply to all methods.
@@ -670,7 +932,7 @@
 # If 'true' the uploaded files stored in 'quarkus.http.body-handler.uploads-directory' will be removed
 # after handling the request. Otherwise the files will be left there forever.
 #
-#quarkus.http.body.delete-uploaded-files-on-end=false
+#quarkus.http.body.delete-uploaded-files-on-end=true
 
 #
 # Whether the files sent using 'multipart/form-data' will be stored locally.
@@ -704,12 +966,7 @@
 #
 # Either an absolute path or a path relative to the current directory of the application process.
 #
-#quarkus.http.body.uploads-directory=file-uploads
-
-#
-# The HTTP console path. Various debug/development endpoints are deployed under this path.
-#
-#quarkus.http.console-path=/quarkus
+#quarkus.http.body.uploads-directory=${java.io.tmpdir}/uploads
 
 #
 # Enable the CORS filter.
@@ -782,9 +1039,27 @@
 #quarkus.http.domain-socket-enabled=false
 
 #
+# If responses should be compressed.
+#
+# Note that this will attempt to compress all responses, to avoid compressing
+# already compressed content (such as images) you need to set the following header:
+#
+# Content-Encoding: identity
+#
+# Which will tell vert.x not to compress the response.
+#
+#quarkus.http.enable-compression=false
+
+#
 # The HTTP host
 #
-#quarkus.http.host=0.0.0.0
+# In dev/test mode this defaults to localhost, in prod mode this defaults to 0.0.0.0
+#
+# Defaulting to 0.0.0.0 makes it easier to deploy Quarkus to container, however it
+# is not suitable for dev/test mode as other people on the network can connect to your
+# development machine.
+#
+#quarkus.http.host=
 
 #
 # Enable listening to host:port
@@ -834,6 +1109,17 @@
 #quarkus.http.limits.max-chunk-size=8192
 
 #
+# The maximum number of connections that are allowed at any one time. If this is set
+# it is recommended to set a short idle timeout.
+#
+#quarkus.http.limits.max-connections=
+
+#
+# The maximum length of a form attribute.
+#
+#quarkus.http.limits.max-form-attribute-size=2048
+
+#
 # The maximum length of all headers.
 #
 #quarkus.http.limits.max-header-size=20K
@@ -842,6 +1128,22 @@
 # The maximum length of the initial line (e.g. '"GET / HTTP/1.0"').
 #
 #quarkus.http.limits.max-initial-line-length=4096
+
+#
+# A common root path for non-application endpoints. Various extension-provided endpoints such as metrics, health,
+# and openapi are deployed under this path by default.
+#
+# * Relative path (Default, `q`) ->
+# Non-application endpoints will be served from
+# `${quarkus.http.root-path}/${quarkus.http.non-application-root-path}`.
+# * Absolute path (`/q`) ->
+# Non-application endpoints will be served from the specified path.
+# * `${quarkus.http.root-path}` -> Setting this path to the same value as HTTP root path disables
+# this root path. All extension-provided endpoints will be served from `${quarkus.http.root-path}`.
+#
+# @asciidoclet
+#
+#quarkus.http.non-application-root-path=q
 
 #
 # The HTTP port
@@ -941,12 +1243,30 @@
 #
 # The file path to a server certificate or certificate chain in PEM format.
 #
+# @deprecated Use 'files' instead.
+#
 #quarkus.http.ssl.certificate.file=
+
+#
+# The list of path to server certificates using the PEM format.
+# Specifying multiple files require SNI to be enabled.
+#
+#quarkus.http.ssl.certificate.files=
 
 #
 # The file path to the corresponding certificate private key file in PEM format.
 #
+# @deprecated Use 'key-files' instead.
+#
 #quarkus.http.ssl.certificate.key-file=
+
+#
+# The list of path to server certificates private key file using the PEM format.
+# Specifying multiple files require SNI to be enabled.
+#
+# The order of the key files must match the order of the certificates.
+#
+#quarkus.http.ssl.certificate.key-files=
 
 #
 # An optional key store which holds the certificate information instead of specifying separate files.
@@ -960,12 +1280,35 @@
 #quarkus.http.ssl.certificate.key-store-file-type=
 
 #
+# An optional parameter to select a specific key in the key store. When SNI is disabled, if the key store contains multiple
+# keys and no alias is specified, the behavior is undefined.
+#
+#quarkus.http.ssl.certificate.key-store-key-alias=
+
+#
+# An optional parameter to define the password for the key, in case it's different from 'key-store-password'.
+#
+#quarkus.http.ssl.certificate.key-store-key-password=
+
+#
 # A parameter to specify the password of the key store file. If not given, the default ("password") is used.
 #
 #quarkus.http.ssl.certificate.key-store-password=password
 
 #
-# An optional trust store which holds the certificate information of the certificates to trust
+# An optional parameter to specify a provider of the key store file. If not given, the provider is automatically detected
+# based on the key store file type.
+#
+#quarkus.http.ssl.certificate.key-store-provider=
+
+#
+# An optional parameter to trust only one specific certificate in the trust store (instead of trusting all certificates in
+# the store).
+#
+#quarkus.http.ssl.certificate.trust-store-cert-alias=
+
+#
+# An optional trust store which holds the certificate information of the certificates to trust.
 #
 #quarkus.http.ssl.certificate.trust-store-file=
 
@@ -979,6 +1322,12 @@
 # A parameter to specify the password of the trust store file.
 #
 #quarkus.http.ssl.certificate.trust-store-password=
+
+#
+# An optional parameter to specify a provider of the trust store file. If not given, the provider is automatically detected
+# based on the trust store file type.
+#
+#quarkus.http.ssl.certificate.trust-store-provider=
 
 #
 # The cipher suites to use. If none is given, a reasonable default is selected.
@@ -995,6 +1344,12 @@
 # The list of protocols to explicitly enable.
 #
 #quarkus.http.ssl.protocols=TLSv1.3,TLSv1.2
+
+#
+# Enables Server Name Indication (SNI), an TLS extension allowing the server to use multiple certificates.
+# The client indicate the server name during the TLS handshake, allowing the server to select the right certificate.
+#
+#quarkus.http.ssl.sni=false
 
 #
 # Enable tcp cork (linux native transport only)
@@ -1022,25 +1377,171 @@
 #quarkus.http.test-ssl-port=8444
 
 #
+# The REST Assured client timeout for testing.
+#
+#quarkus.http.test-timeout=30s
+
+#
 # If this is true then only a virtual channel will be set up for vertx web.
 # We have this switch for testing purposes.
 #
 #quarkus.http.virtual=false
 
 #
-# The maven artifactId of the artifact to index
+# The Ide to use to open files from the DevUI.
+# 'auto' means that Quarkus will attempt to determine the Ide being used.
+#
+#quarkus.ide.target=auto
+
+#
+# The maven artifactId of the artifact.
 #
 #quarkus.index-dependency.*.artifact-id=
 
 #
-# The maven classifier of the artifact to index
+# The maven classifier of the artifact.
 #
 #quarkus.index-dependency.*.classifier=
 
 #
-# The maven groupId of the artifact to index
+# The maven groupId of the artifact.
 #
 #quarkus.index-dependency.*.group-id=
+
+#
+# If enabled, Jackson will ignore case during Enum deserialization.
+#
+#quarkus.jackson.accept-case-insensitive-enums=false
+
+#
+# If enabled, Jackson will fail when no accessors are found for a type.
+# This is enabled by default to match the default Jackson behavior.
+#
+#quarkus.jackson.fail-on-empty-beans=true
+
+#
+# If enabled, Jackson will fail when encountering unknown properties.
+#
+# You can still override it locally with '@JsonIgnoreProperties(ignoreUnknown = false)'.
+#
+#quarkus.jackson.fail-on-unknown-properties=false
+
+#
+# Define which properties of Java Beans are to be included in serialization.
+#
+#quarkus.jackson.serialization-inclusion=
+
+#
+# If set, Jackson will default to using the specified timezone when formatting dates.
+# Some examples values are "Asia/Jakarta" and "GMT+3".
+# If not set, Jackson will use its own default.
+#
+#quarkus.jackson.timezone=UTC
+
+#
+# If enabled, Jackson will serialize dates as numeric value(s).
+#
+#quarkus.jackson.write-dates-as-timestamps=false
+
+#
+# The hostname and port for communicating with agent via UDP
+#
+#quarkus.jaeger.agent-host-port=
+
+#
+# Authentication Token to send as "Bearer" to the endpoint
+#
+#quarkus.jaeger.auth-token=
+
+#
+# Defines if the Jaeger extension is enabled.
+#
+#quarkus.jaeger.enabled=true
+
+#
+# The traces endpoint, in case the client should connect directly to the Collector,
+# like http://jaeger-collector:14268/api/traces
+#
+#quarkus.jaeger.endpoint=
+
+#
+# Whether the trace context should be logged.
+#
+#quarkus.jaeger.log-trace-context=true
+
+#
+# Whether or not metrics are published in case a metrics extension is present.
+#
+#quarkus.jaeger.metrics.enabled=false
+
+#
+# Password to send as part of "Basic" authentication to the endpoint
+#
+#quarkus.jaeger.password=
+
+#
+# Comma separated list of formats to use for propagating the trace context. Defaults to the
+# standard Jaeger format. Valid values are jaeger and b3
+#
+#quarkus.jaeger.propagation=
+
+#
+# The reporter's flush interval
+#
+#quarkus.jaeger.reporter-flush-interval=
+
+#
+# Whether the reporter should also log the spans
+#
+#quarkus.jaeger.reporter-log-spans=
+
+#
+# The reporter's maximum queue size
+#
+#quarkus.jaeger.reporter-max-queue-size=
+
+#
+# The host name and port when using the remote controlled sampler
+#
+#quarkus.jaeger.sampler-manager-host-port=
+
+#
+# The sampler parameter (number)
+#
+#quarkus.jaeger.sampler-param=
+
+#
+# The sampler type (const, probabilistic, ratelimiting or remote)
+#
+#quarkus.jaeger.sampler-type=
+
+#
+# The sender factory class name
+#
+#quarkus.jaeger.sender-factory=
+
+#
+# The service name
+#
+#quarkus.jaeger.service-name=
+
+#
+# A comma separated list of name = value tracer level tags, which get added to all reported
+# spans. The value can also refer to an environment variable using the format ${envVarName:default},
+# where the :default is optional, and identifies a value to be used if the environment variable
+# cannot be found
+#
+#quarkus.jaeger.tags=
+
+#
+# Username to send as part of "Basic" authentication to the endpoint
+#
+#quarkus.jaeger.user=
+
+#
+# Whether jaeger should run in zipkin compatibility mode
+#
+#quarkus.jaeger.zipkin.compatibility-mode=false
 
 #
 # @deprecated JNI is always enabled starting from GraalVM 19.3.1.
@@ -1063,6 +1564,17 @@
 # Custom annotations to add to all resources
 #
 #quarkus.knative.annotations.*=
+
+#
+# If set, the config amp will mounted to the application container and its contents will be used for application
+# configuration.
+#
+#quarkus.knative.app-config-map=
+
+#
+# If set, the secret will mounted to the application container and its contents will be used for application configuration.
+#
+#quarkus.knative.app-secret=
 
 #
 # The arguments
@@ -1345,6 +1857,11 @@
 #quarkus.knative.containers.*.ports.*.host-port=
 
 #
+
+#
+#quarkus.knative.containers.*.ports.*.node-port=
+
+#
 # The application path (refers to web application path).
 #
 # @return The path, defaults to /.
@@ -1513,6 +2030,20 @@
 # The host under which the application is going to be exposed
 #
 #quarkus.knative.host=
+
+#
+# The hostnames to resolve to the ip
+#
+# @return The path.
+#
+#quarkus.knative.host-aliases.*.hostnames=
+
+#
+# The ip address
+#
+# @return The ip.
+#
+#quarkus.knative.host-aliases.*.ip=
 
 #
 # Image pull policy
@@ -1702,6 +2233,11 @@
 # The host port.
 #
 #quarkus.knative.init-containers.*.ports.*.host-port=
+
+#
+
+#
+#quarkus.knative.init-containers.*.ports.*.node-port=
 
 #
 # The application path (refers to web application path).
@@ -1897,6 +2433,11 @@
 #quarkus.knative.ports.*.host-port=
 
 #
+
+#
+#quarkus.knative.ports.*.node-port=
+
+#
 # The application path (refers to web application path).
 #
 # @return The path, defaults to /.
@@ -1907,6 +2448,50 @@
 # The protocol.
 #
 #quarkus.knative.ports.*.protocol=TCP
+
+#
+# When true (the default), emit a set of annotations to identify
+# services that should be scraped by prometheus for metrics.
+#
+# In configurations that use the Prometheus operator with ServiceMonitor,
+# annotations may not be necessary.
+#
+#quarkus.knative.prometheus.annotations=true
+
+#
+# Define the annotation used to indicate the path to scrape.
+# By default, '/path' will be appended to the defined prefix.
+#
+#quarkus.knative.prometheus.path=
+
+#
+# Define the annotation used to indicate the port to scrape.
+# By default, '/port' will be appended to the defined prefix.
+#
+#quarkus.knative.prometheus.port=
+
+#
+# Define the annotation prefix used for scrape values, this value will be used
+# as the base for other annotation name defaults. Altering the base for generated
+# annotations can make it easier to define re-labeling rules and avoid unexpected
+# knock-on effects. The default value is 'prometheus.io'
+#
+# See Prometheus example:
+# https://github.com/prometheus/prometheus/blob/main/documentation/examples/prometheus-kubernetes.yml
+#
+#quarkus.knative.prometheus.prefix=prometheus.io
+
+#
+# Define the annotation used to indicate the scheme to use for scraping
+# By default, '/scheme' will be appended to the defined prefix.
+#
+#quarkus.knative.prometheus.scheme=
+
+#
+# Define the annotation used to indicate services that should be scraped.
+# By default, '/scrape' will be appended to the defined prefix.
+#
+#quarkus.knative.prometheus.scrape=
 
 #
 # The name of the claim to mount.
@@ -1973,6 +2558,26 @@
 #quarkus.knative.readiness-probe.timeout=10s
 
 #
+# CPU Requirements
+#
+#quarkus.knative.resources.limits.cpu=
+
+#
+# Memory Requirements
+#
+#quarkus.knative.resources.limits.memory=
+
+#
+# CPU Requirements
+#
+#quarkus.knative.resources.requests.cpu=
+
+#
+# Memory Requirements
+#
+#quarkus.knative.resources.requests.memory=
+
+#
 
 #
 #quarkus.knative.revision-auto-scaling.auto-scaler-class=
@@ -1996,6 +2601,11 @@
 
 #
 #quarkus.knative.revision-auto-scaling.target-utilization-percentage=
+
+#
+
+#
+#quarkus.knative.revision-name=
 
 #
 # The scale-to-zero values control whether Knative allows revisions to scale down to zero, or stops at â1â.
@@ -2029,6 +2639,33 @@
 # The type of service that will be generated for the application
 #
 #quarkus.knative.service-type=ClusterIP
+
+#
+# LatestRevision may be optionally provided to indicate that the latest
+# ready Revision of the Configuration should be used for this traffic
+# target. When provided LatestRevision must be true if RevisionName is
+# empty.
+#
+#quarkus.knative.traffic.*.latest-revision=false
+
+#
+# Percent indicates that percentage based routing should be used and
+# the value indicates the percent of traffic that is be routed to this
+# Revision or Configuration. `0` (zero) mean no traffic, `100` means all
+# traffic.
+#
+#quarkus.knative.traffic.*.percent=100
+
+#
+# RevisionName of a specific revision to which to send this portion of traffic.
+#
+#quarkus.knative.traffic.*.revision-name=
+
+#
+# Tag is optionally used to expose a dedicated url for referencing
+# this target exclusively.
+#
+#quarkus.knative.traffic.*.tag=
 
 #
 # The version of the application.
@@ -2136,9 +2773,14 @@
 #quarkus.kubernetes-client.rolling-timeout=PT15M
 
 #
+# Kubernetes oauth token
+#
+#quarkus.kubernetes-client.token=
+
+#
 # Whether or not the client should trust a self signed certificate if so presented by the API server
 #
-#quarkus.kubernetes-client.trust-certs=false
+#quarkus.kubernetes-client.trust-certs=
 
 #
 # Kubernetes auth username
@@ -2157,6 +2799,45 @@
 #quarkus.kubernetes-client.watch-reconnect-limit=-1
 
 #
+# ConfigMaps to look for in the namespace that the Kubernetes Client has been configured for.
+# ConfigMaps defined later in this list have a higher priority that ConfigMaps defined earlier
+# in this list.
+# Furthermore any Secrets defined in 'secrets', will have higher priorities than all ConfigMaps.
+#
+#quarkus.kubernetes-config.config-maps=
+
+#
+# If set to true, the application will attempt to look up the configuration from the API server
+#
+#quarkus.kubernetes-config.enabled=false
+
+#
+# If set to true, the application will not start if any of the configured config sources cannot be located
+#
+#quarkus.kubernetes-config.fail-on-missing-config=true
+
+#
+# Namespace to look for config maps and secrets. If this is not specified, then the namespace configured in the kubectl
+# config context is used. If the value is specified and the namespace doesn't exist, the application will fail to start.
+#
+#quarkus.kubernetes-config.namespace=
+
+#
+# Secrets to look for in the namespace that the Kubernetes Client has been configured for.
+# If you use this, you probably want to enable 'quarkus.kubernetes-config.secrets.enabled'.
+# Secrets defined later in this list have a higher priority that ConfigMaps defined earlier
+# in this list.
+# Furthermore these Secrets have a higher priorities than all ConfigMaps defined in 'configMaps'.
+#
+#quarkus.kubernetes-config.secrets=
+
+#
+# Whether or not configuration can be read from secrets.
+# If set to 'true', Kubernetes resources allowing access to secrets (role and role binding) will be generated.
+#
+#quarkus.kubernetes-config.secrets.enabled=false
+
+#
 # Whether or not to add the build timestamp to the Kubernetes annotations
 # This is a very useful way to have manifests of successive builds of the same
 # application differ - thus ensuring that Kubernetes will apply the updated resources
@@ -2164,9 +2845,25 @@
 #quarkus.kubernetes.add-build-timestamp=true
 
 #
+# If true, the 'app.kubernetes.io/version' label will be part of the selectors of Service and Deployment
+#
+#quarkus.kubernetes.add-version-to-label-selectors=true
+
+#
 # Custom annotations to add to all resources
 #
 #quarkus.kubernetes.annotations.*=
+
+#
+# If set, the config amp will mounted to the application container and its contents will be used for application
+# configuration.
+#
+#quarkus.kubernetes.app-config-map=
+
+#
+# If set, the secret will mounted to the application container and its contents will be used for application configuration.
+#
+#quarkus.kubernetes.app-secret=
 
 #
 # The arguments
@@ -2264,6 +2961,11 @@
 #quarkus.kubernetes.config-map-volumes.*.optional=false
 
 #
+# If set to true, Quarkus will attempt to deploy the application to the target Kubernetes cluster
+#
+#quarkus.kubernetes.deploy=false
+
+#
 # The target deployment platform.
 # Defaults to kubernetes. Can be kubernetes, openshift, knative, minikube etc, or any combination of the above as comma
 # separated
@@ -2336,6 +3038,8 @@
 #
 # If true, a Kubernetes Ingress will be created
 #
+# @deprecated Use the 'quarkus.kubernetes.ingress.expose' instead
+#
 #quarkus.kubernetes.expose=false
 
 #
@@ -2356,7 +3060,23 @@
 #
 # The host under which the application is going to be exposed
 #
+# @deprecated Use the 'quarkus.kubernetes.ingress.host' instead
+#
 #quarkus.kubernetes.host=
+
+#
+# The hostnames to resolve to the ip
+#
+# @return The path.
+#
+#quarkus.kubernetes.hostaliases.*.hostnames=
+
+#
+# The ip address
+#
+# @return The ip.
+#
+#quarkus.kubernetes.hostaliases.*.ip=
 
 #
 # Image pull policy
@@ -2367,6 +3087,21 @@
 # The image pull secret
 #
 #quarkus.kubernetes.image-pull-secrets=
+
+#
+# Custom annotations to add to exposition (route or ingress) resources
+#
+#quarkus.kubernetes.ingress.annotations.*=
+
+#
+# If true, the service will be exposed
+#
+#quarkus.kubernetes.ingress.expose=false
+
+#
+# The host under which the application is going to be exposed
+#
+#quarkus.kubernetes.ingress.host=
 
 #
 # The arguments
@@ -2546,6 +3281,11 @@
 # The host port.
 #
 #quarkus.kubernetes.init-containers.*.ports.*.host-port=
+
+#
+
+#
+#quarkus.kubernetes.init-containers.*.ports.*.node-port=
 
 #
 # The application path (refers to web application path).
@@ -2733,6 +3473,11 @@
 #quarkus.kubernetes.ports.*.host-port=
 
 #
+
+#
+#quarkus.kubernetes.ports.*.node-port=
+
+#
 # The application path (refers to web application path).
 #
 # @return The path, defaults to /.
@@ -2743,6 +3488,50 @@
 # The protocol.
 #
 #quarkus.kubernetes.ports.*.protocol=TCP
+
+#
+# When true (the default), emit a set of annotations to identify
+# services that should be scraped by prometheus for metrics.
+#
+# In configurations that use the Prometheus operator with ServiceMonitor,
+# annotations may not be necessary.
+#
+#quarkus.kubernetes.prometheus.annotations=true
+
+#
+# Define the annotation used to indicate the path to scrape.
+# By default, '/path' will be appended to the defined prefix.
+#
+#quarkus.kubernetes.prometheus.path=
+
+#
+# Define the annotation used to indicate the port to scrape.
+# By default, '/port' will be appended to the defined prefix.
+#
+#quarkus.kubernetes.prometheus.port=
+
+#
+# Define the annotation prefix used for scrape values, this value will be used
+# as the base for other annotation name defaults. Altering the base for generated
+# annotations can make it easier to define re-labeling rules and avoid unexpected
+# knock-on effects. The default value is 'prometheus.io'
+#
+# See Prometheus example:
+# https://github.com/prometheus/prometheus/blob/main/documentation/examples/prometheus-kubernetes.yml
+#
+#quarkus.kubernetes.prometheus.prefix=prometheus.io
+
+#
+# Define the annotation used to indicate the scheme to use for scraping
+# By default, '/scheme' will be appended to the defined prefix.
+#
+#quarkus.kubernetes.prometheus.scheme=
+
+#
+# Define the annotation used to indicate services that should be scraped.
+# By default, '/scrape' will be appended to the defined prefix.
+#
+#quarkus.kubernetes.prometheus.scrape=
 
 #
 # The name of the claim to mount.
@@ -2812,6 +3601,26 @@
 # The number of desired pods
 #
 #quarkus.kubernetes.replicas=1
+
+#
+# CPU Requirements
+#
+#quarkus.kubernetes.resources.limits.cpu=
+
+#
+# Memory Requirements
+#
+#quarkus.kubernetes.resources.limits.memory=
+
+#
+# CPU Requirements
+#
+#quarkus.kubernetes.resources.requests.cpu=
+
+#
+# Memory Requirements
+#
+#quarkus.kubernetes.resources.requests.memory=
 
 #
 # Default mode.
@@ -3021,6 +3830,11 @@
 #quarkus.kubernetes.sidecars.*.ports.*.host-port=
 
 #
+
+#
+#quarkus.kubernetes.sidecars.*.ports.*.node-port=
+
+#
 # The application path (refers to web application path).
 #
 # @return The path, defaults to /.
@@ -3099,9 +3913,32 @@
 #quarkus.kubernetes.working-dir=
 
 #
+# The amount of time to wait for a remote dev connect or reconnect
+#
+#quarkus.live-reload.connect-timeout=30s
+
+#
+# Whether or not Quarkus should enable its ability to not do a full restart
+# when changes to classes are compatible with JVM instrumentation.
+#
+# If this is set to true, Quarkus will perform class redefinition when possible.
+#
+#quarkus.live-reload.instrumentation=false
+
+#
 # Password used to use to connect to the remote dev-mode application
 #
 #quarkus.live-reload.password=
+
+#
+# The amount of time to wait between attempts when connecting to the server side of remote dev
+#
+#quarkus.live-reload.retry-interval=2s
+
+#
+# The maximum number of attempts when connecting to the server side of remote dev
+#
+#quarkus.live-reload.retry-max-attempts=10
 
 #
 # URL used to use to connect to the remote dev-mode application
@@ -3129,9 +3966,24 @@
 #quarkus.log.category.*.handlers=
 
 #
-# The log level level for this category
+# The log level for this category.
+#
+# Note that to get log levels below <code>INFO</code>,
+# the minimum level build time configuration option needs to be adjusted as well.
 #
 #quarkus.log.category.*.level=inherit
+
+#
+# The minimum log level for this category.
+# By default all categories are configured with <code>DEBUG</code> minimum level.
+#
+# To get runtime logging below <code>DEBUG</code>, e.g. <code>TRACE</code>,
+# the minimum level has to be adjusted at build time, the right log level needs to be provided at runtime.
+#
+# As an example, to get <code>TRACE</code> logging,
+# minimum level needs to be at <code>TRACE</code> and the runtime log level needs to match that.
+#
+#quarkus.log.category.*.min-level=inherit
 
 #
 # Specify whether or not this logger should send its output to its parent Logger
@@ -3159,6 +4011,9 @@
 # Note that this value will be ignored if an extension is present that takes
 # control of console formatting (e.g. an XML or JSON-format extension).
 #
+# This has been deprecated, and replaced with quarkus.console.color instead,
+# as quarkus now provides more console based functionality than just logging.
+#
 #quarkus.log.console.color=
 
 #
@@ -3183,6 +4038,11 @@
 # The console log level.
 #
 #quarkus.log.console.level=ALL
+
+#
+# If console logging should go to {@link System#err} instead of {@link System#out}.
+#
+#quarkus.log.console.stderr=false
 
 #
 # Indicates whether to log asynchronously
@@ -3221,6 +4081,7 @@
 
 #
 # File handler rotation file suffix.
+# When used, the file will be rotated based on its suffix.
 #
 # Example fileSuffix: .yyyy-MM-dd
 #
@@ -3274,6 +4135,9 @@
 # Note that this value will be ignored if an extension is present that takes
 # control of console formatting (e.g. an XML or JSON-format extension).
 #
+# This has been deprecated, and replaced with quarkus.console.color instead,
+# as quarkus now provides more console based functionality than just logging.
+#
 #quarkus.log.handler.console.*.color=
 
 #
@@ -3298,6 +4162,11 @@
 # The console log level.
 #
 #quarkus.log.handler.console.*.level=ALL
+
+#
+# If console logging should go to {@link System#err} instead of {@link System#out}.
+#
+#quarkus.log.handler.console.*.stderr=false
 
 #
 # Indicates whether to log asynchronously
@@ -3336,6 +4205,7 @@
 
 #
 # File handler rotation file suffix.
+# When used, the file will be rotated based on its suffix.
 #
 # Example fileSuffix: .yyyy-MM-dd
 #
@@ -3454,11 +4324,14 @@
 #quarkus.log.level=INFO
 
 #
-# The default minimum log level
+# Whether or not logging metrics are published in case a metrics extension is present.
 #
-# @deprecated this functionality was never implemented, it may be deleted or implemented in a future release.
+#quarkus.log.metrics.enabled=false
+
 #
-#quarkus.log.min-level=INFO
+# The default minimum log level.
+#
+#quarkus.log.min-level=DEBUG
 
 #
 # The app name used when formatting the message in RFC5424 format
@@ -3543,7 +4416,8 @@
 #quarkus.native.add-all-charsets=false
 
 #
-# Additional arguments to pass to the build process
+# Comma-separated, additional arguments to pass to the build process.
+# If an argument includes the ',' symbol, it needs to be escaped, e.g. '\\,'
 #
 #quarkus.native.additional-build-args=
 
@@ -3555,16 +4429,19 @@
 #
 # The docker image to use to do the image build
 #
-#quarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11
+#quarkus.native.builder-image=${platform.quarkus.native.builder-image}
 
 #
-# If the native image server should be restarted
+# If the native image server should be restarted.
+#
+# @deprecated Since GraalVM 20.2.0 the native image server has become an experimental feature and is disabled by
+# default.
 #
 #quarkus.native.cleanup-server=false
 
 #
-# If this build should be done using a container runtime. If this is set docker will be used by default,
-# unless container-runtime is also set.
+# If this build should be done using a container runtime. Unless container-runtime is also set, docker will be
+# used by default. If docker is not available or is an alias to podman, podman will be used instead as the default.
 #
 #quarkus.native.container-build=false
 
@@ -3602,6 +4479,11 @@
 #quarkus.native.enable-all-security-services=false
 
 #
+# Generate the report files for GraalVM Dashboard.
+#
+#quarkus.native.enable-dashboard-dump=false
+
+#
 # If a JVM based 'fallback image' should be created if native image fails. This is not recommended, as this is
 # functionally the same as just running the application in a JVM
 #
@@ -3636,12 +4518,26 @@
 # If the native image server should be used. This can speed up compilation but can result in changes not always
 # being picked up due to cache invalidation not working 100%
 #
+# @deprecated This used to be the default prior to GraalVM 20.2.0 and this configuration item was used to disable
+# it as it was not stable. Since GraalVM 20.2.0 the native image server has become an experimental
+# feature.
+#
 #quarkus.native.enable-server=false
 
 #
 # If the resulting image should allow VM introspection
 #
 #quarkus.native.enable-vm-inspection=false
+
+#
+# Defines the file encoding as in -Dfile.encoding=...
+#
+# Native image runtime uses the host's (i.e. build time) value of file.encoding
+# system property. We intentionally default this to UTF-8 to avoid platform specific
+# defaults to be picked up which can then result in inconsistent behavior in the
+# generated native executable.
+#
+#quarkus.native.file-encoding=UTF-8
 
 #
 # If full stack traces are enabled in the resulting image
@@ -3652,6 +4548,11 @@
 # The location of the Graal distribution
 #
 #quarkus.native.graalvm-home=${GRAALVM_HOME:}
+
+#
+# If '-H:+InlineBeforeAnalysis' flag will be added to the native-image run
+#
+#quarkus.native.inline-before-analysis=false
 
 #
 # The location of the JDK
@@ -3669,6 +4570,11 @@
 #quarkus.native.publish-debug-build-process-port=true
 
 #
+# If this build is done using a remote docker daemon.
+#
+#quarkus.native.remote-container-build=false
+
+#
 # If errors should be reported at runtime. This is a more relaxed setting, however it is not recommended as it
 # means
 # your application may fail at runtime if an unsupported feature is used by accident.
@@ -3679,6 +4585,29 @@
 # If exceptions should be reported with a full stack trace
 #
 #quarkus.native.report-exception-stack-traces=true
+
+#
+# A comma separated list of globs to match resource paths that should <b>not</b> be added to the native image.
+#
+# Use slash ('/') as a path separator on all platforms. Globs must not start with slash.
+#
+# Please refer to 'includes' for details about the glob syntax.
+#
+# By default, no resources are excluded.
+#
+# Example: Given that you have 'src/main/resources/red.png'
+# and 'src/main/resources/foo/green.png' in your source tree and one of your dependency JARs contains
+# 'bar/blue.png' file, with the following configuration
+#
+# <pre>
+# quarkus.native.resources.includes = **&#47;*.png
+# quarkus.native.resources.excludes = foo/**,**&#47;green.png
+# </pre>
+#
+# the resource 'red.png' will be available in the native image while the resources 'foo/green.png'
+# and 'bar/blue.png' will not be available in the native image.
+#
+#quarkus.native.resources.excludes=
 
 #
 # A comma separated list of globs to match resource paths that should be added to the native image.
@@ -3758,6 +4687,42 @@
 #quarkus.native.resources.includes=
 
 #
+# Don't build a native image if it already exists.
+#
+# This is useful if you have already built an image and you want to use Quarkus to deploy it somewhere.
+#
+# Note that this is not able to detect if the existing image is outdated, if you have modified source
+# or config and want a new image you must not use this flag.
+#
+#quarkus.native.reuse-existing=false
+
+#
+# Defines the user country used for building the native executable.
+#
+# Defaults to the system one.
+#
+#quarkus.native.user-country=${user.country:}
+
+#
+# Defines the user language used for building the native executable.
+#
+# Defaults to the system one.
+#
+#quarkus.native.user-language=${user.language:}
+
+#
+# The value configuring the 'io.netty.allocator.maxOrder' system property of Netty.
+# The default value is '3'.
+#
+# Configuring this property overrides the minimum 'maxOrder' requested by the extensions.
+#
+# This property affects the memory consumption of the application.
+# It must be used carefully.
+# More details on https://programmer.group/pool-area-of-netty-memory-pool.html.
+#
+#quarkus.netty.allocator-max-order=
+
+#
 # Whether or not to add the build timestamp to the Kubernetes annotations
 # This is a very useful way to have manifests of successive builds of the same
 # application differ - thus ensuring that Kubernetes will apply the updated resources
@@ -3765,9 +4730,25 @@
 #quarkus.openshift.add-build-timestamp=true
 
 #
+# If true, the 'app.kubernetes.io/version' label will be part of the selectors of Service and DeploymentConfig
+#
+#quarkus.openshift.add-version-to-label-selectors=true
+
+#
 # Custom annotations to add to all resources
 #
 #quarkus.openshift.annotations.*=
+
+#
+# If set, the config amp will mounted to the application container and its contents will be used for application
+# configuration.
+#
+#quarkus.openshift.app-config-map=
+
+#
+# If set, the secret will mounted to the application container and its contents will be used for application configuration.
+#
+#quarkus.openshift.app-secret=
 
 #
 # The arguments
@@ -3840,6 +4821,26 @@
 # The share name.
 #
 #quarkus.openshift.azure-file-volumes.*.share-name=
+
+#
+# The base image to be used when a container image is being produced for the jar build
+#
+#quarkus.openshift.base-jvm-image=registry.access.redhat.com/ubi8/openjdk-11
+
+#
+# The base image to be used when a container image is being produced for the native binary build
+#
+#quarkus.openshift.base-native-image=quay.io/quarkus/ubi-quarkus-native-binary-s2i:1.0
+
+#
+# The build config strategy to use.
+#
+#quarkus.openshift.build-strategy=binary
+
+#
+# The build timeout.
+#
+#quarkus.openshift.build-timeout=PT5M
 
 #
 # The commands
@@ -4044,6 +5045,11 @@
 #quarkus.openshift.containers.*.ports.*.host-port=
 
 #
+
+#
+#quarkus.openshift.containers.*.ports.*.node-port=
+
+#
 # The application path (refers to web application path).
 #
 # @return The path, defaults to /.
@@ -4176,7 +5182,16 @@
 #
 # If true, an Openshift Route will be created
 #
+# @deprecated Use the 'quarkus.openshift.route.exposition' instead
+#
 #quarkus.openshift.expose=false
+
+#
+# The OpenShift flavor / version to use.
+# Older versions of OpenShift have minor differrences in the labels and fields they support.
+# This option allows users to have their manifests automatically aligned to the OpenShift 'flavor' they use.
+#
+#quarkus.openshift.flavor=v4
 
 #
 # The directory of the repository to mount.
@@ -4196,7 +5211,23 @@
 #
 # The host under which the application is going to be exposed
 #
+# @deprecated Use the 'quarkus.openshift.route.host' instead
+#
 #quarkus.openshift.host=
+
+#
+# The hostnames to resolve to the ip
+#
+# @return The path.
+#
+#quarkus.openshift.host-aliases.*.hostnames=
+
+#
+# The ip address
+#
+# @return The ip.
+#
+#quarkus.openshift.host-aliases.*.ip=
 
 #
 # Image pull policy
@@ -4388,6 +5419,11 @@
 #quarkus.openshift.init-containers.*.ports.*.host-port=
 
 #
+
+#
+#quarkus.openshift.init-containers.*.ports.*.node-port=
+
+#
 # The application path (refers to web application path).
 #
 # @return The path, defaults to /.
@@ -4454,6 +5490,28 @@
 # Working directory.
 #
 #quarkus.openshift.init-containers.*.working-dir=
+
+#
+# The directory where the jar is added during the assemble phase.
+# This is dependent on the S2I image and should be supplied if a non default image is used.
+#
+#quarkus.openshift.jar-directory=
+
+#
+# The resulting filename of the jar in the S2I image.
+# This option may be used if the selected S2I image uses a fixed name for the jar.
+#
+#quarkus.openshift.jar-file-name=
+
+#
+# Additional JVM arguments to pass to the JVM when starting the application
+#
+#quarkus.openshift.jvm-arguments=-Dquarkus.http.host=0.0.0.0,-Djava.util.logging.manager=org.jboss.logmanager.LogManager
+
+#
+# The default Dockerfile to use for jvm builds
+#
+#quarkus.openshift.jvm-dockerfile=src/main/docker/Dockerfile.jvm
 
 #
 # Custom labels to add to all resources
@@ -4553,6 +5611,28 @@
 #quarkus.openshift.namespace=
 
 #
+# Additional arguments to pass when starting the native application
+#
+#quarkus.openshift.native-arguments=-Dquarkus.http.host=0.0.0.0
+
+#
+# The directory where the native binary is added during the assemble phase.
+# This is dependent on the S2I image and should be supplied if a non-default image is used.
+#
+#quarkus.openshift.native-binary-directory=
+
+#
+# The resulting filename of the native binary in the S2I image.
+# This option may be used if the selected S2I image uses a fixed name for the native binary.
+#
+#quarkus.openshift.native-binary-file-name=
+
+#
+# The default Dockerfile to use for native builds
+#
+#quarkus.openshift.native-dockerfile=src/main/docker/Dockerfile.native
+
+#
 # The nodePort to set when serviceType is set to nodePort
 #
 #quarkus.openshift.node-port=
@@ -4573,6 +5653,11 @@
 #quarkus.openshift.ports.*.host-port=
 
 #
+
+#
+#quarkus.openshift.ports.*.node-port=
+
+#
 # The application path (refers to web application path).
 #
 # @return The path, defaults to /.
@@ -4583,6 +5668,50 @@
 # The protocol.
 #
 #quarkus.openshift.ports.*.protocol=TCP
+
+#
+# When true (the default), emit a set of annotations to identify
+# services that should be scraped by prometheus for metrics.
+#
+# In configurations that use the Prometheus operator with ServiceMonitor,
+# annotations may not be necessary.
+#
+#quarkus.openshift.prometheus.annotations=true
+
+#
+# Define the annotation used to indicate the path to scrape.
+# By default, '/path' will be appended to the defined prefix.
+#
+#quarkus.openshift.prometheus.path=
+
+#
+# Define the annotation used to indicate the port to scrape.
+# By default, '/port' will be appended to the defined prefix.
+#
+#quarkus.openshift.prometheus.port=
+
+#
+# Define the annotation prefix used for scrape values, this value will be used
+# as the base for other annotation name defaults. Altering the base for generated
+# annotations can make it easier to define re-labeling rules and avoid unexpected
+# knock-on effects. The default value is 'prometheus.io'
+#
+# See Prometheus example:
+# https://github.com/prometheus/prometheus/blob/main/documentation/examples/prometheus-kubernetes.yml
+#
+#quarkus.openshift.prometheus.prefix=prometheus.io
+
+#
+# Define the annotation used to indicate the scheme to use for scraping
+# By default, '/scheme' will be appended to the defined prefix.
+#
+#quarkus.openshift.prometheus.scheme=
+
+#
+# Define the annotation used to indicate services that should be scraped.
+# By default, '/scrape' will be appended to the defined prefix.
+#
+#quarkus.openshift.prometheus.scrape=
 
 #
 # The name of the claim to mount.
@@ -4652,6 +5781,41 @@
 # The number of desired pods
 #
 #quarkus.openshift.replicas=1
+
+#
+# CPU Requirements
+#
+#quarkus.openshift.resources.limits.cpu=
+
+#
+# Memory Requirements
+#
+#quarkus.openshift.resources.limits.memory=
+
+#
+# CPU Requirements
+#
+#quarkus.openshift.resources.requests.cpu=
+
+#
+# Memory Requirements
+#
+#quarkus.openshift.resources.requests.memory=
+
+#
+# Custom annotations to add to exposition (route or ingress) resources
+#
+#quarkus.openshift.route.annotations.*=
+
+#
+# If true, the service will be exposed
+#
+#quarkus.openshift.route.expose=false
+
+#
+# The host under which the application is going to be exposed
+#
+#quarkus.openshift.route.host=
 
 #
 # Default mode.
@@ -4861,6 +6025,11 @@
 #quarkus.openshift.sidecars.*.ports.*.host-port=
 
 #
+
+#
+#quarkus.openshift.sidecars.*.ports.*.node-port=
+
+#
 # The application path (refers to web application path).
 #
 # @return The path, defaults to /.
@@ -4939,12 +6108,86 @@
 #quarkus.openshift.working-dir=
 
 #
+
+#
+#quarkus.opentracing.server.operation-name-provider=class-method
+
+#
+
+#
+#quarkus.opentracing.server.skip-pattern=
+
+#
+# When AppCDS generation is enabled, if this property is set, then the JVM used to generate the AppCDS file
+# will be the JVM present in the container image. The builder image is expected to have have the 'java' binary
+# on its PATH.
+# This flag is useful when the JVM to be used at runtime is not the same exact JVM version as the one used to build
+# the jar.
+# Note that this property is consulted only when 'quarkus.package.create-appcds=true' and it requires having
+# docker available during the build.
+#
+#quarkus.package.appcds-builder-image=
+
+#
 # Whether to automate the creation of AppCDS. This has not effect when a native binary is needed and will be ignored in
 # that case.
 # Furthermore, this option only works for Java 11+ and is considered experimental for the time being.
 # Finally, care must be taken to use the same exact JVM version when building and running the application.
 #
 #quarkus.package.create-appcds=false
+
+#
+# An advanced option that will decompile generated and transformed bytecode into the 'decompiled' directory.
+# This is only taken into account when fast-jar is used.
+#
+#quarkus.package.fernflower.enabled=false
+
+#
+# The git hash to use to download the fernflower tool from https://jitpack.io/com/github/fesh0r/fernflower/
+#
+#quarkus.package.fernflower.hash=dbf407a655
+
+#
+# The directory into which to save the fernflower tool if it doesn't exist
+#
+#quarkus.package.fernflower.jar-directory=${user.home}/.quarkus
+
+#
+# Flag indicating whether the optional dependencies should be filtered out or not.
+#
+# This parameter is meant to be used in modules where multi-builds have been configured to avoid getting a final
+# package with unused dependencies.
+#
+#quarkus.package.filter-optional-dependencies=false
+
+#
+# This option only applies when using fast-jar or mutable-jar. If this option is true
+# then a list of all the coordinates of the artifacts that made up this image will be included
+# in the quarkus-app directory. This list can be used by vulnerability scanners to determine
+# if your application has any vulnerable dependencies.
+#
+#quarkus.package.include-dependency-list=true
+
+#
+# List of all the dependencies that have been defined as optional to include into the final package of the application.
+# Each optional dependency needs to be expressed in the following format:
+#
+# groupId:artifactId:classifier:type
+#
+# With the classifier and type being optional.
+#
+# If the type is missing, the artifact is assumed to be of type 'jar'.
+#
+# This parameter is optional, if absent, no optional dependencies will be included into the final package of
+# the application.
+#
+# For backward compatibility reasons, this parameter is ignored by default and can be enabled by setting the
+# parameter 'quarkus.package.filter-optional-dependencies' to 'true'.
+#
+# This parameter is meant to be used in modules where multi-builds have been configured to avoid getting a final
+# package with unused dependencies.
+#
+#quarkus.package.included-optional-dependencies=
 
 #
 # The entry point of the application. This can either be a a fully qualified name of a standard Java
@@ -4988,17 +6231,10 @@
 #
 # The requested output type.
 #
-# The default built in types are 'jar', 'fast-jar' (a prototype more performant version of the default 'jar' type),
-# 'uber-jar' and 'native'.
+# The default built in types are 'jar' (which will use 'fast-jar'), 'legacy-jar' for the pre-1.12 default jar
+# packaging, 'uber-jar', 'native' and 'native-sources'.
 #
 #quarkus.package.type=jar
-
-#
-# If the java runner should be packed as an uberjar
-#
-# This is deprecated, you should use quarkus.package.type=uber-jar instead
-#
-#quarkus.package.uber-jar=false
 
 #
 # Files that should not be copied to the output artifact
@@ -5020,12 +6256,12 @@
 #
 # artifactId of the platform to use
 #
-#quarkus.platform.artifact-id=quarkus-universe-bom
+#quarkus.platform.artifact-id=quarkus-bom
 
 #
 # groupId of the platform to use
 #
-#quarkus.platform.group-id=io.quarkus
+#quarkus.platform.group-id=io.quarkus.platform
 
 #
 # version of the platform to use
@@ -5038,6 +6274,22 @@
 # Default value is 'prod'
 #
 #quarkus.profile=
+
+#
+# If this is true (the default) then JSON is set to the default media type. If a method has no
+# produces/consumes and there is no builtin provider than can handle the type
+# then we will assume the response should be JSON.
+#
+# Note that this will only take effect if a JSON provider has been installed, such as quarkus-resteasy-jsonb
+# or quarkus-resteasy-jackson.
+#
+#quarkus.resteasy-json.json-default=true
+
+#
+# Whether or not annotations such `@IfBuildTimeProfile`, `@IfBuildTimeProperty` and friends will be taken
+# into account when used on JAX-RS classes.
+#
+#quarkus.resteasy.build-time-condition-aware=true
 
 #
 # If gzip is enabled
@@ -5053,9 +6305,22 @@
 #quarkus.resteasy.gzip.max-input=10M
 
 #
-# Whether or not JAX-RS metrics should be enabled if the Metrics capability is present and Vert.x is being used.
+# Ignore all explicit JAX-RS {@link Application} classes.
+# As multiple JAX-RS applications are not supported, this can be used to effectively merge all JAX-RS applications.
 #
-#quarkus.resteasy.metrics.enabled=false
+#quarkus.resteasy.ignore-application-classes=false
+
+#
+# Whether or not detailed JAX-RS metrics should be enabled if the smallrye-metrics
+# extension is present.
+#
+# See <a href=
+# "https://github.com/eclipse/microprofile-metrics/blob/2.3.x/spec/src/main/asciidoc/required-metrics.adoc#optional-rest">MicroProfile
+# Metrics: Optional REST metrics</a>.
+#
+# @deprecated Use 'quarkus.smallrye-metrics.jaxrs.enabled' instead.
+#
+#quarkus.resteasy.metrics.enabled=
 
 #
 # Set this to override the default path for JAX-RS resources if there are no
@@ -5082,6 +6347,14 @@
 #quarkus.resteasy.singleton-resources=true
 
 #
+# The size of the output stream response buffer. If a response is larger than this and no content-length
+# is provided then the request will be chunked.
+#
+# Larger values may give slight performance increases for large responses, at the expense of more memory usage.
+#
+#quarkus.resteasy.vertx.response-buffer-size=8191
+
+#
 # The base image to be used when a container image is being produced for the jar build
 #
 #quarkus.s2i.base-jvm-image=registry.access.redhat.com/ubi8/openjdk-11
@@ -5100,7 +6373,7 @@
 # The directory where the jar is added during the assemble phase.
 # This is dependent on the S2I image and should be supplied if a non default image is used.
 #
-#quarkus.s2i.jar-directory=/deployments/
+#quarkus.s2i.jar-directory=/deployments/target/
 
 #
 # The resulting filename of the jar in the S2I image.
@@ -5131,6 +6404,15 @@
 #quarkus.s2i.native-binary-file-name=
 
 #
+# If no security annotations are affecting a method then they will default to requiring these roles,
+# (equivalent to adding an @RolesAllowed annotation with the roles to every endpoint class).
+#
+# The role of '**' means any authenticated user, which is equivalent to the {@link io.quarkus.security.Authenticated}
+# annotation.
+#
+#quarkus.security.jaxrs.default-roles-allowed=
+
+#
 # if set to true, access to all JAX-RS resources will be denied by default
 #
 #quarkus.security.jaxrs.deny-unannotated-endpoints=false
@@ -5143,24 +6425,39 @@
 #quarkus.shutdown.timeout=
 
 #
-# The relative path of the health group endpoint.
+# Whether the context should be propagated to each health check invocation.
 #
-#quarkus.smallrye-health.group-path=/group
+#quarkus.smallrye-health.context-propagation=false
+
+#
+# The relative path of the health group endpoint.
+# By default, this value will be resolved as a path relative to `${quarkus.smallrye-health.rootPath}`.
+#
+#quarkus.smallrye-health.group-path=group
 
 #
 # The relative path of the liveness health-checking endpoint.
+# By default, this value will be resolved as a path relative to `${quarkus.smallrye-health.rootPath}`.
 #
-#quarkus.smallrye-health.liveness-path=/live
+#quarkus.smallrye-health.liveness-path=live
 
 #
 # The relative path of the readiness health-checking endpoint.
+# By default, this value will be resolved as a path relative to `${quarkus.smallrye-health.rootPath}`.
 #
-#quarkus.smallrye-health.readiness-path=/ready
+#quarkus.smallrye-health.readiness-path=ready
 
 #
 # Root path for health-checking endpoints.
+# By default, this value will be resolved as a path relative to `${quarkus.http.non-application-root-path}`.
 #
-#quarkus.smallrye-health.root-path=/health
+#quarkus.smallrye-health.root-path=health
+
+#
+# The relative path of the startup health-checking endpoint.
+# By default, this value will be resolved as a path relative to `${quarkus.smallrye-health.rootPath}`.
+#
+#quarkus.smallrye-health.startup-path=started
 
 #
 # Always include the UI. By default this will only be included in dev and test.
@@ -5169,20 +6466,36 @@
 #quarkus.smallrye-health.ui.always-include=false
 
 #
-# If Health UI should be enabled. By default, Health UI is enabled.
+# If Health UI should be enabled. By default, Health UI is enabled if it is included (see 'always-include').
 #
 #quarkus.smallrye-health.ui.enable=true
 
 #
 # The path where Health UI is available.
 # The value `/` is not allowed as it blocks the application from serving anything else.
+# By default, this value will be resolved as a path relative to `${quarkus.http.non-application-root-path}`.
 #
-#quarkus.smallrye-health.ui.root-path=/health-ui
+#quarkus.smallrye-health.ui.root-path=health-ui
+
+#
+# The relative path of the wellness health-checking endpoint.
+# By default, this value will be resolved as a path relative to `${quarkus.smallrye-health.rootPath}`.
+#
+#quarkus.smallrye-health.wellness-path=well
 
 #
 # Whether or not metrics published by Quarkus extensions should be enabled.
 #
 #quarkus.smallrye-metrics.extensions.enabled=true
+
+#
+# Whether or not detailed JAX-RS metrics should be enabled.
+#
+# See <a href=
+# "https://github.com/eclipse/microprofile-metrics/blob/2.3.x/spec/src/main/asciidoc/required-metrics.adoc#optional-rest">MicroProfile
+# Metrics: Optional REST metrics</a>.
+#
+#quarkus.smallrye-metrics.jaxrs.enabled=false
 
 #
 # Apply Micrometer compatibility mode, where instead of regular 'base' and 'vendor' metrics,
@@ -5195,7 +6508,7 @@
 #
 # The path to the metrics handler.
 #
-#quarkus.smallrye-metrics.path=/metrics
+#quarkus.smallrye-metrics.path=metrics
 
 #
 # Enable native SSL support.
@@ -5203,19 +6516,157 @@
 #quarkus.ssl.native=
 
 #
+# Additional launch parameters to be used when Quarkus launches the produced artifact for '@QuarkusIntegrationTest'
+# When the artifact is a 'jar', this string is passed right after the 'java' command.
+# When the artifact is a 'container', this string is passed right after the 'docker run' command.
+# When the artifact is a 'native binary', this string is passed right after the native binary name.
+#
+#quarkus.test.arg-line=
+
+#
+# Disable the testing status/prompt message at the bottom of the console
+# and log these messages to STDOUT instead.
+#
+# Use this option if your terminal does not support ANSI escape sequences.
+#
+# This is deprecated, {@literal quarkus.console.basic} should be used instead.
+#
+#quarkus.test.basic-console=
+
+#
+# If a class matches this pattern then it will be cloned into the Quarkus ClassLoader even if it
+# is in a parent first artifact.
+#
+# This is important for collections which can contain objects from the Quarkus ClassLoader, but for
+# most parent first classes it will just cause problems.
+#
+#quarkus.test.class-clone-pattern=java\..*
+
+#
+# If test results and status should be displayed in the console.
+#
+# If this is false results can still be viewed in the dev console.
+#
+# This is deprecated, {@literal quarkus.console.enabled} should be used instead.
+#
+#quarkus.test.console=
+
+#
+# If continuous testing is enabled.
+#
+# The default value is 'paused', which will allow you to start testing
+# from the console or the Dev UI, but will not run tests on startup.
+#
+# If this is set to 'enabled' then testing will start as soon as the
+# application has started.
+#
+# If this is 'disabled' then continuous testing is not enabled, and can't
+# be enabled without restarting the application.
+#
+#quarkus.test.continuous-testing=paused
+
+#
+# Disable color in the testing status and prompt messages.
+#
+# Use this option if your terminal does not support color.
+#
+# This is deprecated, {@literal quarkus.console.disable-color} should be used instead.
+#
+#quarkus.test.disable-color=
+
+#
+# Disables the ability to enter input on the console.
+#
+# This is deprecated, {@literal quarkus.console.disable-input} should be used instead.
+#
+#quarkus.test.disable-console-input=
+
+#
+# If output from the running tests should be displayed in the console.
+#
+#quarkus.test.display-test-output=false
+
+#
+# Tests that should be excluded with continuous testing. This is a regular expression and
+# is matched against the test class name (not the file name).
+#
+# This is ignored if include-pattern has been set.
+#
+#quarkus.test.exclude-pattern=.*\.IT[^.]+|.*IT|.*ITCase
+
+#
+# Tags that should be excluded by default with continuous testing.
+#
+# This is ignored if include-tags has been set.
+#
+# Defaults to 'slow'
+#
+#quarkus.test.exclude-tags=slow
+
+#
+# Changes tests to use the 'flat' ClassPath used in Quarkus 1.x versions.
+#
+# This means all Quarkus and test classes are loaded in the same ClassLoader,
+# however it means you cannot use continuous testing.
+#
+# Note that if you find this necessary for your application then you
+# may also have problems running in development mode, which cannot use
+# a flat class path.
+#
+#quarkus.test.flat-class-path=false
+
+#
+# Configures the hang detection in @QuarkusTest. If no activity happens (i.e. no test callbacks are called) over
+# this period then QuarkusTest will dump all threads stack traces, to help diagnose a potential hang.
+#
+# Note that the initial timeout (before Quarkus has started) will only apply if provided by a system property, as
+# it is not possible to read all config sources until Quarkus has booted.
+#
+#quarkus.test.hang-detection-timeout=10m
+
+#
+# Tests that should be included for continuous testing. This is a regular expression and
+# is matched against the test class name (not the file name).
+#
+#quarkus.test.include-pattern=
+
+#
+# Tags that should be included for continuous testing.
+#
+#quarkus.test.include-tags=
+
+#
 # The profile to use when testing the native image
 #
 #quarkus.test.native-image-profile=prod
 
 #
-# Duration to wait for the native image to built during testing
-#
-#quarkus.test.native-image-wait-time=PT5M
-
-#
-# The profile to use when testing using @QuarkusTest
+# The profile (dev, test or prod) to use when testing using @QuarkusTest
 #
 #quarkus.test.profile=test
+
+#
+# The tags this profile is associated with.
+# When the 'quarkus.test.profile.tags' System property is set (its value is a comma separated list of strings)
+# then Quarkus will only execute tests that are annotated with a '@TestProfile' that has at least one of the
+# supplied (via the aforementioned system property) tags.
+#
+#quarkus.test.profile.tags=
+
+#
+# The type of test to run, this can be either:
+#
+# quarkus-test: Only runs '@QuarkusTest' annotated test classes
+# unit: Only runs classes that are not annotated with '@QuarkusTest'
+# all: Runs both, running the unit tests first
+#
+#quarkus.test.type=all
+
+#
+# Used in '@QuarkusIntegrationTest' and 'NativeImageTest' to determine how long the test will wait for the
+# application to launch
+#
+#quarkus.test.wait-time=PT1M
 
 #
 # The core thread pool size. This number of threads will always be kept alive.
@@ -5276,6 +6727,19 @@
 # continue
 #
 #quarkus.thread-pool.shutdown-timeout=1M
+
+#
+# Enable trusting all certificates. Disable by default.
+#
+#quarkus.tls.trust-all=false
+
+#
+# A property that allows accessing a generated UUID.
+# It generates that UUID at startup time. So it changes between two starts including in dev mode.
+#
+# Access this generated UUID using expressions: `${quarkus.uuid}`.
+#
+#quarkus.uuid=
 
 #
 # Enables or disables the Vert.x cache.
@@ -5493,9 +6957,24 @@
 #quarkus.vertx.eventbus.trust-certificate-pfx.path=
 
 #
+# The executor growth resistance.
+#
+# A resistance factor applied after the core pool is full; values applied here will cause that fraction
+# of submissions to create new threads when no idle thread is available. A value of '0.0f' implies that
+# threads beyond the core size should be created as aggressively as threads within it; a value of '1.0f'
+# implies that threads beyond the core size should never be created.
+#
+#quarkus.vertx.growth-resistance=0
+
+#
 # The size of the internal thread pool (used for the file system).
 #
 #quarkus.vertx.internal-blocking-pool-size=20
+
+#
+# The amount of time a thread will stay alive with no work.
+#
+#quarkus.vertx.keep-alive-time=30
 
 #
 # The maximum amount of time the event loop can be blocked.
@@ -5513,631 +6992,16 @@
 #quarkus.vertx.prefer-native-transport=false
 
 #
-# Enables the async DNS resolver.
+# Prefill thread pool when creating a new Executor.
+# When {@see io.vertx.core.spi.ExecutorServiceFactory.createExecutor} is called,
+# initialise with the number of defined threads at startup
 #
-#quarkus.vertx.use-async-dns=false
+#quarkus.vertx.prefill=false
 
 #
-# The amount of time before a warning is displayed if the event loop is blocked.
+# The queue size. For most applications this should be unbounded
 #
-#quarkus.vertx.warning-exception-time=2
-
-#
-# The size of the worker thread pool.
-#
-#quarkus.vertx.worker-pool-size=20
-
-#
-# If set to true then the container attempts to detect "unused removed beans" false positives during programmatic lookup at
-# runtime. You can disable this feature to conserve some memory when running your application in production.
-#
-# @see ArcConfig#removeUnusedBeans
-#
-#quarkus.arc.detect-unused-false-positives=true
-
-#
-# If set to true then the container attempts to detect usage of <i>wrong</i> annotations.
-#
-# A <i>wrong</i> annotation may lead to unexpected behavior in a Quarkus application. A typical example is
-# '@javax.ejb.Singleton' which is often confused with '@javax.inject.Singleton'. As a result a component
-# annotated with '@javax.ejb.Singleton' can be completely ignored.
-#
-#quarkus.arc.detect-wrong-annotations=true
-
-#
-# What to do if it is not possible to extract CSimple expressions from a route definition at build time.
-#
-#quarkus.camel.csimple.on-build-time-analysis-failure=warn
-
-#
-# What should happen if the application is started with a different build time configuration than it was compiled
-# against. This may be useful to prevent misconfiguration.
-#
-# If this is set to 'warn' the application will warn at start up.
-#
-# If this is set to 'fail' the application will fail at start up.
-#
-# Native tests leveraging<code>@io.quarkus.test.junit.TestProfile</code> are always run with
-# 'quarkus.configuration.build-time-mismatch-at-runtime = fail'.
-#
-#quarkus.configuration.build-time-mismatch-at-runtime=warn
-
-#
-# Represents the entire image string.
-# If set, then 'group', 'name', 'registry', 'tags', 'additionalTags'
-# are ignored
-#
-#quarkus.container-image.image=
-
-#
-# Whether or not Quarkus should disable it's ability to not do a full restart
-# when changes to classes are compatible with JVM instrumentation.
-# If this is set to true, Quarkus will always restart on changes and never perform class redefinition.
-#
-#quarkus.dev.instrumentation=true
-
-#
-# Whether or not to include the Liveness and Readiness Health endpoints in the generated OpenAPI document
-#
-#quarkus.health.openapi.included=false
-
-#
-# Determines whether the entire permission set is enabled, or not.
-#
-# By default, if the permission set is defined, it is enabled.
-#
-#quarkus.http.auth.permission.*.enabled=
-
-#
-# If responses should be compressed.
-#
-# Note that this will attempt to compress all responses, to avoid compressing
-# already compressed content (such as images) you need to set the following header:
-#
-# Content-Encoding: identity
-#
-# Which will tell vert.x not to compress the response.
-#
-#quarkus.http.enable-compression=false
-
-#
-# A common root path for non-application endpoints. Various extension-provided endpoints such as metrics, health,
-# and openapi are deployed under this path by default.
-#
-# * Relative path (Default, `q`) ->
-# Non-application endpoints will be served from
-# `${quarkus.http.root-path}/${quarkus.http.non-application-root-path}`.
-# * Absolute path (`/q`) ->
-# Non-application endpoints will be served from the specified path.
-# * `${quarkus.http.root-path}` -> Setting this path to the same value as HTTP root path disables
-# this root path. All extension-provided endpoints will be served from `${quarkus.http.root-path}`.
-#
-# @asciidoclet
-#
-#quarkus.http.non-application-root-path=q
-
-#
-# Provide redirect endpoints for extension-provided endpoints existing prior to Quarkus 1.11.
-# This will trigger HTTP 301 Redirects for the following:
-#
-# * `/graphql-ui`
-# * `/health`
-# * `/health-ui`
-# * `/metrics`
-# * `/openapi`
-# * `/swagger-ui`
-#
-# Default is `true` for Quarkus 1.11.x to facilitate transition to name-spaced URIs using
-# `${quarkus.http.non-application-root-path}`.
-#
-# Quarkus 1.13 will change the default to `false`,
-# and the config item will be removed in Quarkus 2.0.
-#
-# @asciidoclet
-#
-#quarkus.http.redirect-to-non-application-root-path=true
-
-#
-# An optional parameter to specify a provider of the key store file. If not given, the provider is automatically detected
-# based on the key store file type.
-#
-#quarkus.http.ssl.certificate.key-store-provider=
-
-#
-# An optional parameter to specify a provider of the trust store file. If not given, the provider is automatically detected
-# based on the trust store file type.
-#
-#quarkus.http.ssl.certificate.trust-store-provider=
-
-#
-# If enabled, Jackson will fail when encountering unknown properties.
-#
-# You can still override it locally with '@JsonIgnoreProperties(ignoreUnknown = false)'.
-#
-#quarkus.jackson.fail-on-unknown-properties=false
-
-#
-# If set, the config amp will mounted to the application container and its contents will be used for application
-# configuration.
-#
-#quarkus.knative.app-config-map=
-
-#
-# If set, the secret will mounted to the application container and its contents will be used for application configuration.
-#
-#quarkus.knative.app-secret=
-
-#
-# The hostnames to resolve to the ip
-#
-# @return The path.
-#
-#quarkus.knative.host-aliases.*.hostnames=
-
-#
-# The ip address
-#
-# @return The ip.
-#
-#quarkus.knative.host-aliases.*.ip=
-
-#
-# When true (the default), emit a set of annotations to identify
-# services that should be scraped by prometheus for metrics.
-#
-# In configurations that use the Prometheus operator with ServiceMonitor,
-# annotations may not be necessary.
-#
-#quarkus.knative.prometheus.annotations=true
-
-#
-# Define the annotation used to indicate the path to scrape.
-# By default, '/path' will be appended to the defined prefix.
-#
-#quarkus.knative.prometheus.path=
-
-#
-# Define the annotation used to indicate the port to scrape.
-# By default, '/port' will be appended to the defined prefix.
-#
-#quarkus.knative.prometheus.port=
-
-#
-# Define the annotation prefix used for scrape values, this value will be used
-# as the base for other annotation name defaults. Altering the base for generated
-# annotations can make it easier to define re-labeling rules and avoid unexpected
-# knock-on effects. The default value is 'prometheus.io'
-#
-# See Prometheus example:
-# https://github.com/prometheus/prometheus/blob/master/documentation/examples/prometheus-kubernetes.yml
-#
-#quarkus.knative.prometheus.prefix=prometheus.io
-
-#
-# Define the annotation used to indicate the scheme to use for scraping
-# By default, '/scheme' will be appended to the defined prefix.
-#
-#quarkus.knative.prometheus.scheme=
-
-#
-# Define the annotation used to indicate services that should be scraped.
-# By default, '/scrape' will be appended to the defined prefix.
-#
-#quarkus.knative.prometheus.scrape=
-
-#
-# CPU Requirements
-#
-#quarkus.knative.resources.limits.cpu=
-
-#
-# Memory Requirements
-#
-#quarkus.knative.resources.limits.memory=
-
-#
-# CPU Requirements
-#
-#quarkus.knative.resources.requests.cpu=
-
-#
-# Memory Requirements
-#
-#quarkus.knative.resources.requests.memory=
-
-#
-
-#
-#quarkus.knative.revision-name=
-
-#
-# LatestRevision may be optionally provided to indicate that the latest
-# ready Revision of the Configuration should be used for this traffic
-# target. When provided LatestRevision must be true if RevisionName is
-# empty.
-#
-#quarkus.knative.traffic.*.latest-revision=false
-
-#
-# Percent indicates that percentage based routing should be used and
-# the value indicates the percent of traffic that is be routed to this
-# Revision or Configuration. `0` (zero) mean no traffic, `100` means all
-# traffic.
-#
-#quarkus.knative.traffic.*.percent=100
-
-#
-# RevisionName of a specific revision to which to send this portion of traffic.
-#
-#quarkus.knative.traffic.*.revision-name=
-
-#
-# Tag is optionally used to expose a dedicated url for referencing
-# this target exclusively.
-#
-#quarkus.knative.traffic.*.tag=
-
-#
-# Kubernetes oauth token
-#
-#quarkus.kubernetes-client.token=
-
-#
-# If true, the 'app.kubernetes.io/version' label will be part of the selectors of Service and Deployment
-#
-#quarkus.kubernetes.add-version-to-label-selectors=true
-
-#
-# If set, the config amp will mounted to the application container and its contents will be used for application
-# configuration.
-#
-#quarkus.kubernetes.app-config-map=
-
-#
-# If set, the secret will mounted to the application container and its contents will be used for application configuration.
-#
-#quarkus.kubernetes.app-secret=
-
-#
-# If set to true, Quarkus will attempt to deploy the application to the target Kubernetes cluster
-#
-#quarkus.kubernetes.deploy=false
-
-#
-# The hostnames to resolve to the ip
-#
-# @return The path.
-#
-#quarkus.kubernetes.hostaliases.*.hostnames=
-
-#
-# The ip address
-#
-# @return The ip.
-#
-#quarkus.kubernetes.hostaliases.*.ip=
-
-#
-# When true (the default), emit a set of annotations to identify
-# services that should be scraped by prometheus for metrics.
-#
-# In configurations that use the Prometheus operator with ServiceMonitor,
-# annotations may not be necessary.
-#
-#quarkus.kubernetes.prometheus.annotations=true
-
-#
-# Define the annotation used to indicate the path to scrape.
-# By default, '/path' will be appended to the defined prefix.
-#
-#quarkus.kubernetes.prometheus.path=
-
-#
-# Define the annotation used to indicate the port to scrape.
-# By default, '/port' will be appended to the defined prefix.
-#
-#quarkus.kubernetes.prometheus.port=
-
-#
-# Define the annotation prefix used for scrape values, this value will be used
-# as the base for other annotation name defaults. Altering the base for generated
-# annotations can make it easier to define re-labeling rules and avoid unexpected
-# knock-on effects. The default value is 'prometheus.io'
-#
-# See Prometheus example:
-# https://github.com/prometheus/prometheus/blob/master/documentation/examples/prometheus-kubernetes.yml
-#
-#quarkus.kubernetes.prometheus.prefix=prometheus.io
-
-#
-# Define the annotation used to indicate the scheme to use for scraping
-# By default, '/scheme' will be appended to the defined prefix.
-#
-#quarkus.kubernetes.prometheus.scheme=
-
-#
-# Define the annotation used to indicate services that should be scraped.
-# By default, '/scrape' will be appended to the defined prefix.
-#
-#quarkus.kubernetes.prometheus.scrape=
-
-#
-# CPU Requirements
-#
-#quarkus.kubernetes.resources.limits.cpu=
-
-#
-# Memory Requirements
-#
-#quarkus.kubernetes.resources.limits.memory=
-
-#
-# CPU Requirements
-#
-#quarkus.kubernetes.resources.requests.cpu=
-
-#
-# Memory Requirements
-#
-#quarkus.kubernetes.resources.requests.memory=
-
-#
-# The minimum log level for this category.
-# By default all categories are configured with <code>DEBUG</code> minimum level.
-#
-# To get runtime logging below <code>DEBUG</code>, e.g. <code>TRACE</code>,
-# the minimum level has to be adjusted at build time, the right log level needs to be provided at runtime.
-#
-# As an example, to get <code>TRACE</code> logging,
-# minimum level needs to be at <code>TRACE</code> and the runtime log level needs to match that.
-#
-#quarkus.log.category.*.min-level=inherit
-
-#
-# Whether or not logging metrics are published in case a metrics extension is present.
-#
-#quarkus.log.metrics.enabled=false
-
-#
-# Defines the file encoding as in -Dfile.encoding=...
-#
-# Native image runtime uses the host's (i.e. build time) value of file.encoding
-# system property. We intentionally default this to UTF-8 to avoid platform specific
-# defaults to be picked up which can then result in inconsistent behavior in the
-# generated native executable.
-#
-#quarkus.native.file-encoding=UTF-8
-
-#
-# A comma separated list of globs to match resource paths that should <b>not</b> be added to the native image.
-#
-# Use slash ('/') as a path separator on all platforms. Globs must not start with slash.
-#
-# Please refer to 'includes' for details about the glob syntax.
-#
-# By default, no resources are excluded.
-#
-# Example: Given that you have 'src/main/resources/red.png'
-# and 'src/main/resources/foo/green.png' in your source tree and one of your dependency JARs contains
-# 'bar/blue.png' file, with the following configuration
-#
-# <pre>
-# quarkus.native.resources.includes = **&#47;*.png
-# quarkus.native.resources.excludes = foo/**,**&#47;green.png
-# </pre>
-#
-# the resource 'red.png' will be available in the native image while the resources 'foo/green.png'
-# and 'bar/blue.png' will not be available in the native image.
-#
-#quarkus.native.resources.excludes=
-
-#
-# If true, the 'app.kubernetes.io/version' label will be part of the selectors of Service and DeploymentConfig
-#
-#quarkus.openshift.add-version-to-label-selectors=true
-
-#
-# If set, the config amp will mounted to the application container and its contents will be used for application
-# configuration.
-#
-#quarkus.openshift.app-config-map=
-
-#
-# If set, the secret will mounted to the application container and its contents will be used for application configuration.
-#
-#quarkus.openshift.app-secret=
-
-#
-# The base image to be used when a container image is being produced for the jar build
-#
-#quarkus.openshift.base-jvm-image=registry.access.redhat.com/ubi8/openjdk-11
-
-#
-# The base image to be used when a container image is being produced for the native binary build
-#
-#quarkus.openshift.base-native-image=quay.io/quarkus/ubi-quarkus-native-binary-s2i:1.0
-
-#
-# The build config strategy to use.
-#
-#quarkus.openshift.build-strategy=binary
-
-#
-# The build timeout.
-#
-#quarkus.openshift.build-timeout=PT5M
-
-#
-# The OpenShift flavor / version to use.
-# Older versions of OpenShift have minor differrences in the labels and fields they support.
-# This option allows users to have their manifests automatically aligned to the OpenShift 'flavor' they use.
-#
-#quarkus.openshift.flavor=v4
-
-#
-# The hostnames to resolve to the ip
-#
-# @return The path.
-#
-#quarkus.openshift.host-aliases.*.hostnames=
-
-#
-# The ip address
-#
-# @return The ip.
-#
-#quarkus.openshift.host-aliases.*.ip=
-
-#
-# The directory where the jar is added during the assemble phase.
-# This is dependent on the S2I image and should be supplied if a non default image is used.
-#
-#quarkus.openshift.jar-directory=
-
-#
-# The resulting filename of the jar in the S2I image.
-# This option may be used if the selected S2I image uses a fixed name for the jar.
-#
-#quarkus.openshift.jar-file-name=
-
-#
-# Additional JVM arguments to pass to the JVM when starting the application
-#
-#quarkus.openshift.jvm-arguments=-Dquarkus.http.host=0.0.0.0,-Djava.util.logging.manager=org.jboss.logmanager.LogManager
-
-#
-# The default Dockerfile to use for jvm builds
-#
-#quarkus.openshift.jvm-dockerfile=src/main/docker/Dockerfile.jvm
-
-#
-# Additional arguments to pass when starting the native application
-#
-#quarkus.openshift.native-arguments=-Dquarkus.http.host=0.0.0.0
-
-#
-# The directory where the native binary is added during the assemble phase.
-# This is dependent on the S2I image and should be supplied if a non-default image is used.
-#
-#quarkus.openshift.native-binary-directory=
-
-#
-# The resulting filename of the native binary in the S2I image.
-# This option may be used if the selected S2I image uses a fixed name for the native binary.
-#
-#quarkus.openshift.native-binary-file-name=
-
-#
-# The default Dockerfile to use for native builds
-#
-#quarkus.openshift.native-dockerfile=src/main/docker/Dockerfile.native
-
-#
-# When true (the default), emit a set of annotations to identify
-# services that should be scraped by prometheus for metrics.
-#
-# In configurations that use the Prometheus operator with ServiceMonitor,
-# annotations may not be necessary.
-#
-#quarkus.openshift.prometheus.annotations=true
-
-#
-# Define the annotation used to indicate the path to scrape.
-# By default, '/path' will be appended to the defined prefix.
-#
-#quarkus.openshift.prometheus.path=
-
-#
-# Define the annotation used to indicate the port to scrape.
-# By default, '/port' will be appended to the defined prefix.
-#
-#quarkus.openshift.prometheus.port=
-
-#
-# Define the annotation prefix used for scrape values, this value will be used
-# as the base for other annotation name defaults. Altering the base for generated
-# annotations can make it easier to define re-labeling rules and avoid unexpected
-# knock-on effects. The default value is 'prometheus.io'
-#
-# See Prometheus example:
-# https://github.com/prometheus/prometheus/blob/master/documentation/examples/prometheus-kubernetes.yml
-#
-#quarkus.openshift.prometheus.prefix=prometheus.io
-
-#
-# Define the annotation used to indicate the scheme to use for scraping
-# By default, '/scheme' will be appended to the defined prefix.
-#
-#quarkus.openshift.prometheus.scheme=
-
-#
-# Define the annotation used to indicate services that should be scraped.
-# By default, '/scrape' will be appended to the defined prefix.
-#
-#quarkus.openshift.prometheus.scrape=
-
-#
-# CPU Requirements
-#
-#quarkus.openshift.resources.limits.cpu=
-
-#
-# Memory Requirements
-#
-#quarkus.openshift.resources.limits.memory=
-
-#
-# CPU Requirements
-#
-#quarkus.openshift.resources.requests.cpu=
-
-#
-# Memory Requirements
-#
-#quarkus.openshift.resources.requests.memory=
-
-#
-# If this is true (the default) then JSON is set to the default media type. If a method has no
-# produces/consumes and there is no builtin provider than can handle the type
-# then we will assume the response should be JSON.
-#
-# Note that this will only take effect if a JSON provider has been installed, such as quarkus-resteasy-jsonb
-# or quarkus-resteasy-jackson.
-#
-#quarkus.resteasy-json.json-default=true
-
-#
-# Ignore all explict JAX-RS {@link Application} classes.
-# As multiple JAX-RS applications are not supported, this can be used to effectively merge all JAX-RS applications.
-#
-#quarkus.resteasy.ignore-application-classes=false
-
-#
-# The size of the output stream response buffer. If a response is larger than this and no content-length
-# is provided then the request will be chunked.
-#
-# Larger values may give slight performance increases for large responses, at the expense of more memory usage.
-#
-#quarkus.resteasy.vertx.response-buffer-size=8191
-
-#
-# The relative path of the wellness health-checking endpoint.
-#
-#quarkus.smallrye-health.wellness-path=well
-
-#
-# Whether or not detailed JAX-RS metrics should be enabled.
-#
-# See <a href=
-# "https://github.com/eclipse/microprofile-metrics/blob/2.3.x/spec/src/main/asciidoc/required-metrics.adoc#optional-rest">MicroProfile
-# Metrics: Optional REST metrics</a>.
-#
-#quarkus.smallrye-metrics.jaxrs.enabled=false
-
-#
-# Enable trusting all certificates. Disable by default.
-#
-#quarkus.tls.trust-all=false
+#quarkus.vertx.queue-size=
 
 #
 # The maximum amount of time in seconds that a successfully resolved address will be cached.
@@ -6157,891 +7021,16 @@
 #quarkus.vertx.resolver.cache-negative-time-to-live=0
 
 #
-# If set to true then the container monitors business method invocations and fired events during the development mode.
+# Enables the async DNS resolver.
 #
-#quarkus.arc.dev-mode.monitoring-enabled=true
+#quarkus.vertx.use-async-dns=false
 
 #
-# The list of packages that will not be checked for split package issues.
+# The amount of time before a warning is displayed if the event loop is blocked.
 #
-# A package string representation can be:
-# 
-#  - a full name of the package, i.e. 'org.acme.foo'
-#  - a package name with suffix '.*', i.e. 'org.acme.*', which matches a package that starts with provided
-# value
-#
-#quarkus.arc.ignored-split-packages=
-
-#
-# If set to true then disable 'StartupEvent' and 'ShutdownEvent' observers declared on application bean classes
-# during the tests.
-#
-#quarkus.arc.test.disable-application-lifecycle-observers=false
-
-#
-# If set to true, the workspace initialization will be based on the effective POMs
-# (i.e. properly interpolated, including support for profiles, etc) instead of the raw ones.
-#
-#quarkus.bootstrap.effective-model-builder=false
-
-#
-# Whether to throw an error, warn or silently ignore misaligned platform BOM imports
-#
-#quarkus.bootstrap.misaligned-platform-imports=error
-
-#
-# The action to take when {@link CamelMain} encounters an unknown argument.
-#
-# fail - Prints the {@link CamelMain} usage statement and throws a {@link RuntimeException}
-# ignore - Suppresses any warnings and the application startup proceeds as normal
-# warn - Prints the {@link CamelMain} usage statement but allows the application startup to proceed as normal
-#
-#quarkus.camel.main.arguments.on-unknown=warn
-
-#
-# If 'true' all 'camel-main' features are enabled; otherwise no 'camel-main' features are
-# enabled. See described the
-# <a href="https://camel.apache.org/camel-quarkus/latest/user-guide/configuration.html">Configuration</a>
-# section of Camel Quarkus documentation for more details.
-#
-#quarkus.camel.main.enabled=true
-
-#
-# A timeout (with millisecond precision) to wait for {@link CamelMain#stop()} to finish
-#
-#quarkus.camel.main.shutdown.timeout=PT3S
-
-#
-# If 'true', basic classes are registered for serialization; otherwise basic classes won't be registered
-# automatically for serialization in native mode.
-#
-# The list of classes automatically registered for serialization can be found in <a href=
-# "https://github.com/apache/camel-quarkus/blob/main/extensions-core/core/deployment/src/main/java/org/apache/camel/quarkus/core/deployment/CamelSerializationProcessor.java">CamelSerializationProcessor.BASE_SERIALIZATION_CLASSES</a>.
-#
-# Setting this to 'false' helps to reduce the size of the native image. In JVM mode, there is no real
-# benefit of setting this flag to 'true' except for making the behavior consistent with native mode.
-#
-#quarkus.camel.native.reflection.serialization-enabled=false
-
-#
-# Sets whether header keys need to be encoded
-#
-#quarkus.camel.opentracing.encoding=false
-
-#
-# Sets whether to disable tracing for endpoint URIs that match the given patterns
-#
-#quarkus.camel.opentracing.exclude-patterns=
-
-#
-# Artifacts that are loaded in a parent first manner. This can be used to work around issues where a given
-# class needs to be loaded by the system ClassLoader. Note that if you
-# make a library parent first all its dependencies should generally also be parent first.
-#
-# Artifacts should be configured as a comma separated list of artifact ids, with the group, artifact-id and optional
-# classifier separated by a colon.
-#
-# WARNING: This config property can only be set in application.properties
-#
-#quarkus.class-loading.parent-first-artifacts=
-
-#
-# Artifacts that are loaded in the runtime ClassLoader in dev mode, so they will be dropped
-# and recreated on change.
-#
-# This is an advanced option, it should only be used if you have a problem with
-# libraries holding stale state between reloads. Note that if you use this any library that depends on the listed libraries
-# will also need to be reloadable.
-#
-# This setting has no impact on production builds.
-#
-# Artifacts should be configured as a comma separated list of artifact ids, with the group, artifact-id and optional
-# classifier separated by a colon.
-#
-# WARNING: This config property can only be set in application.properties
-#
-#quarkus.class-loading.reloadable-artifacts=
-
-#
-# Artifacts that will never be loaded by the class loader, and will not be packed into the final application. This allows
-# you to explicitly remove artifacts from your application even though they may be present on the class path.
-#
-#quarkus.class-loading.removed-artifacts=
-
-#
-# Resources that should be removed/hidden from dependencies.
-#
-# This allows for classes and other resources to be removed from dependencies, so they
-# are not accessible to the application. This is a map of artifact id (in the form group:artifact)
-# to a list of resources to be removed.
-#
-# When running in dev and test mode these resources are hidden from the ClassLoader, when running
-# in production mode these files are removed from the jars that contain them.
-#
-# Note that if you want to remove a class you need to specify the class file name. e.g. to
-# remove <code>com.acme.Foo</code> you would specify <code>com/acme/Foo.class</code>.
-#
-# Note that for technical reasons this is not supported when running with JBang.
-#
-#quarkus.class-loading.removed-resources.*=
-
-#
-# Additional config locations to be loaded with the Config. The configuration support multiple locations
-# separated by a comma and each must represent a valid {@link java.net.URI}.
-#
-#quarkus.config.locations=
-
-#
-# Accepts a single configuration profile name. If a configuration property cannot be found in the current active
-# profile, the config performs the same lookup in the profile set by this configuration.
-#
-#quarkus.config.profile.parent=
-
-#
-# Disable the testing status/prompt message at the bottom of the console
-# and log these messages to STDOUT instead.
-#
-# Use this option if your terminal does not support ANSI escape sequences.
-#
-#quarkus.console.basic=false
-
-#
-# If color should be enabled or disabled.
-#
-# If this is not present then an attempt will be made to guess if the terminal supports color
-#
-#quarkus.console.color=
-
-#
-# Disables the ability to enter input on the console.
-#
-#quarkus.console.disable-input=false
-
-#
-# If test results and status should be displayed in the console.
-#
-# If this is false results can still be viewed in the dev console.
-#
-#quarkus.console.enabled=true
-
-#
-# The number of history log entries to remember.
-#
-#quarkus.dev-ui.history-size=50
-
-#
-# Global flag that can be used to disable all Dev Services. If this is set to false then Dev Services will not be used.
-#
-#quarkus.devservices.enabled=true
-
-#
-# A regular expression that can be used to exclude some paths from logging.
-#
-#quarkus.http.access-log.exclude-pattern=
-
-#
-# Option to control the name of the cookie used to redirect the user back
-# to where he want to get access to.
-#
-#quarkus.http.auth.form.location-cookie=quarkus-redirect-location
-
-#
-# The password field name.
-#
-#quarkus.http.auth.form.password-parameter=j_password
-
-#
-# The post location.
-#
-#quarkus.http.auth.form.post-location=/j_security_check
-
-#
-# The username field name.
-#
-#quarkus.http.auth.form.username-parameter=j_username
-
-#
-# Path specific authentication mechanism which must be used to authenticate a user.
-# It needs to match {@link HttpCredentialTransport} authentication scheme such as 'basic', 'bearer', 'form', etc.
-#
-#quarkus.http.auth.permission.*.auth-mechanism=
-
-#
-# The maximum number of connections that are allowed at any one time. If this is set
-# it is recommended to set a short idle timeout.
-#
-#quarkus.http.limits.max-connections=
-
-#
-# The maximum length of a form attribute.
-#
-#quarkus.http.limits.max-form-attribute-size=2048
-
-#
-# The list of path to server certificates using the PEM format.
-# Specifying multiple files require SNI to be enabled.
-#
-#quarkus.http.ssl.certificate.files=
-
-#
-# The list of path to server certificates private key file using the PEM format.
-# Specifying multiple files require SNI to be enabled.
-#
-# The order of the key files must match the order of the certificates.
-#
-#quarkus.http.ssl.certificate.key-files=
-
-#
-# An optional parameter to select a specific key in the key store. When SNI is disabled, if the key store contains multiple
-# keys and no alias is specified, the behavior is undefined.
-#
-#quarkus.http.ssl.certificate.key-store-key-alias=
-
-#
-# An optional parameter to define the password for the key, in case it's different from 'key-store-password'.
-#
-#quarkus.http.ssl.certificate.key-store-key-password=
-
-#
-# An optional parameter to trust only one specific certificate in the trust store (instead of trusting all certificates in
-# the store).
-#
-#quarkus.http.ssl.certificate.trust-store-cert-alias=
-
-#
-# Enables Server Name Indication (SNI), an TLS extension allowing the server to use multiple certificates.
-# The client indicate the server name during the TLS handshake, allowing the server to select the right certificate.
-#
-#quarkus.http.ssl.sni=false
-
-#
-# The REST Assured client timeout for testing.
-#
-#quarkus.http.test-timeout=30s
-
-#
-# The Ide to use to open files from the DevUI.
-# 'auto' means that Quarkus will attempt to determine the Ide being used.
-#
-#quarkus.ide.target=auto
-
-#
-# If enabled, Jackson will ignore case during Enum deserialization.
-#
-#quarkus.jackson.accept-case-insensitive-enums=false
-
-#
-# If enabled, Jackson will fail when no accessors are found for a type.
-# This is enabled by default to match the default Jackson behavior.
-#
-#quarkus.jackson.fail-on-empty-beans=true
-
-#
-# Define which properties of Java Beans are to be included in serialization.
-#
-#quarkus.jackson.serialization-inclusion=
-
-#
-# If set, Jackson will default to using the specified timezone when formatting dates.
-# Some examples values are "Asia/Jakarta" and "GMT+3".
-# If not set, Jackson will use its own default.
-#
-#quarkus.jackson.timezone=UTC
-
-#
-# If enabled, Jackson will serialize dates as numeric value(s).
-#
-#quarkus.jackson.write-dates-as-timestamps=false
-
-#
-# The hostname and port for communicating with agent via UDP
-#
-#quarkus.jaeger.agent-host-port=
-
-#
-# Authentication Token to send as "Bearer" to the endpoint
-#
-#quarkus.jaeger.auth-token=
-
-#
-# Defines if the Jaeger extension is enabled.
-#
-#quarkus.jaeger.enabled=true
-
-#
-# The traces endpoint, in case the client should connect directly to the Collector,
-# like http://jaeger-collector:14268/api/traces
-#
-#quarkus.jaeger.endpoint=
-
-#
-# Whether the trace context should be logged.
-#
-#quarkus.jaeger.log-trace-context=true
-
-#
-# Whether or not metrics are published in case a metrics extension is present.
-#
-#quarkus.jaeger.metrics.enabled=false
-
-#
-# Password to send as part of "Basic" authentication to the endpoint
-#
-#quarkus.jaeger.password=
-
-#
-# Comma separated list of formats to use for propagating the trace context. Defaults to the
-# standard Jaeger format. Valid values are jaeger and b3
-#
-#quarkus.jaeger.propagation=
-
-#
-# The reporter's flush interval
-#
-#quarkus.jaeger.reporter-flush-interval=
-
-#
-# Whether the reporter should also log the spans
-#
-#quarkus.jaeger.reporter-log-spans=
-
-#
-# The reporter's maximum queue size
-#
-#quarkus.jaeger.reporter-max-queue-size=
-
-#
-# The host name and port when using the remote controlled sampler
-#
-#quarkus.jaeger.sampler-manager-host-port=
-
-#
-# The sampler parameter (number)
-#
-#quarkus.jaeger.sampler-param=
-
-#
-# The sampler type (const, probabilistic, ratelimiting or remote)
-#
-#quarkus.jaeger.sampler-type=
-
-#
-# The sender factory class name
-#
-#quarkus.jaeger.sender-factory=
-
-#
-# The service name
-#
-#quarkus.jaeger.service-name=
-
-#
-# A comma separated list of name = value tracer level tags, which get added to all reported
-# spans. The value can also refer to an environment variable using the format ${envVarName:default},
-# where the :default is optional, and identifies a value to be used if the environment variable
-# cannot be found
-#
-#quarkus.jaeger.tags=
-
-#
-# Username to send as part of "Basic" authentication to the endpoint
-#
-#quarkus.jaeger.user=
-
-#
-# Whether jaeger should run in zipkin compatibility mode
-#
-#quarkus.jaeger.zipkin.compatibility-mode=false
-
-#
-
-#
-#quarkus.knative.containers.*.ports.*.node-port=
-
-#
-
-#
-#quarkus.knative.init-containers.*.ports.*.node-port=
-
-#
-
-#
-#quarkus.knative.ports.*.node-port=
-
-#
-# Custom annotations to add to exposition (route or ingress) resources
-#
-#quarkus.kubernetes.ingress.annotations.*=
-
-#
-# If true, the service will be exposed
-#
-#quarkus.kubernetes.ingress.expose=false
-
-#
-# The host under which the application is going to be exposed
-#
-#quarkus.kubernetes.ingress.host=
-
-#
-
-#
-#quarkus.kubernetes.init-containers.*.ports.*.node-port=
-
-#
-
-#
-#quarkus.kubernetes.ports.*.node-port=
+#quarkus.vertx.warning-exception-time=2
 
-#
-
-#
-#quarkus.kubernetes.sidecars.*.ports.*.node-port=
-
-#
-# The amount of time to wait for a remote dev connect or reconnect
-#
-#quarkus.live-reload.connect-timeout=30s
-
-#
-# Whether or not Quarkus should enable its ability to not do a full restart
-# when changes to classes are compatible with JVM instrumentation.
-#
-# If this is set to true, Quarkus will perform class redefinition when possible.
-#
-#quarkus.live-reload.instrumentation=false
-
-#
-# The amount of time to wait between attempts when connecting to the server side of remote dev
-#
-#quarkus.live-reload.retry-interval=2s
-
-#
-# The maximum number of attempts when connecting to the server side of remote dev
-#
-#quarkus.live-reload.retry-max-attempts=10
-
-#
-# If console logging should go to {@link System#err} instead of {@link System#out}.
-#
-#quarkus.log.console.stderr=false
-
-#
-# If console logging should go to {@link System#err} instead of {@link System#out}.
-#
-#quarkus.log.handler.console.*.stderr=false
-
-#
-# Generate the report files for GraalVM Dashboard.
-#
-#quarkus.native.enable-dashboard-dump=false
-
-#
-# If '-H:+InlineBeforeAnalysis' flag will be added to the native-image run
-#
-#quarkus.native.inline-before-analysis=false
-
-#
-# If this build is done using a remote docker daemon.
-#
-#quarkus.native.remote-container-build=false
-
-#
-# Don't build a native image if it already exists.
-#
-# This is useful if you have already built an image and you want to use Quarkus to deploy it somewhere.
-#
-# Note that this is not able to detect if the existing image is outdated, if you have modified source
-# or config and want a new image you must not use this flag.
-#
-#quarkus.native.reuse-existing=false
-
-#
-# Defines the user country used for building the native executable.
-#
-# Defaults to the system one.
-#
-#quarkus.native.user-country=${user.country:}
-
-#
-# Defines the user language used for building the native executable.
-#
-# Defaults to the system one.
-#
-#quarkus.native.user-language=${user.language:}
-
-#
-# The value configuring the 'io.netty.allocator.maxOrder' system property of Netty.
-# The default value is '3'.
-#
-# Configuring this property overrides the minimum 'maxOrder' requested by the extensions.
-#
-# This property affects the memory consumption of the application.
-# It must be used carefully.
-# More details on https://programmer.group/pool-area-of-netty-memory-pool.html.
-#
-#quarkus.netty.allocator-max-order=
-
-#
-
-#
-#quarkus.openshift.containers.*.ports.*.node-port=
-
-#
-
-#
-#quarkus.openshift.init-containers.*.ports.*.node-port=
-
-#
-
-#
-#quarkus.openshift.ports.*.node-port=
-
-#
-# Custom annotations to add to exposition (route or ingress) resources
-#
-#quarkus.openshift.route.annotations.*=
-
-#
-# If true, the service will be exposed
-#
-#quarkus.openshift.route.expose=false
-
-#
-# The host under which the application is going to be exposed
-#
-#quarkus.openshift.route.host=
-
-#
-
-#
-#quarkus.openshift.sidecars.*.ports.*.node-port=
-
-#
-
-#
-#quarkus.opentracing.server.operation-name-provider=class-method
-
-#
-
-#
-#quarkus.opentracing.server.skip-pattern=
-
-#
-# When AppCDS generation is enabled, if this property is set, then the JVM used to generate the AppCDS file
-# will be the JVM present in the container image. The builder image is expected to have have the 'java' binary
-# on its PATH.
-# This flag is useful when the JVM to be used at runtime is not the same exact JVM version as the one used to build
-# the jar.
-# Note that this property is consulted only when 'quarkus.package.create-appcds=true' and it requires having
-# docker available during the build.
-#
-#quarkus.package.appcds-builder-image=
-
-#
-# An advanced option that will decompile generated and transformed bytecode into the 'decompiled' directory.
-# This is only taken into account when fast-jar is used.
-#
-#quarkus.package.fernflower.enabled=false
-
-#
-# The git hash to use to download the fernflower tool from https://jitpack.io/com/github/fesh0r/fernflower/
-#
-#quarkus.package.fernflower.hash=dbf407a655
-
-#
-# The directory into which to save the fernflower tool if it doesn't exist
-#
-#quarkus.package.fernflower.jar-directory=${user.home}/.quarkus
-
-#
-# Flag indicating whether the optional dependencies should be filtered out or not.
-#
-# This parameter is meant to be used in modules where multi-builds have been configured to avoid getting a final
-# package with unused dependencies.
-#
-#quarkus.package.filter-optional-dependencies=false
-
-#
-# This option only applies when using fast-jar or mutable-jar. If this option is true
-# then a list of all the coordinates of the artifacts that made up this image will be included
-# in the quarkus-app directory. This list can be used by vulnerability scanners to determine
-# if your application has any vulnerable dependencies.
-#
-#quarkus.package.include-dependency-list=true
-
-#
-# List of all the dependencies that have been defined as optional to include into the final package of the application.
-# Each optional dependency needs to be expressed in the following format:
-#
-# groupId:artifactId:classifier:type
-#
-# With the classifier and type being optional.
-#
-# If the type is missing, the artifact is assumed to be of type 'jar'.
-#
-# This parameter is optional, if absent, no optional dependencies will be included into the final package of
-# the application.
-#
-# For backward compatibility reasons, this parameter is ignored by default and can be enabled by setting the
-# parameter 'quarkus.package.filter-optional-dependencies' to 'true'.
-#
-# This parameter is meant to be used in modules where multi-builds have been configured to avoid getting a final
-# package with unused dependencies.
-#
-#quarkus.package.included-optional-dependencies=
-
-#
-# Whether or not annotations such `@IfBuildTimeProfile`, `@IfBuildTimeProperty` and friends will be taken
-# into account when used on JAX-RS classes.
-#
-#quarkus.resteasy.build-time-condition-aware=true
-
-#
-# If no security annotations are affecting a method then they will default to requiring these roles,
-# (equivalent to adding an @RolesAllowed annotation with the roles to every endpoint class).
-#
-# The role of '**' means any authenticated user, which is equivalent to the {@link io.quarkus.security.Authenticated}
-# annotation.
-#
-#quarkus.security.jaxrs.default-roles-allowed=
-
-#
-# Whether the context should be propagated to each health check invocation.
-#
-#quarkus.smallrye-health.context-propagation=false
-
-#
-# The relative path of the startup health-checking endpoint.
-# By default, this value will be resolved as a path relative to `${quarkus.smallrye-health.rootPath}`.
-#
-#quarkus.smallrye-health.startup-path=started
-
-#
-# Additional launch parameters to be used when Quarkus launches the produced artifact for '@QuarkusIntegrationTest'
-# When the artifact is a 'jar', this string is passed right after the 'java' command.
-# When the artifact is a 'container', this string is passed right after the 'docker run' command.
-# When the artifact is a 'native binary', this string is passed right after the native binary name.
-#
-#quarkus.test.arg-line=
-
-#
-# Disable the testing status/prompt message at the bottom of the console
-# and log these messages to STDOUT instead.
-#
-# Use this option if your terminal does not support ANSI escape sequences.
-#
-# This is deprecated, {@literal quarkus.console.basic} should be used instead.
-#
-#quarkus.test.basic-console=
-
-#
-# If a class matches this pattern then it will be cloned into the Quarkus ClassLoader even if it
-# is in a parent first artifact.
-#
-# This is important for collections which can contain objects from the Quarkus ClassLoader, but for
-# most parent first classes it will just cause problems.
-#
-#quarkus.test.class-clone-pattern=java\..*
-
-#
-# If test results and status should be displayed in the console.
-#
-# If this is false results can still be viewed in the dev console.
-#
-# This is deprecated, {@literal quarkus.console.enabled} should be used instead.
-#
-#quarkus.test.console=
-
-#
-# If continuous testing is enabled.
-#
-# The default value is 'paused', which will allow you to start testing
-# from the console or the Dev UI, but will not run tests on startup.
-#
-# If this is set to 'enabled' then testing will start as soon as the
-# application has started.
-#
-# If this is 'disabled' then continuous testing is not enabled, and can't
-# be enabled without restarting the application.
-#
-#quarkus.test.continuous-testing=paused
-
-#
-# Disable color in the testing status and prompt messages.
-#
-# Use this option if your terminal does not support color.
-#
-# This is deprecated, {@literal quarkus.console.disable-color} should be used instead.
-#
-#quarkus.test.disable-color=
-
-#
-# Disables the ability to enter input on the console.
-#
-# This is deprecated, {@literal quarkus.console.disable-input} should be used instead.
-#
-#quarkus.test.disable-console-input=
-
-#
-# If output from the running tests should be displayed in the console.
-#
-#quarkus.test.display-test-output=false
-
-#
-# Tests that should be excluded with continuous testing. This is a regular expression and
-# is matched against the test class name (not the file name).
-#
-# This is ignored if include-pattern has been set.
-#
-#quarkus.test.exclude-pattern=.*\.IT[^.]+|.*IT|.*ITCase
-
-#
-# Tags that should be excluded by default with continuous testing.
-#
-# This is ignored if include-tags has been set.
-#
-# Defaults to 'slow'
-#
-#quarkus.test.exclude-tags=slow
-
-#
-# Changes tests to use the 'flat' ClassPath used in Quarkus 1.x versions.
-#
-# This means all Quarkus and test classes are loaded in the same ClassLoader,
-# however it means you cannot use continuous testing.
-#
-# Note that if you find this necessary for your application then you
-# may also have problems running in development mode, which cannot use
-# a flat class path.
-#
-#quarkus.test.flat-class-path=false
-
-#
-# Configures the hang detection in @QuarkusTest. If no activity happens (i.e. no test callbacks are called) over
-# this period then QuarkusTest will dump all threads stack traces, to help diagnose a potential hang.
-#
-# Note that the initial timeout (before Quarkus has started) will only apply if provided by a system property, as
-# it is not possible to read all config sources until Quarkus has booted.
-#
-#quarkus.test.hang-detection-timeout=10m
-
-#
-# Tests that should be included for continuous testing. This is a regular expression and
-# is matched against the test class name (not the file name).
-#
-#quarkus.test.include-pattern=
-
-#
-# Tags that should be included for continuous testing.
-#
-#quarkus.test.include-tags=
-
-#
-# The tags this profile is associated with.
-# When the 'quarkus.test.profile.tags' System property is set (its value is a comma separated list of strings)
-# then Quarkus will only execute tests that are annotated with a '@TestProfile' that has at least one of the
-# supplied (via the aforementioned system property) tags.
-#
-#quarkus.test.profile.tags=
-
-#
-# The type of test to run, this can be either:
-#
-# quarkus-test: Only runs '@QuarkusTest' annotated test classes
-# unit: Only runs classes that are not annotated with '@QuarkusTest'
-# all: Runs both, running the unit tests first
-#
-#quarkus.test.type=all
-
-#
-# Used in '@QuarkusIntegrationTest' and 'NativeImageTest' to determine how long the test will wait for the
-# application to launch
-#
-#quarkus.test.wait-time=PT1M
-
-#
-# A property that allows accessing a generated UUID.
-# It generates that UUID at startup time. So it changes between two starts including in dev mode.
-#
-# Access this generated UUID using expressions: `${quarkus.uuid}`.
-#
-#quarkus.uuid=
-
-#
-# The executor growth resistance.
-#
-# A resistance factor applied after the core pool is full; values applied here will cause that fraction
-# of submissions to create new threads when no idle thread is available. A value of '0.0f' implies that
-# threads beyond the core size should be created as aggressively as threads within it; a value of '1.0f'
-# implies that threads beyond the core size should never be created.
-#
-#quarkus.vertx.growth-resistance=0
-
-#
-# The amount of time a thread will stay alive with no work.
-#
-#quarkus.vertx.keep-alive-time=30
-
-#
-# Prefill thread pool when creating a new Executor.
-# When {@see io.vertx.core.spi.ExecutorServiceFactory.createExecutor} is called,
-# initialise with the number of defined threads at startup
-#
-#quarkus.vertx.prefill=false
-
-#
-# The queue size. For most applications this should be unbounded
-#
-#quarkus.vertx.queue-size=
-
-#
-# ConfigMaps to look for in the namespace that the Kubernetes Client has been configured for.
-# ConfigMaps defined later in this list have a higher priority that ConfigMaps defined earlier
-# in this list.
-# Furthermore any Secrets defined in 'secrets', will have higher priorities than all ConfigMaps.
-#
-#quarkus.kubernetes-config.config-maps=
-
-#
-# If set to true, the application will attempt to look up the configuration from the API server
-#
-#quarkus.kubernetes-config.enabled=false
-
-#
-# If set to true, the application will not start if any of the configured config sources cannot be located
-#
-#quarkus.kubernetes-config.fail-on-missing-config=true
-
-#
-# Namespace to look for config maps and secrets. If this is not specified, then the namespace configured in the kubectl
-# config context is used. If the value is specified and the namespace doesn't exist, the application will fail to start.
-#
-#quarkus.kubernetes-config.namespace=
-
-#
-# Secrets to look for in the namespace that the Kubernetes Client has been configured for.
-# If you use this, you probably want to enable 'quarkus.kubernetes-config.secrets.enabled'.
-# Secrets defined later in this list have a higher priority that ConfigMaps defined earlier
-# in this list.
-# Furthermore these Secrets have a higher priorities than all ConfigMaps defined in 'configMaps'.
-#
-#quarkus.kubernetes-config.secrets=
-
-#
-# Whether or not configuration can be read from secrets.
-# If set to 'true', Kubernetes resources allowing access to secrets (role and role binding) will be generated.
-#
-#quarkus.kubernetes-config.secrets.enabled=false
-
-#
-# Whether to enable the bridging of Camel events to CDI events.
-#
-# This allows CDI observers to be configured for Camel events. E.g. those belonging to the
-# 'org.apache.camel.quarkus.core.events', 'org.apache.camel.quarkus.main.events' &
-# 'org.apache.camel.impl.event' packages.
 #
-# Note that this configuration item only has any effect when observers configured for Camel events
-# are present in the application.
+# The size of the worker thread pool.
 #
-#quarkus.camel.event-bridge.enabled=true
+#quarkus.vertx.worker-pool-size=20

@@ -115,7 +115,7 @@ java -Dquarkus.kubernetes-config.enabled=false -Dquarkus.jaeger.endpoint=http://
 
 4. Create the `quarkus-opentracing-endpoint-secret` containing the _QUARKUS OPENTRACING_ [endpoint configuration options](https://quarkus.io/version/main/guides/opentracing#configuration-reference). These options are leveraged by the _Camel Quarkus Opentracing_ extension to connect to the jaeger collector. Adapt the `quarkus.jaeger.endpoint`according to your environment.
 
-    :warning: _Replace values with your AMQP broker environment_
+    :warning: _Replace jaeger endpoint according to your environment_
     ```zsh
     oc create secret generic quarkus-opentracing-endpoint-secret \
     --from-literal=quarkus.jaeger.endpoint="http://jaeger-all-in-one-inmemory-collector.camel-quarkus-jvm.svc:14268/api/traces"
