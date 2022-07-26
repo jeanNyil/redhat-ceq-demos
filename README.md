@@ -1,4 +1,4 @@
-## Red Hat build of Quarkus Camel Examples
+## Red Hat Camel Extensions for Quarkus Examples
 
 This repository contains examples of _Apache Camel Quarkus_ projects to demonstrate various features.
 
