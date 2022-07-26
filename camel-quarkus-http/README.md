@@ -91,34 +91,103 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 
 1. Make sure the latest supported OpenJDK 17 image is imported in OpenShift
     ```shell script
-    oc import-image --confirm openjdk-17 \
+    oc import-image --confirm openjdk-17-ubi8 \
     --from=registry.access.redhat.com/ubi8/openjdk-17:1.11 \
     -n openshift
     ```
-2. Create the `camel-quarkus-http` OpenShift application from the git repository
+2. Create the `view-secrets` role and bind it, along with the `view` cluster role, to the `default` service account used to run the quarkus application. These permissions allow the `default` service account to access secrets.
+    ```shell script
+    oc apply -f - <<EOF
+    ---
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: Role
+    metadata:
+        labels:
+            app.kubernetes.io/name: camel-quarkus-http
+            app.kubernetes.io/version: 1.0.0
+        name: view-secrets
+    rules:
+        - apiGroups:
+            - ""
+          resources:
+            - secrets
+          verbs:
+            - get
+    ---
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+        labels:
+            app.kubernetes.io/name: camel-quarkus-http
+            app.kubernetes.io/version: 1.0.0
+        name: camel-quarkus-http-view
+    roleRef:
+        kind: ClusterRole
+        apiGroup: rbac.authorization.k8s.io
+        name: view
+    subjects:
+        - kind: ServiceAccount
+          name: camel-quarkus-http
+    ---
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+        labels:
+            app.kubernetes.io/name: camel-quarkus-http
+            app.kubernetes.io/version: 1.0.0
+        name: camel-quarkus-http-view-secrets
+    roleRef:
+        kind: Role
+        apiGroup: rbac.authorization.k8s.io
+        name: view-secrets
+    subjects:
+        - kind: ServiceAccount
+          name: camel-quarkus-http
+    ---
+    EOF
+    ```
+3. Create the `quarkus-opentracing-endpoint-secret` containing the _QUARKUS OPENTRACING_ [endpoint configuration options](https://quarkus.io/version/main/guides/opentracing#configuration-reference). These options are leveraged by the _Camel Quarkus Opentracing_ extension to connect to the jaeger collector. Adapt the `quarkus.jaeger.endpoint`according to your environment.
+
+    > :warning: _Replace values with your AMQP broker environment_
+    ```shell script
+    oc apply -f - <<EOF
+    ---
+    apiVersion: v1
+    kind: Secret
+    metadata:
+        labels:
+            app.kubernetes.io/name: camel-quarkus-http
+            app.kubernetes.io/version: 1.0.0
+        name: quarkus-opentracing-endpoint-secret
+    stringData:
+        quarkus.jaeger.endpoint: "http://jaeger-all-in-one-inmemory-collector.ceq-services-jvm.svc:14268/api/traces"
+    type: Opaque
+    EOF
+    ``` 
+4. Create the `camel-quarkus-http` OpenShift application from the git repository
     ```shell script
     oc new-app https://github.com/jeanNyil/redhat-ceq-demos.git \
     --context-dir=camel-quarkus-http \
     --name=camel-quarkus-http \
-    --image-stream="openshift/openjdk-11-ubi8" \
+    --image-stream="openshift/openjdk-17-ubi8" \
     --labels=app.kubernetes.io/name=camel-quarkus-http \
     --labels=app.kubernetes.io/version=1.0.0 \
     --labels=app.openshift.io/runtime=quarkus
     ```
-3. Follow the log of the S2I build
+5. Follow the log of the S2I build
     ```shell script
     oc logs bc/camel-quarkus-http -f
     ```
     ```shell script
     Cloning "https://github.com/jeanNyil/redhat-ceq-demos.git" ...
-            Commit: da04530f24460a522108fc510bbf56ea1869c840 (Upgraded to Red Hat build of Quarkus 1.11)
+            Commit: 00e44699862ae9203942d15f00f443f95fa000c5 (Upgraded to Red Hat CEQ 2.7.6 + some refactoring)
             Author: Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
-            Date:   Thu May 27 12:02:54 2021 +0200
+            Date:   Tue Jul 26 20:18:04 2022 +0200
     [...]
-    Successfully pushed image-registry.openshift-image-registry.svc:5000/ceq-services-jvm/camel-quarkus-http@sha256:e24b806b432f40290e175bb75ad9c88f8ce6b3ef6f37ee4b51071b46405a451e
+    Successfully pushed image-registry.openshift-image-registry.svc:5000/ceq-services-jvm/camel-quarkus-http@sha256:d188b5e72dbdaf7ef266c3125d3593a1b5981300ee12288807a3a6f18f8ad6e9
     Push successful
     ```
-4. Create a non-secure route to expose the `camel-quarkus-http` service outside the OpenShift cluster
+6. Create a non-secure route to expose the `camel-quarkus-http` service outside the OpenShift cluster
     ```shell script
     oc expose svc/camel-quarkus-http
     ```
