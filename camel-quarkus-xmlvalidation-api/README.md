@@ -97,7 +97,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     ```
 2. Create the `Camel-Quarkus-XmlValidation-Api.postman_collection` OpenShift application from the git repository
     ```zsh
-    oc new-app https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git \
+    oc new-app https://github.com/jeanNyil/redhat-ceq-demos.git \
     --context-dir=camel-quarkus-xmlvalidation-api \
     --name=camel-quarkus-xmlvalidation-api \
     --image-stream="openshift/openjdk-11-ubi8" \
@@ -110,7 +110,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     oc logs bc/camel-quarkus-xmlvalidation-api -f
     ```
     ```zsh
-    Cloning "https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git" ...
+    Cloning "https://github.com/jeanNyil/redhat-ceq-demos.git" ...
             Commit: 6272aa3b4f668a7a2fb64614afd71eb8d340988f (Upgraded to Red Hat build of Quarkus 1.11)
             Author: Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
             Date:   Thu May 27 12:55:19 2021 +0200

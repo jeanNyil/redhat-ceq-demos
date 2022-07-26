@@ -170,7 +170,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     ```
 2. Create the `camel-quarkus-jsonvalidation-api` OpenShift application from the git repository
     ```zsh
-    oc new-app https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git \
+    oc new-app https://github.com/jeanNyil/redhat-ceq-demos.git \
     --context-dir=camel-quarkus-jsonvalidation-api \
     --name=camel-quarkus-jsonvalidation-api \
     --image-stream="openshift/openjdk-11-ubi8" \
@@ -183,7 +183,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     oc logs bc/camel-quarkus-jsonvalidation-api -f
     ```
     ```zsh
-    Cloning "https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git" ...
+    Cloning "https://github.com/jeanNyil/redhat-ceq-demos.git" ...
             Commit: 7da594c26cdcb2e85cd94032415d72726b6eb162 (Upgraded to Red Hat build of Quarkus 1.11)
             Author: Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
             Date:   Thu May 27 12:32:37 2021 +0200
