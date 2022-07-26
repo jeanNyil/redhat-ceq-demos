@@ -51,16 +51,6 @@ quarkus:
         # The traces endpoint to the Collector
         endpoint: http://localhost:14268/api/traces
 
-    # Quarkus kubernetes config extension
-    kubernetes-config:
-        # Enable to look up the configuration from the API server
-        enabled: true
-        secrets:
-            # Secrets (list of strings) to look for in the namespace that the Kubernetes Client has been configured for 
-            ~: quarkus-opentracing-endpoint-secret
-            # Enable to generate the necessary role and corresponding role binding
-            enabled: true
-
     ## Quarkus native build 
     native:
         # If all character sets should be added to the native image. This increases image size
@@ -93,3 +83,16 @@ quarkus:
             enable-exchange-event-notifier: true
             enable-route-event-notifier: true
             enable-camel-context-event-notifier: true
+
+# Only when running in prod profile
+"%prod":
+    quarkus:
+        # Quarkus kubernetes config extension
+        kubernetes-config:
+            # Enable to look up the configuration from the API server
+            enabled: true
+            secrets:
+                # Secrets (list of strings) to look for in the namespace that the Kubernetes Client has been configured for 
+                ~: quarkus-opentracing-endpoint-secret
+                # Enable to generate the necessary role and corresponding role binding
+                enabled: true
