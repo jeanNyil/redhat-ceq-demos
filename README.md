@@ -1,6 +1,6 @@
 ## Red Hat Camel Extensions for Quarkus Examples
 
-This repository contains examples of _Apache Camel Quarkus_ projects to demonstrate various features.
+This repository contains examples of _Red Hat Camel Extensions for Quarkus_ projects to demonstrate various features.
 
 All projects leverage the **Red Hat build of Quarkus 2.2.x**, the Supersonic Subatomic Java Framework.
 
