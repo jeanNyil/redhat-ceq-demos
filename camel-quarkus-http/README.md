@@ -1,6 +1,6 @@
 # Camel-Quarkus-Http
 
-This project leverages **Red Hat build of Quarkus 1.11.x**, the Supersonic Subatomic Java Framework.
+This project leverages **Red Hat build of Quarkus 2.7.x**, the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat Camel Extensions for Quarkus 2.7.x**](https://access.redhat.com/documentation/en-us/red_hat_integration/2022.q3/html/getting_started_with_camel_extensions_for_quarkus/index).
 
 It exposes the following RESTful service endpoints  using the **Apache Camel Quarkus Platform** extension: 
 - `/fruits` : returns a list of hard-coded fruits (`name` and `description`) in JSON format. It also allows to add a `fruit` through the `POST` HTTP method
@@ -9,23 +9,35 @@ It exposes the following RESTful service endpoints  using the **Apache Camel Qua
 - `/q/metrics` : the _Camel Quarkus MicroProfile_ metrics 
 
 ## Prerequisites
-- JDK 11 installed with `JAVA_HOME` configured appropriately
+- JDK 17 installed with `JAVA_HOME` configured appropriately
 - Apache Maven 3.8.1+
 
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
+```shell script
+./mvnw compile quarkus:dev
 ```
-./mvnw quarkus:dev
+
+> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+
+## Packaging and running the application
+
+The application can be packaged using:
+```shell script
+./mvnw package
+```
+It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
+Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+
+The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+
+If you want to build an _über-jar_, execute the following command:
+```shell script
+./mvnw package -Dquarkus.package.type=uber-jar
 ```
 
-## Packaging and running the application locally
-
-The application can be packaged using `./mvnw package`.
-It produces the `camel-quarkus-http-1.0.0-runner.jar` file in the `/target` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/lib` directory.
-
-The application is now runnable using `java -jar target/camel-quarkus-http-1.0.0-runner.jar`.
+The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
 
 ## Packaging and running the application on Red Hat OpenShift
 
@@ -34,12 +46,12 @@ The application is now runnable using `java -jar target/camel-quarkus-http-1.0.0
 - User has self-provisioner privilege or has access to a working OpenShift project
 
 1. Login to the OpenShift cluster
-    ```zsh
+    ```shell script
     oc login ...
     ```
-2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `camel-quarkus`
-    ```zsh
-    oc new-project camel-quarkus-jvm --display-name="Apache Camel Quarkus Apps - JVM Mode"
+2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `ceq-services-jvm`
+    ```shell script
+    oc new-project ceq-services-jvm --display-name="Red Hat Camel Extensions for Quarkus Apps - JVM Mode"
     ```
 3. Use either the _**S2I binary workflow**_ or _**S2I source workflow**_ to deploy the `camel-quarkus-http` app as described below.
 
@@ -47,46 +59,45 @@ The application is now runnable using `java -jar target/camel-quarkus-http-1.0.0
 
 This leverages the _Quarkus OpenShift_ extension and is only recommended for development and testing purposes.
 
-```zsh
+```shell script
 ./mvnw clean package -Dquarkus.kubernetes.deploy=true
 ```
-```zsh
+```shell script
 [...]
-[INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building thin jar: /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-runner.jar
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.jeannyil.sandbox1789.opentlc.com:6443/' successfully contacted.
-[...]
-[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Performing openshift binary build with jar on server: https://api.jeannyil.sandbox1789.opentlc.com:6443/ in namespace:camel-quarkus-jvm.
-[...]
-[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-jvm/camel-quarkus-http@sha256:db6f7c6e388189156820ba60acaa36ed7f989ae7cab4f03627e6d400469a850c
+[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/ceq-services-jvm/camel-quarkus-http@sha256:b4936f8d532f8436841b2fc255ffbb4b536f03093acd199ddb978f9214177a61
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Push successful
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.jeannyil.sandbox1789.opentlc.com:6443/ in namespace: camel-quarkus-jvm.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.cluster-tjldv.tjldv.sandbox661.opentlc.com:6443/ in namespace: ceq-services-jvm.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ServiceAccount camel-quarkus-http.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Service camel-quarkus-http.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Role view-secrets.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: RoleBinding camel-quarkus-http-view.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: RoleBinding camel-quarkus-http-view-secrets.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ImageStream camel-quarkus-http.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ImageStream openjdk-11.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ImageStream openjdk-17.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: BuildConfig camel-quarkus-http.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: DeploymentConfig camel-quarkus-http.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Route camel-quarkus-http.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-http-camel-quarkus-jvm.apps.jeannyil.sandbox1789.opentlc.com
-[INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 88890ms
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-http-ceq-services-jvm.apps.cluster-tjldv.tjldv.sandbox661.opentlc.com
+[INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 62873ms
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  01:58 min
-[INFO] Finished at: 2021-05-27T11:54:19+02:00
+[INFO] Total time:  01:59 min
+[INFO] Finished at: 2022-07-26T20:13:53+02:00
 [INFO] ------------------------------------------------------------------------
 ```
 
 ### OpenShift S2I source workflow (recommended for PRODUCTION use)
 
-1. Make sure the latest supported OpenJDK 11 image is imported in OpenShift
-    ```zsh
-    oc import-image --confirm openjdk-11-ubi8 \
-    --from=registry.access.redhat.com/ubi8/openjdk-11 \
+1. Make sure the latest supported OpenJDK 17 image is imported in OpenShift
+    ```shell script
+    oc import-image --confirm openjdk-17 \
+    --from=registry.access.redhat.com/ubi8/openjdk-17:1.11 \
     -n openshift
     ```
 2. Create the `camel-quarkus-http` OpenShift application from the git repository
-    ```zsh
-    oc new-app https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git \
+    ```shell script
+    oc new-app https://github.com/jeanNyil/redhat-ceq-demos.git \
     --context-dir=camel-quarkus-http \
     --name=camel-quarkus-http \
     --image-stream="openshift/openjdk-11-ubi8" \
@@ -95,31 +106,31 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     --labels=app.openshift.io/runtime=quarkus
     ```
 3. Follow the log of the S2I build
-    ```zsh
+    ```shell script
     oc logs bc/camel-quarkus-http -f
     ```
-    ```zsh
-    Cloning "https://github.com/jeanNyil/rh-build-quarkus-camel-demos.git" ...
+    ```shell script
+    Cloning "https://github.com/jeanNyil/redhat-ceq-demos.git" ...
             Commit: da04530f24460a522108fc510bbf56ea1869c840 (Upgraded to Red Hat build of Quarkus 1.11)
             Author: Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
             Date:   Thu May 27 12:02:54 2021 +0200
     [...]
-    Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-jvm/camel-quarkus-http@sha256:e24b806b432f40290e175bb75ad9c88f8ce6b3ef6f37ee4b51071b46405a451e
+    Successfully pushed image-registry.openshift-image-registry.svc:5000/ceq-services-jvm/camel-quarkus-http@sha256:e24b806b432f40290e175bb75ad9c88f8ce6b3ef6f37ee4b51071b46405a451e
     Push successful
     ```
 4. Create a non-secure route to expose the `camel-quarkus-http` service outside the OpenShift cluster
-    ```zsh
+    ```shell script
     oc expose svc/camel-quarkus-http
     ```
 
 ## Testing the application on OpenShift
 
 1. Get the OpenShift route hostname
-    ```zsh
+    ```shell script
     URL="http://$(oc get route camel-quarkus-http -o jsonpath='{.spec.host}')"
     ```
 2. Test the `/fruits` endpoint
-    ```zsh
+    ```shell script
     curl -w '\n' $URL/fruits
     ```
     ```json
@@ -138,7 +149,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     } ]
     ```
 3. Test the `/legumes` endpoint
-    ```zsh
+    ```shell script
     curl -w '\n' $URL/legumes
     ```
     ```json
@@ -151,7 +162,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     } ]
     ```
 4. Test the `/q/health` endpoint
-    ```zsh
+    ```shell script
     curl -w '\n' $URL/q/health
     ```
     ```json
@@ -163,22 +174,31 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
                 "status": "UP"
             },
             {
-                "name": "camel-context-check",
+                "name": "camel-readiness-checks",
                 "status": "UP",
                 "data": {
-                    "contextStatus": "Started",
-                    "name": "camel-1"
+                    "invocation.count": "2",
+                    "context.name": "camel-quarkus-http",
+                    "success.count": "2",
+                    "invocation.time": "2022-07-26T19:58:41.547988+02:00[Europe/Paris]",
+                    "context.version": "3.14.2.redhat-00047",
+                    "context.status": "Started",
+                    "failure.count": "0",
+                    "context": "UP",
+                    "route.id": "legumes-restful-route",
+                    "route.context.name": "camel-quarkus-http",
+                    "route.status": "Started",
+                    "consumer:fruits-restful-route": "UP",
+                    "consumer:legumes-restful-route": "UP",
+                    "route:fruits-restful-route": "UP",
+                    "route:legumes-restful-route": "UP"
                 }
-            },
-            {
-                "name": "camel-readiness-checks",
-                "status": "UP"
             }
         ]
     }
     ```
 5. Test the `/q/health/live` endpoint
-    ```zsh
+    ```shell script
     curl -w '\n' $URL/q/health/live
     ```
     ```json
@@ -193,7 +213,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     }
     ```
 6. Test the `/q/health/ready` endpoint
-    ```zsh
+    ```shell script
     curl -w '\n' $URL/q/health/ready
     ```
     ```json
@@ -201,25 +221,34 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         "status": "UP",
         "checks": [
             {
-                "name": "camel-context-check",
+                "name": "camel-readiness-checks",
                 "status": "UP",
                 "data": {
-                    "contextStatus": "Started",
-                    "name": "camel-1"
+                    "invocation.count": "3",
+                    "context.name": "camel-quarkus-http",
+                    "success.count": "3",
+                    "invocation.time": "2022-07-26T19:59:26.535274+02:00[Europe/Paris]",
+                    "context.version": "3.14.2.redhat-00047",
+                    "context.status": "Started",
+                    "failure.count": "0",
+                    "context": "UP",
+                    "route.id": "legumes-restful-route",
+                    "route.context.name": "camel-quarkus-http",
+                    "route.status": "Started",
+                    "consumer:fruits-restful-route": "UP",
+                    "consumer:legumes-restful-route": "UP",
+                    "route:fruits-restful-route": "UP",
+                    "route:legumes-restful-route": "UP"
                 }
-            },
-            {
-                "name": "camel-readiness-checks",
-                "status": "UP"
             }
         ]
     }
     ```
 7. Test the `/q/metrics` endpoint
-    ```zsh
+    ```shell script
     curl -w '\n' $URL/q/metrics
     ```
-    ```zsh
+    ```shell script
     [...]
     # HELP application_camel_context_exchanges_total The total number of exchanges for a route or Camel Context
     # TYPE application_camel_context_exchanges_total counter
@@ -264,30 +293,30 @@ If you want to learn more about building native executables, please consult http
 #### Instructions
 
 1. Login to the OpenShift cluster
-    ```zsh
+    ```shell script
     oc login ...
     ```
 
-2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `camel-quarkus-native`
-    ```zsh
-    oc new-project camel-quarkus-native --display-name="Apache Camel Quarkus Apps - Native Mode"
+2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `ceq-services-native`
+    ```shell script
+    oc new-project ceq-services-native --display-name="Red Hat Camel Extensions for Quarkus Apps - Native Mode"
     ```
 
 3. Build a Linux executable using a container build. Compiling a Quarkus application to a native executable consumes a lot of memory during analysis and optimization. You can limit the amount of memory used during native compilation by setting the `quarkus.native.native-image-xmx` configuration property. Setting low memory limits might increase the build time.
     1. For Docker use:
-        ```zsh
+        ```shell script
         ./mvnw package -Pnative -Dquarkus.native.container-build=true \
         -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11 \
         -Dquarkus.native.native-image-xmx=6g
         ```
     2. For Podman use:
-        ```zsh
+        ```shell script
         ./mvnw package -Pnative -Dquarkus.native.container-build=true \
         -Dquarkus.native.container-runtime=podman \
         -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:20.3-java11 \
         -Dquarkus.native.native-image-xmx=6g
         ```
-    ```zsh
+    ```shell script
     [...]
     [INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building native image source jar: /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-native-image-source-jar/camel-quarkus-http-1.0.0-runner.jar
     [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Building native image from /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-http/target/camel-quarkus-http-1.0.0-native-image-source-jar/camel-quarkus-http-1.0.0-runner.jar
@@ -306,15 +335,15 @@ If you want to learn more about building native executables, please consult http
 
 4. Create the `camel-quarkus-http` container image using the _OpenShift Docker build_ strategy. This strategy creates a container using a build configuration in the cluster.
     1. Create a build config based on the [`src/main/docker/Dockerfile.native`](./src/main/docker/Dockerfile.native) file:
-        ```zsh
+        ```shell script
         cat src/main/docker/Dockerfile.native | oc new-build \
         --name camel-quarkus-http --strategy=docker --dockerfile -
         ```
     2. Build the project:
-        ```zsh
+        ```shell script
         oc start-build camel-quarkus-http --from-dir . -F
         ```
-        ```zsh
+        ```shell script
         Uploading directory "." as binary input for the build ...
         ....
         Uploading finished
@@ -322,19 +351,19 @@ If you want to learn more about building native executables, please consult http
         Receiving source from STDIN as archive ...
         Replaced Dockerfile FROM image registry.access.redhat.com/ubi8/ubi-minimal:8.1
         [...]
-        Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-native/camel-quarkus-http@sha256:c894bb0368acdf857e317f10a3e27f5b052a988de8c014542ea839ea6ad4fbb0
+        Successfully pushed image-registry.openshift-image-registry.svc:5000/ceq-services-native/camel-quarkus-http@sha256:c894bb0368acdf857e317f10a3e27f5b052a988de8c014542ea839ea6ad4fbb0
         Push successful
         ```
 
 5. Deploy the `camel-quarkus-http` as a serverless application
-    ```zsh
+    ```shell script
     kn service create camel-quarkus-http \
     --label app.openshift.io/runtime=quarkus \
-    --image image-registry.openshift-image-registry.svc:5000/camel-quarkus-native/camel-quarkus-http:latest
+    --image image-registry.openshift-image-registry.svc:5000/ceq-services-native/camel-quarkus-http:latest
     ```
 
 6. To verify that the `camel-quarkus-http` service is ready, enter the following command.
-    ```zsh
+    ```shell script
     kn service list camel-quarkus-http
     ```
     The output in the column called "READY" reads `True` if the service is ready.
@@ -343,7 +372,7 @@ If you want to learn more about building native executables, please consult http
 
 ### JVM mode
 
-```zsh
+```shell script
 [...]
 2021-05-27 10:10:38,433 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.7.0 (camel-1) is starting
 [...]
@@ -358,7 +387,7 @@ If you want to learn more about building native executables, please consult http
 
 ### Native mode
 
-```zsh
+```shell script
 [...]
 2021-05-27 12:59:44,863 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.7.0 (camel-1) is starting
 [...]
@@ -371,3 +400,31 @@ If you want to learn more about building native executables, please consult http
 2021-05-27 12:59:44,865 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-core, camel-jackson, camel-microprofile-health, camel-microprofile-metrics, camel-platform-http, camel-support-common, cdi, config-yaml, kubernetes, mutiny, smallrye-context-propagation, smallrye-health, smallrye-metrics, vertx, vertx-web]
 [...]
 ```
+
+## Related Guides
+
+- OpenShift ([guide](https://quarkus.io/guides/deploying-to-openshift)): Generate OpenShift resources from annotations
+- Camel Platform HTTP ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-platform-http)): Expose HTTP endpoints using the HTTP server available in the current platform
+- Camel MicroProfile Health ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-microprofile-health)): Expose Camel health checks via MicroProfile Health
+- Camel MicroProfile Metrics ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-microprofile-metrics)): Expose metrics from Camel routes
+- Camel Jackson ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-jackson)): Marshal POJOs to JSON and back using Jackson
+- YAML Configuration ([guide](https://quarkus.io/guides/config#yaml)): Use YAML to configure your Quarkus application
+- RESTEasy JAX-RS ([guide](https://quarkus.io/guides/rest-json)): REST endpoint framework implementing JAX-RS and more
+- Kubernetes Config ([guide](https://quarkus.io/guides/kubernetes-config)): Read runtime configuration from Kubernetes ConfigMaps and Secrets
+- Camel OpenTracing ([guide](https://camel.apache.org/camel-quarkus/latest/reference/extensions/opentracing.html)): Distributed tracing using OpenTracing
+
+## Provided Code
+
+### YAML Config
+
+Configure your application with YAML
+
+[Related guide section...](https://quarkus.io/guides/config-reference#configuration-examples)
+
+The Quarkus application configuration is located in `src/main/resources/application.yml`.
+
+### RESTEasy JAX-RS
+
+Easily start your RESTful Web Services
+
+[Related guide section...](https://quarkus.io/guides/getting-started#the-jax-rs-resources)
