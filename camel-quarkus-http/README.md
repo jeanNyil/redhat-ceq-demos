@@ -66,7 +66,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 [...]
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Successfully pushed image-registry.openshift-image-registry.svc:5000/ceq-services-jvm/camel-quarkus-http@sha256:b4936f8d532f8436841b2fc255ffbb4b536f03093acd199ddb978f9214177a61
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Push successful
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.cluster-l5mt5.l5mt5.sandbox1873.opentlc.com:6443/ in namespace: ceq-services-jvm.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.cluster-vvdzl.vvdzl.sandbox321.opentlc.com:6443/ in namespace: ceq-services-jvm.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ServiceAccount camel-quarkus-http.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Service camel-quarkus-http.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Role view-secrets.
@@ -77,7 +77,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: BuildConfig camel-quarkus-http.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: DeploymentConfig camel-quarkus-http.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Route camel-quarkus-http.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-http-ceq-services-jvm.apps.cluster-l5mt5.l5mt5.sandbox1873.opentlc.com
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-http-ceq-services-jvm.apps.cluster-vvdzl.vvdzl.sandbox321.opentlc.com
 [INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 62873ms
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS

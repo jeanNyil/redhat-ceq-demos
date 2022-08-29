@@ -12,6 +12,7 @@ If you want to learn more:
 
 ### _Red Hat Camel Extensions for Quarkus_ examples:
 
-* [camel-quarkus-http](camel-quarkus-http): exposing a RESTful service using the _Apache Camel Quarkus Platform-HTTP_ extension.
-* [camel-quarkus-jsonvalidation-api](camel-quarkus-jsonvalidation-api): exposing a RESTful service using the _Apache Camel REST DSL_ and validating a sample JSON payload using the _Apache Camel Quarkus JSON Schema Validator_ extension.
-* [camel-quarkus-xmlvalidation-api](camel-quarkus-xmlvalidation-api): exposing a RESTful service using the _Apache Camel REST DSL_ and validating a sample XML payload using the _Apache Camel Quarkus validator_ extension.
+* [camel-quarkus-datagrid-tester](./camel-quarkus-datagrid-tester): demoing the implementation of the _Infinispan Idempotent Repository_ to synchronize concurrent access as well as the use of the _Apache Camel Quarkus Infinispan_ extension.
+* [camel-quarkus-http](./camel-quarkus-http): exposing a RESTful service using the _Apache Camel Quarkus Platform-HTTP_ extension.
+* [camel-quarkus-jsonvalidation-api](./camel-quarkus-jsonvalidation-api): exposing a RESTful service using the _Apache Camel REST DSL_ and validating a sample JSON payload using the _Apache Camel Quarkus JSON Schema Validator_ extension.
+* [camel-quarkus-xmlvalidation-api](./camel-quarkus-xmlvalidation-api): exposing a RESTful service using the _Apache Camel REST DSL_ and validating a sample XML payload using the _Apache Camel Quarkus validator_ extension.
