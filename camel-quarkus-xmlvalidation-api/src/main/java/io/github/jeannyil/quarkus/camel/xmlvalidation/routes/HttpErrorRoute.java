@@ -35,7 +35,7 @@ public class HttpErrorRoute extends RouteBuilder {
 						"generateErrorResponse(${headers.CamelHttpResponseCode}, ${headers.CamelHttpResponseText}, ${exception})")
 			.end()
 			.marshal().json(JsonLibrary.Jackson, true).id("marshal-500-errorresponse-to-json")
-			.convertBodyTo(String.class).id("convert-500-errorresponse-to-string")
+			.convertBodyTo(String.class).id("convert-500-errorresponse-to-string") // Stream caching is enabled on the CamelContext
 			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]").id("log-common-500-response")
 		;
 		
@@ -59,7 +59,7 @@ public class HttpErrorRoute extends RouteBuilder {
 						"generateErrorResponse(${exchangeProperty.errorId}, ${exchangeProperty.errorDescription}, ${exchangeProperty.errorMessage})")
 			.end()
 			.marshal().json(JsonLibrary.Jackson, true)
-			.convertBodyTo(String.class)
+			.convertBodyTo(String.class) // Stream caching is enabled on the CamelContext
 			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]")
 		;
 	}
