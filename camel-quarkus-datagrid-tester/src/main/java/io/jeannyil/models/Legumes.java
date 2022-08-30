@@ -1,6 +1,6 @@
 package io.jeannyil.models;
 
-import java.util.Set;
+import java.util.List;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -10,20 +10,20 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection // Lets Quarkus register this class for reflection during the native build
 public class Legumes {
     
-    private Set<Legume> legumes;
+    private List<Legume> legumes;
 
     public Legumes() {
     }
 
-    public Legumes(Set<Legume> legumes) {
+    public Legumes(List<Legume> legumes) {
         this.legumes = legumes;
     }
 
-    public Set<Legume> getLegumes() {
+    public List<Legume> getLegumes() {
         return legumes;
     }
 
-    public void setLegumes(Set<Legume> legumes) {
+    public void setLegumes(List<Legume> legumes) {
         this.legumes = legumes;
     }
 
