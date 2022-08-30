@@ -10,7 +10,7 @@ The purpose is to demo the implementation of the _Infinispan Idempotent Reposito
 - JDK 17 installed with `JAVA_HOME` configured appropriately
 - A running [_Red Hat OpenShift 4_](https://access.redhat.com/documentation/en-us/openshift_container_platform) cluster
 - A running [_Red Hat Data Grid v8.3_](https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.3) cluster. 
-    >_**NOTE**_: The [`config`](./config) folder contains OpenShift _Cache Custom Resources_ to be created:
+    >_**NOTE**_: The [`config`](./config) folder contains OpenShift _Cache Custom Resources_ to be created. For instance, the following command line would create the `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` replicated caches if the _Red Hat Data Grid_ cluster is deployed in the `datagrid-cluster` namespace: `oc -n datagrid-cluster apply -f ./config`
     - [`fruits-legumes-replicated-cache-definition`](./config/fruits-legumes-replicated-cache_cr.yaml) : `fruits-legumes-replicated-cache` used by the [`FruitsAndLegumesAPI`](./src/main/java/io/jeannyil/routes/FruitsAndLegumesApiRoute.java)
     - [`idempotency-replicated-cache-definition`](./config/idempotency-replicated-cache_cr.yaml) : `idempotency-replicated-cache` used for idempotency purposes
 - A truststore containing the [_Red Hat Data Grid v8.3_](https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.3) server public certificate. Below are sample command lines to generate one:
@@ -89,24 +89,24 @@ If you want to learn more about building native executables, please consult http
     
     :bulb: THIS IS FOR INFORMATION PURPOSES ONLY
 
-        ```
-        oc get secrets/signing-key -n openshift-service-ca -o template='{{index .data "tls.crt"}}' | openssl base64 -d -A > ./tls-keys/server.crt
-        # Use the Java cacerts as the basis for the truststore
-        cp ${JAVA_HOME}/lib/security/cacerts ./tls-keys/truststore.p12
-        keytool -storepasswd -keystore ./tls-keys/truststore.p12 -storepass changeit -new 'P@ssw0rd'
-        # Importing the OpenShift signing service certificate into the truststore
-        keytool -importcert -keystore ./tls-keys/truststore.p12 -storepass 'P@ssw0rd' -file ./tls-keys/server.crt -trustcacerts -noprompt
-        # Create camel-quarkus-datagrid-tester-truststore-secret
-        oc create secret generic camel-quarkus-datagrid-tester-truststore-secret --from-file=./tls-keys/truststore.p12
-        ```
+    ```
+    oc get secrets/signing-key -n openshift-service-ca -o template='{{index .data "tls.crt"}}' | openssl base64 -d -A > ./tls-keys/server.crt
+    # Use the Java cacerts as the basis for the truststore
+    cp ${JAVA_HOME}/lib/security/cacerts ./tls-keys/truststore.p12
+    keytool -storepasswd -keystore ./tls-keys/truststore.p12 -storepass changeit -new 'P@ssw0rd'
+    # Importing the OpenShift signing service certificate into the truststore
+    keytool -importcert -keystore ./tls-keys/truststore.p12 -storepass 'P@ssw0rd' -file ./tls-keys/server.crt -trustcacerts -noprompt
+    # Create camel-quarkus-datagrid-tester-truststore-secret
+    oc create secret generic camel-quarkus-datagrid-tester-truststore-secret --from-file=./tls-keys/truststore.p12
+    ```
 
     b. With custom certificates
 
     :white_check_mark: THIS IS THE WAY TO BE USED
 
-        ```
-        oc create secret generic camel-quarkus-datagrid-tester-truststore-secret --from-file=./tls-keys/truststore.p12
-        ```
+    ```
+    oc create secret generic camel-quarkus-datagrid-tester-truststore-secret --from-file=./tls-keys/truststore.p12
+    ```
 
 4. Deploy the CEQ service
     ```script shell
