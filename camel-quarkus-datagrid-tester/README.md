@@ -11,8 +11,8 @@ The purpose is to demo the implementation of the _Infinispan Idempotent Reposito
 - A running [_Red Hat OpenShift 4_](https://access.redhat.com/documentation/en-us/openshift_container_platform) cluster
 - A running [_Red Hat Data Grid v8.3_](https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.3) cluster. 
     >_**NOTE**_: The [`config`](./config) folder contains OpenShift _Cache Custom Resources_ to be created. For instance, the following command line would create the `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` replicated caches if the _Red Hat Data Grid_ cluster is deployed in the `datagrid-cluster` namespace: `oc -n datagrid-cluster apply -f ./config`
-    - [`fruits-legumes-replicated-cache-definition`](./config/fruits-legumes-replicated-cache_cr.yaml) : `fruits-legumes-replicated-cache` used by the [`FruitsAndLegumesAPI`](./src/main/java/io/jeannyil/routes/FruitsAndLegumesApiRoute.java)
-    - [`idempotency-replicated-cache-definition`](./config/idempotency-replicated-cache_cr.yaml) : `idempotency-replicated-cache` used for idempotency purposes
+    - [`fruits-legumes-replicated-cache-definition`](./config/fruits-legumes-replicated-cache_cr.yaml) : `fruits-legumes-replicated-cache` used by the [`FruitsAndLegumesAPI`](./src/main/java/io/jeannyil/routes/FruitsAndLegumesApiRoute.java).
+    - [`idempotency-replicated-cache-definition`](./config/idempotency-replicated-cache_cr.yaml) : `idempotency-replicated-cache` used for idempotency purposes by the [`FilePollerRoute`](./src/main/java/io/jeannyil/routes/FilePollerRoute.java).
 - A truststore containing the [_Red Hat Data Grid v8.3_](https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.3) server public certificate. Below are sample command lines to generate one:
     ```script shell
     # Use the Java cacerts as the basis for the truststore
