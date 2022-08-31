@@ -118,19 +118,22 @@ public class FruitsAndLegumesApiRoute extends RouteBuilder {
             .unmarshal()
                 .json(JsonLibrary.Jackson, Fruit.class)
             .setProperty("newFruit", body())
-            // // Get current fruits array from cache
-            // .to("direct:get-fruits-from-cache")
-            // .convertBodyTo(String.class) // Stream caching is enabled on the CamelContext
-            // .unmarshal()
-            //     .json(JsonLibrary.Jackson, Fruits.class)
-            // // Add new Fruit in current Fruits array
-            // .bean("fruitsAndLegumesSetHelper", "addFruit(${exchangeProperty.newFruit}, ${body})")
-            // // Put the new Fruits array in cache
-            // .marshal().json(JsonLibrary.Jackson, true)
-            // .setProperty("newFruitsSet", body())
-            // .to("direct:put-fruits-in-cache")
-            // // New Fruits array as a response for the addFruit operation
-            // .setBody(exchangeProperty("newFruitsSet"))
+            // Get current fruits set from cache
+            .to("direct:get-fruits-from-cache")
+            .convertBodyTo(String.class) // Stream caching is enabled on the CamelContext
+            .unmarshal()
+                .json(JsonLibrary.Jackson)
+            .log(LoggingLevel.DEBUG, logName, ">>> Body after cache unmarshal: ${body}")
+            // Add new Fruit in current Fruits set
+            .bean("fruitsAndLegumesSetHelper", "addFruit(${exchangeProperty.newFruit}, ${body})")
+            // Put the new Fruits set in cache
+            .marshal()
+                .json(JsonLibrary.Jackson, true)
+            .log(LoggingLevel.DEBUG, logName, ">>> Body after addFruits marshal: ${body}")
+            .setProperty("newFruitsSet", body())
+            .to("direct:put-fruits-in-cache")
+            // New Fruits set as a response for the addFruit operation
+            .setBody(exchangeProperty("newFruitsSet"))
             .log(LoggingLevel.INFO, logName, ">>> Processing POST fruits DONE: ${body}")
         ;
         
