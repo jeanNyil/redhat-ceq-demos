@@ -196,3 +196,26 @@ Configure your application with YAML
 [Related guide section...](https://quarkus.io/guides/config-reference#configuration-examples)
 
 The Quarkus application configuration is located in `src/main/resources/application.yml`.
+
+## OPTIONAL - How to secure the API using _Red Hat 3scale API Management_ and _Red Hat SSO 7_
+
+### :bulb: Pre-requisite
+
+- A running [_Red Hat 3scale API Management v2.12_](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.12) platform and [_Red Hat SSO 7.6_](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.6) instance to secure the API.
+- [_3scale Toolbox_](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.12/html/operating_3scale/the-threescale-toolbox#installing_the_toolbox_container_image) installed.
+
+### Create the API Product from the OpenAPI Specification
+
+The following command line imports the API in _Red Hat 3scale API Management_ and secures it using OpenID Connect from the OpenAPI Specification. _Red Hat SSO 7_ is used as the OpenID Connect Authorization Server.
+
+> :bulb: **NOTE:** Adapt the values according to your environment.
+
+```script shell
+3scale import openapi \
+--override-private-base-url='http://camel-quarkus-datagrid-tester.ceq-services-jvm.svc' \
+--production-public-base-url='https://rhdg-fruits-and-legumes-api.apps.cluster-vvdzl.vvdzl.sandbox321.opentlc.com'  \
+--staging-public-base-url='https://rhdg-fruits-and-legumes-api-staging.apps.cluster-vvdzl.vvdzl.sandbox321.opentlc.com'  \
+--oidc-issuer-type=keycloak \
+--oidc-issuer-endpoint='https://rhpds-3scale-apim-demo-zync:TgEJ50Qr5iz6KN0xRLm3TCampSXZoiYK@sso.apps.cluster-vvdzl.vvdzl.sandbox321.opentlc.com/auth/realms/openshift-cluster' \
+--verbose -d rhpds-apim-demo ./src/main/resources/openapi/openapi.json
+```
