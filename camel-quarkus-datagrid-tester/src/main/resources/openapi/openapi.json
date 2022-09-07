@@ -1,9 +1,9 @@
 {
     "openapi": "3.0.2",
     "info": {
-        "title": "Camel Quarkus Fruits and Legumes API",
+        "title": "Camel Quarkus Fruits and Legumes API (Red Hat Data Grid)",
         "version": "1.0.0",
-        "description": "A simple API to test the Apache Camel Quarkus Platform HTTP extension.",
+        "description": "A simple API to test mainly the Apache Camel Quarkus Platform HTTP and Infinispan extensions.",
         "contact": {
             "name": "Jean Nyilimbibi"
         },
@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "http://fruits-and-legumes-api.apps.cluster-vvdzl.vvdzl.sandbox321.opentlc.com",
+            "url": "http://rhdg-fruits-and-legumes-api.apps.cluster-vvdzl.vvdzl.sandbox321.opentlc.com",
             "description": "API Backend URL"
         }
     ],
@@ -214,7 +214,7 @@
             "oauth2": {
                 "flows": {
                     "clientCredentials": {
-                        "tokenUrl": "https://sso.apps.jeannyil.sandbox1789.opentlc.com/auth/realms/RH3scaleAdminPortal/protocol/openid-connect/token",
+                        "tokenUrl": "https://sso.apps.cluster-vvdzl.vvdzl.sandbox321.opentlc.com/auth/realms/openshift-cluster/protocol/openid-connect/token",
                         "scopes": {
                             "openid": "OpenID Connect Protocol"
                         }
@@ -226,8 +226,7 @@
     },
     "security": [
         {
-            "oauth2": [
-            ]
+            "oauth2": []
         }
     ]
 }
