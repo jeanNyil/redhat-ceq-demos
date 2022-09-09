@@ -36,7 +36,7 @@ quarkus:
     # Expose OpenShift route
     route:
       expose: true
-      host: fruits-and-legumes-api.apps.cluster-vvdzl.vvdzl.sandbox321.opentlc.com
+      host: fruits-and-legumes-api.apps.cluster-mxflw.mxflw.sandbox618.opentlc.com
     # CPU and Memory resources requirements when deployed on Kubernetes/OpenShift
     resources:
       requests:
@@ -69,7 +69,7 @@ quarkus:
   # Red Hat Data Grid (Infinispan)
   infinispan-client:
     # Server address
-    server-list: datagrid-cluster.apps.cluster-vvdzl.vvdzl.sandbox321.opentlc.com:443
+    server-list: datagrid-cluster.apps.cluster-mxflw.mxflw.sandbox618.opentlc.com:443
     # Server name used by authentication
     auth-server-name: datagrid-cluster
     # Realm used by authentication
