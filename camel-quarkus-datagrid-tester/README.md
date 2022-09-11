@@ -73,6 +73,13 @@ If you want to learn more about building native executables, please consult http
 
 ## Deploy to OpenShift
 
+### Prerequisites
+- The `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` caches have been created in the _Red Hat Data Grid_ cluster.
+
+>_**NOTE**_: The [`config`](./config) folder contains OpenShift _Cache Custom Resources_ to be created. For instance, the following command line would create the `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` replicated caches if the _Red Hat Data Grid_ cluster is deployed in the `datagrid-cluster` namespace: `oc -n datagrid-cluster apply -f ./config`
+
+### Instructions
+
 1. Login to the OpenShift cluster
     ```script shell
     oc login ...
