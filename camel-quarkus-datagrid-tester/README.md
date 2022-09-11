@@ -83,7 +83,7 @@ If you want to learn more about building native executables, please consult http
     oc new-project ceq-services-jvm --display-name="Red Hat Camel Extensions for Quarkus Apps - JVM Mode"
     ```
 
-3. Create secret containing the truststore
+3. Create secret containing the camel-quarkus-datagrid-tester truststore
 
     a. **OPTIONAL:** With OpenShift signed certificates
     
