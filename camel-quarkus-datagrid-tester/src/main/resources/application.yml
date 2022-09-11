@@ -25,6 +25,10 @@ quarkus:
 
   ## Quarkus OpenShift extension configuration
   openshift:
+    # Additional custom labels on all resources
+    labels:
+      # Part of the `FruitsAndLegumesAPI` Application Group
+      "app.kubernetes.io/part-of": FruitsAndLegumesAPI
     # The build config strategy to use
     build-strategy: DOCKER
     # The default Dockerfile to use for jvm builds
@@ -131,9 +135,9 @@ quarkus:
       # Enable to look up the configuration from the API server
       enabled: true
       # ConfigMaps (list of strings) to look for in the namespace that the Kubernetes Client has been configured for
-      config-maps: camel-quarkus-datagrid-tester-config
+      config-maps: ${camel.context.name}-config
       secrets:
         # Secrets (list of strings) to look for in the namespace that the Kubernetes Client has been configured for 
-        ~: camel-quarkus-datagrid-tester-secret
+        ~: ${camel.context.name}-secret
         # Enable to generate the necessary role and corresponding role binding
         enabled: true
