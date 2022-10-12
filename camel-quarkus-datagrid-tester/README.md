@@ -223,6 +223,6 @@ The following command line imports the API in _Red Hat 3scale API Management_ an
 --production-public-base-url='https://rhdg-fruits-and-legumes-api.apps.cluster-lctdv.lctdv.sandbox276.opentlc.com'  \
 --staging-public-base-url='https://rhdg-fruits-and-legumes-api-staging.apps.cluster-lctdv.lctdv.sandbox276.opentlc.com'  \
 --oidc-issuer-type=keycloak \
---oidc-issuer-endpoint='https://rhpds-3scale-apim-demo-zync:TgEJ50Qr5iz6KN0xRLm3TCampSXZoiYK@sso.apps.cluster-lctdv.lctdv.sandbox276.opentlc.com/auth/realms/openshift-cluster' \
+--oidc-issuer-endpoint='https://<replace_me_with_client_id>:<replace_me_with_client_secret>@sso.apps.cluster-lctdv.lctdv.sandbox276.opentlc.com/auth/realms/openshift-cluster' \
 --verbose -d rhpds-apim-demo ./src/main/resources/openapi/openapi.json
 ```
