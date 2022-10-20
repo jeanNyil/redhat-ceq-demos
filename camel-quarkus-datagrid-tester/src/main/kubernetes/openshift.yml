@@ -6,7 +6,7 @@ metadata:
 data:
   datagrid.caches.fruits-legumes: fruits-legumes-replicated-cache
   datagrid.caches.idempotency: idempotency-replicated-cache
-  quarkus.jaeger.endpoint: http://jaeger-all-in-one-inmemory-collector.cnrs-camel-quarkus.svc:14268/api/traces
+  quarkus.jaeger.endpoint: http://jaeger-all-in-one-inmemory-collector.3scale-amp.svc:14268/api/traces
 ---
 apiVersion: v1
 kind: Secret
@@ -21,5 +21,4 @@ stringData:
   quarkus.infinispan-client.sasl-mechanism: PLAIN
   quarkus.infinispan-client.trust-store: /mnt/ssl/truststore.p12
   quarkus.infinispan-client.trust-store-password: P@ssw0rd
-  quarkus.jaeger.endpoint: http://jaeger-all-in-one-inmemory-collector.3scale-amp.svc:14268/api/traces
 type: Opaque
