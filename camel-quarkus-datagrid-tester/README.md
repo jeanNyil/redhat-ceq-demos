@@ -26,7 +26,7 @@ The purpose is to demo the implementation of the _Infinispan Idempotent Reposito
     ```script shell
     openssl s_client -showcerts -servername <Red Hat Data Grid cluster OpenShift route> -connect <Red Hat Data Grid cluster OpenShift route>:443
     ```
-    with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid-cluster.apps.cluster-lctdv.lctdv.sandbox276.opentlc.com`
+    with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid-cluster.apps.cluster-2bwzt.2bwzt.sandbox2426.opentlc.com`
 
 ## Running the application in dev mode
 
@@ -220,9 +220,9 @@ The following command line imports the API in _Red Hat 3scale API Management_ an
 ```script shell
 3scale import openapi \
 --override-private-base-url='http://camel-quarkus-datagrid-tester.ceq-services-jvm.svc' \
---production-public-base-url='https://rhdg-fruits-and-legumes-api.apps.cluster-lctdv.lctdv.sandbox276.opentlc.com'  \
---staging-public-base-url='https://rhdg-fruits-and-legumes-api-staging.apps.cluster-lctdv.lctdv.sandbox276.opentlc.com'  \
+--production-public-base-url='https://rhdg-fruits-and-legumes-api.apps.cluster-2bwzt.2bwzt.sandbox2426.opentlc.com'  \
+--staging-public-base-url='https://rhdg-fruits-and-legumes-api-staging.apps.cluster-2bwzt.2bwzt.sandbox2426.opentlc.com'  \
 --oidc-issuer-type=keycloak \
---oidc-issuer-endpoint='https://<replace_me_with_client_id>:<replace_me_with_client_secret>@sso.apps.cluster-lctdv.lctdv.sandbox276.opentlc.com/auth/realms/openshift-cluster' \
+--oidc-issuer-endpoint='https://<replace_me_with_client_id>:<replace_me_with_client_secret>@sso.apps.cluster-2bwzt.2bwzt.sandbox2426.opentlc.com/auth/realms/openshift-cluster' \
 --verbose -d rhpds-apim-demo ./src/main/resources/openapi/openapi.json
 ```
