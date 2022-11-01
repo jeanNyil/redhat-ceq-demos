@@ -48,12 +48,12 @@ public class DataGridOperationsRoutes extends RouteBuilder {
         // GET fruits from cache
         from("direct:get-fruits-from-cache")
             .routeId("get-fruits-from-cache-route")
-            .log(LoggingLevel.INFO, logName, "Getting fruits from the {{datagrid.caches.fruits-legumes}}...")
+            .log(LoggingLevel.INFO, logName, ">>> Getting fruits from the {{datagrid.caches.fruits-legumes}}...")
             .removeHeaders("*", "breadcrumbId")
             .setHeader(InfinispanConstants.OPERATION, constant(InfinispanOperation.GET))
             .setHeader(InfinispanConstants.KEY, constant("fruits"))
             .to("infinispan:{{datagrid.caches.fruits-legumes}}")
-            .log(LoggingLevel.INFO, logName, "Fruits from the {{datagrid.caches.fruits-legumes}}: headers[${headers}] - body[${body}]")
+            .log(LoggingLevel.INFO, logName, ">>> Fruits from the {{datagrid.caches.fruits-legumes}}: headers[${headers}] - body[${body}]")
         ;
 
         // PUT legumes in cache - expects the payload in the message body
