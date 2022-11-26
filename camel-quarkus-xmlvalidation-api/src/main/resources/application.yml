@@ -18,6 +18,8 @@ quarkus:
         native: true
 
     openshift:
+        # The kind of the deployment resource to use. Supported values are 'Deployment', 'StatefulSet', 'Job', 'CronJob' and 'DeploymentConfig' defaulting to the latter.
+        deployment-kind: Deployment
         # The build config strategy to use
         build-strategy: docker
         # The default Dockerfile to use for jvm builds

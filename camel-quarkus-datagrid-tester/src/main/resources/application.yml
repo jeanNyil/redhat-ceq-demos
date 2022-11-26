@@ -25,10 +25,10 @@ quarkus:
 
   ## Quarkus OpenShift extension configuration
   openshift:
-    # Additional custom labels on all resources
-    labels:
-      # Part of the `FruitsAndLegumesAPI` Application Group
-      "app.kubernetes.io/part-of": FruitsAndLegumesAPI
+    # The kind of the deployment resource to use. Supported values are 'Deployment', 'StatefulSet', 'Job', 'CronJob' and 'DeploymentConfig' defaulting to the latter.
+    deployment-kind: Deployment
+    # Part of the `FruitsAndLegumesAPI` Application Group
+    part-of: FruitsAndLegumesAPI
     # The build config strategy to use
     build-strategy: DOCKER
     # The default Dockerfile to use for jvm builds
@@ -40,7 +40,7 @@ quarkus:
     # Expose OpenShift route
     route:
       expose: true
-      host: fruits-and-legumes-api.apps.cluster-qqf8n.qqf8n.sandbox2677.opentlc.com
+      host: fruits-and-legumes-api.apps.cluster-l8vv9.l8vv9.sandbox2346.opentlc.com
     # CPU and Memory resources requirements when deployed on Kubernetes/OpenShift
     resources:
       requests:
@@ -73,7 +73,7 @@ quarkus:
   # Red Hat Data Grid (Infinispan)
   infinispan-client:
     # Server address
-    server-list: datagrid-cluster.apps.cluster-qqf8n.qqf8n.sandbox2677.opentlc.com:443
+    server-list: datagrid-cluster.apps.cluster-l8vv9.l8vv9.sandbox2346.opentlc.com:443
     # Server name used by authentication
     auth-server-name: datagrid-cluster
     # Realm used by authentication
