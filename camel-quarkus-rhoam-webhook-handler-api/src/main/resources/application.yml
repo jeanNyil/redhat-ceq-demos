@@ -142,8 +142,10 @@ quarkus:
         kubernetes-config:
             # Enable to look up the configuration from the API server
             enabled: true
+            # ConfigMaps (list of strings) to look for in the namespace that the Kubernetes Client has been configured for
+            config-maps: ${camel.context.name}-config
             secrets:
                 # Secrets (list of strings) to look for in the namespace that the Kubernetes Client has been configured for 
-                ~: quarkus-amqpbroker-connection-secret,quarkus-opentracing-endpoint-secret
+                ~: ${camel.context.name}-secret
                 # Enable to generate the necessary role and corresponding role binding
                 enabled: true

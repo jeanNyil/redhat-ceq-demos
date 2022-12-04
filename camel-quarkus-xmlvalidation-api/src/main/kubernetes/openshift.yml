@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: camel-quarkus-xmlvalidation-api-config
+data:
+  quarkus.jaeger.endpoint: http://jaeger-all-in-one-inmemory-collector.ceq-services-native.svc:14268/api/traces
