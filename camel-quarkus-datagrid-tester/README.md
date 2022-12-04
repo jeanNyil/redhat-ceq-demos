@@ -92,9 +92,17 @@ If you want to learn more about building native executables, please consult http
 
 3. Create secret containing the camel-quarkus-datagrid-tester truststore
 
-    a. **OPTIONAL:** With OpenShift signed certificates
+    a. With custom certificates
+
+    > :white_check_mark: USE THIS
+
+    ```
+    oc create secret generic camel-quarkus-datagrid-tester-truststore-secret --from-file=./tls-keys/truststore.p12
+    ```
+
+    b. **OPTIONAL:** With OpenShift signed certificates
     
-    :bulb: THIS IS FOR INFORMATION PURPOSES ONLY
+    >:bulb: THIS IS FOR INFORMATION PURPOSES ONLY
 
     ```
     oc get secrets/signing-key -n openshift-service-ca -o template='{{index .data "tls.crt"}}' | openssl base64 -d -A > ./tls-keys/server.crt
@@ -107,17 +115,9 @@ If you want to learn more about building native executables, please consult http
     oc create secret generic camel-quarkus-datagrid-tester-truststore-secret --from-file=./tls-keys/truststore.p12
     ```
 
-    b. With custom certificates
-
-    :white_check_mark: THIS IS THE WAY TO BE USED
-
-    ```
-    oc create secret generic camel-quarkus-datagrid-tester-truststore-secret --from-file=./tls-keys/truststore.p12
-    ```
-
 4. Deploy the CEQ service
     ```script shell
-    ./mvnw clean package -Dquarkus.kubernetes.deploy=true
+    ./mvnw clean package -Dquarkus.kubernetes.deploy=true -Dquarkus.container-image.group=ceq-services-jvm
     ```
 
 ### OpenTelemetry with Jaeger
