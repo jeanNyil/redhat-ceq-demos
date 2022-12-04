@@ -1,4 +1,4 @@
-package io.github.jeannyil.quarkus.camel.jsonvalidation.routes;
+package io.jeannyil.quarkus.camel.jsonvalidation.routes;
 
 import javax.ws.rs.core.Response;
 

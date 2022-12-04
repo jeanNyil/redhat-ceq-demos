@@ -13,7 +13,6 @@ import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 
 import io.jeannyil.models.Fruit;
-import io.jeannyil.models.Fruits;
 
 /* FruitsAndLegumesApi route definition
 

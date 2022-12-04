@@ -1,10 +1,10 @@
-package io.jeannyil.quarkus.camel.jsonvalidation.beans;
-
-import io.jeannyil.quarkus.camel.jsonvalidation.models.ValidationResult;
-import io.jeannyil.quarkus.camel.jsonvalidation.models.ValidationResult_;
+package io.jeannyil.quarkus.camel.xmlvalidation.beans;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+
+import io.jeannyil.quarkus.camel.xmlvalidation.models.ValidationResult;
+import io.jeannyil.quarkus.camel.xmlvalidation.models.ValidationResult_;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**

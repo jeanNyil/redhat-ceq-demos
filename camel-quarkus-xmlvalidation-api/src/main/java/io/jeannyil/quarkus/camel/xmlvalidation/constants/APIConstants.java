@@ -1,4 +1,4 @@
-package io.jeannyil.quarkus.camel.jsonvalidation.constants;
+package io.jeannyil.quarkus.camel.xmlvalidation.constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

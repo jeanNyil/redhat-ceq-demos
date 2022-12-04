@@ -1,5 +1,5 @@
 
-package io.github.jeannyil.quarkus.camel.jsonvalidation.models;
+package io.jeannyil.quarkus.camel.jsonvalidation.models;
 
 import java.util.HashMap;
 import java.util.Map;

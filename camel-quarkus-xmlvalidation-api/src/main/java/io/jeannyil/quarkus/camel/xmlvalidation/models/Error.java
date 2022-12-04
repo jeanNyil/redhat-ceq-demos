@@ -1,5 +1,5 @@
 
-package io.jeannyil.quarkus.camel.jsonvalidation.models;
+package io.jeannyil.quarkus.camel.xmlvalidation.models;
 
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;

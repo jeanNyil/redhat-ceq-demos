@@ -1,9 +1,9 @@
-package io.jeannyil.quarkus.camel.jsonvalidation.beans;
+package io.jeannyil.quarkus.camel.xmlvalidation.beans;
 
 import java.util.ArrayList;
 
-import io.jeannyil.quarkus.camel.jsonvalidation.models.Error;
-import io.jeannyil.quarkus.camel.jsonvalidation.models.ErrorResponse;
+import io.jeannyil.quarkus.camel.xmlvalidation.models.Error;
+import io.jeannyil.quarkus.camel.xmlvalidation.models.ErrorResponse;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
