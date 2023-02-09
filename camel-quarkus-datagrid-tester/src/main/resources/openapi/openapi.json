@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "http://rhdg-fruits-and-legumes-api.apps.cluster-jthgm.jthgm.sandbox2662.opentlc.com",
+            "url": "http://rhdg-fruits-and-legumes-api.apps.cluster-mmnz8.mmnz8.sandbox1269.opentlc.com",
             "description": "API Backend URL"
         }
     ],
@@ -214,7 +214,7 @@
             "oauth2": {
                 "flows": {
                     "clientCredentials": {
-                        "tokenUrl": "https://sso.apps.cluster-jthgm.jthgm.sandbox2662.opentlc.com/auth/realms/openshift-cluster/protocol/openid-connect/token",
+                        "tokenUrl": "https://sso.apps.cluster-mmnz8.mmnz8.sandbox1269.opentlc.com/auth/realms/openshift-cluster/protocol/openid-connect/token",
                         "scopes": {
                             "openid": "OpenID Connect Protocol"
                         }
