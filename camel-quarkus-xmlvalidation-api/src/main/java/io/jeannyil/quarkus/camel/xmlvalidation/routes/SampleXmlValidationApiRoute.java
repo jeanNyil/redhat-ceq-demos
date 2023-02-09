@@ -69,21 +69,22 @@ public class SampleXmlValidationApiRoute extends RouteBuilder {
 		/**
 		 * REST endpoint for the Service OpenAPI document 
 		  */
-		rest().id("openapi-document-restapi")
+		rest()
 			.produces(MediaType.APPLICATION_JSON)
-			
-			// Gets the OpenAPI document for this service
-			.get("openapi.json")
-				.id("get-openapi-spec-route")
-				.description("Gets the OpenAPI document for this service in JSON format")
-				.route()
-					.log(LoggingLevel.INFO, logName, ">>> ${routeId} - IN: headers:[${headers}] - body:[${body}]")
-					.setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json"))
-					.setBody()
-						.constant("resource:classpath:openapi/openapi.json")
-					.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]")
-				.end()
-	  ;
+			.get("/openapi.json")
+				.id("opernapi-route")
+				.description("Gets the OpenAPI specification for this service in JSON format")
+				.to("direct:getOAS")
+		;
+
+		// Returns the OAS
+		from("direct:getOAS")
+			.routeId("get-oas-route")
+			.log(LoggingLevel.INFO, logName, ">>> IN: headers:[${headers}] - body:[${body}]")
+			.setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json"))
+			.setBody().constant("resource:classpath:openapi/openapi.json")
+			.log(LoggingLevel.INFO, logName, ">>> OUT: headers:[${headers}] - body:[${body}]")
+		;
 		
 		/**
 		 * REST endpoint for the Sample XML Validation RESTful API 

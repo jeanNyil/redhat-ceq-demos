@@ -64,14 +64,17 @@ public class FruitsAndLegumesApiRoute extends RouteBuilder {
             .get("/openapi.json")
                 .id("get-oas-route")
                 .description("Gets the OpenAPI specification for this service in JSON format")
-                .route()
-                    .log(LoggingLevel.INFO, logName, ">>> IN: headers:[${headers}] - body:[${body}]")
-                    .setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json"))
-                    .setBody().constant("resource:classpath:openapi/openapi.json")
-                    .log(LoggingLevel.INFO, logName, ">>> OUT: headers:[${headers}] - body:[${body}]")
-                .end()
+                .to("direct:getOAS")
         ;
-        
+
+        // Returns the OAS
+        from("direct:getOAS")
+            .log(LoggingLevel.INFO, logName, ">>> IN: headers:[${headers}] - body:[${body}]")
+            .setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json"))
+            .setBody().constant("resource:classpath:openapi/openapi.json")
+            .log(LoggingLevel.INFO, logName, ">>> OUT: headers:[${headers}] - body:[${body}]")
+        ;
+
         // REST endpoint for the fruits API
         rest("/fruits")
             .get()

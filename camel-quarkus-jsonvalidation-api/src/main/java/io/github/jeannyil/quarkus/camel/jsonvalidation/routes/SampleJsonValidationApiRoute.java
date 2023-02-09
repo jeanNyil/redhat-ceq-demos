@@ -50,41 +50,27 @@ public class SampleJsonValidationApiRoute extends RouteBuilder {
 			.port("8080")
 			.contextPath("/")
 			.clientRequestValidation(true)
-			// Add information for the generated Open API Specification
-            // .apiContextPath("/validateMembershipJSON/api-doc")
-            // 	.apiContextRouteId("api-doc-route")
-			// 	.apiProperty("api.title", "Sample JSON Validation API")
-			// 	.apiProperty("api.version", "1.0.0-SNAPSHOT")
-			// 	.apiProperty("api.description", "A simple API to test the Camel json-schema-validator component")
-			// 	.apiProperty("api.contact.name", "Jean Nyilimbibi")
-			// 	.apiProperty("api.contact.email", "jean.nyilimbibi@gmail.com")
-			// 	.apiProperty("api.license.name", "MIT License")
-			// 	.apiProperty("api.license.url", "https://opensource.org/licenses/MIT")
-			// 	.apiProperty("cors", "true")
-			// 	.apiProperty("openapi.version", "3.0")
-			// 	.apiProperty("api.specification.contentType.json", "application/json")
-			// 	.apiProperty("api.specification.contentType.yaml", "text/yaml")
 		;
 
 		/**
 		 * REST endpoint for the Service OpenAPI document 
 		  */
-		rest().id("openapi-document-restapi")
-			.produces(MediaType.APPLICATION_JSON)
-		  
-			// Gets the OpenAPI document for this service
-			.get("openapi.json")
-				.id("get-openapi-spec-route")
-				.description("Gets the OpenAPI document for this service in JSON format")
-				.route()
-					.log(LoggingLevel.INFO, logName, ">>> ${routeId} - IN: headers:[${headers}] - body:[${body}]").id("log-openapi-doc-request")
-					.setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json")).id("set-content-type")
-					.setBody()
-						.constant("resource:classpath:openapi/openapi.json")
-						.id("setBody-for-openapi-document")
-					.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]").id("log-openapi-doc-response")
-				.end()
-	  ;
+        rest()
+            .produces(MediaType.APPLICATION_JSON)
+            .get("/openapi.json")
+                .id("opernapi-route")
+                .description("Gets the OpenAPI specification for this service in JSON format")
+                .to("direct:getOAS")
+        ;
+
+        // Returns the OAS
+        from("direct:getOAS")
+			.routeId("get-oas-route")
+            .log(LoggingLevel.INFO, logName, ">>> IN: headers:[${headers}] - body:[${body}]")
+            .setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json"))
+            .setBody().constant("resource:classpath:openapi/openapi.json")
+            .log(LoggingLevel.INFO, logName, ">>> OUT: headers:[${headers}] - body:[${body}]")
+        ;
 		
 		/**
 		 * REST endpoint for the Sample JSON Validation RESTful API 
