@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.jeannyil</groupId>
   <artifactId>demo-ceq-dependencies</artifactId>
-  <version>2.13.5</version>
+  <version>2.13.7</version>
   <packaging>pom</packaging>
 
   <name>RHAF :: Red Hat Integration :: Camel Extensions for Quarkus dependencies parent POM</name>
