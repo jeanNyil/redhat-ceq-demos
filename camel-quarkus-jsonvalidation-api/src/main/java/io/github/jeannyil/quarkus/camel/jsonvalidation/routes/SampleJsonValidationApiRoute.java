@@ -58,7 +58,7 @@ public class SampleJsonValidationApiRoute extends RouteBuilder {
         rest()
             .produces(MediaType.APPLICATION_JSON)
             .get("/openapi.json")
-                .id("opernapi-route")
+                .id("openapi-route")
                 .description("Gets the OpenAPI specification for this service in JSON format")
                 .to("direct:getOAS")
         ;
