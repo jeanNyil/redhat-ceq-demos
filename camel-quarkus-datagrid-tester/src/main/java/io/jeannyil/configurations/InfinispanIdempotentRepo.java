@@ -5,11 +5,14 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import org.apache.camel.component.infinispan.remote.InfinispanRemoteIdempotentRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 
 @ApplicationScoped
+@RegisterForReflection // Lets Quarkus register this class for reflection during the native build
 public class InfinispanIdempotentRepo {
 
     @Inject
