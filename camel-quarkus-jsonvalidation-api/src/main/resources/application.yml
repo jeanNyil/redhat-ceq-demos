@@ -44,16 +44,12 @@ quarkus:
                 cpu: 500m
                 memory: 256Mi
 
-    # OpenTracing configuration. This is leveraged by Camel Quarkus OpenTracing extension
-    jaeger:
-        # The service name
-        service-name: ${camel.context.name}
-        # The sampler type (const, probabilistic, ratelimiting or remote)
-        sampler-type: const
-        # The sampler parameter
-        sampler-param: 1
-        # The traces endpoint to the Collector
-        endpoint: http://localhost:14268/api/traces
+    # OpenTelemetry configuration. This is leveraged by Camel Quarkus OpenTelemetry extension
+    opentelemetry:
+        tracer:
+            exporter:
+                jaeger:
+                    endpoint: http://localhost:14250
 
     ## Quarkus native build 
     native:
