@@ -34,7 +34,7 @@ type: Opaque
         ```
         podman run --rm -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
         -p 5775:5775/udp -p 6831:6831/udp -p 6832:6832/udp \
-        -p 5778:5778 -p 16686:16686 -p 14268:14268 -p 9411:9411 \
+        -p 5778:5778 -p 16686:16686 -p 14268:14268 -p 14250:14250 -p 9411:9411 \
         quay.io/jaegertracing/all-in-one:latest
         ```
     2. While the server is running, browse to http://localhost:16686 to view tracing events.
@@ -645,7 +645,7 @@ If you want to learn more about building native executables, please consult http
 2022-11-27 20:50:48,445 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started webhook-amqpbridge-ping-route (rest://get:/webhook/amqpbridge)
 2022-11-27 20:50:48,445 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started webhook-amqpbridge-handler-route (rest://post:/webhook/amqpbridge)
 2022-11-27 20:50:48,445 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.14.2.redhat-00047 (camel-quarkus-rhoam-webhook-handler-api) started in 292ms (build:0ms init:267ms start:25ms)
-2022-11-27 20:50:48,541 INFO  [io.quarkus] (main) camel-quarkus-rhoam-webhook-handler-api 1.0.0 on JVM (powered by Quarkus 2.7.6.Final-redhat-00006) started in 2.594s. Listening on: http://0.0.0.0:8080
+2022-11-27 20:50:48,541 INFO  [io.quarkus] (main) camel-quarkus-rhoam-webhook-handler-api 1.0.0 on JVM (powered by Quarkus 2.13.7.SP1-redhat-00001) started in 2.594s. Listening on: http://0.0.0.0:8080
 2022-11-27 20:50:48,541 INFO  [io.quarkus] (main) Profile prod activated.
 2022-11-27 20:50:48,541 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jms, camel-microprofile-health, camel-microprofile-metrics, camel-openapi-java, camel-opentracing, camel-platform-http, camel-rest, camel-xpath, cdi, config-yaml, jaeger, kubernetes, kubernetes-client, qpid-jms, smallrye-context-propagation, smallrye-health, smallrye-metrics, smallrye-opentracing, vertx]
 ```
@@ -668,7 +668,7 @@ If you want to learn more about building native executables, please consult http
 2022-11-27 21:44:27,076 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started webhook-amqpbridge-ping-route (rest://get:/webhook/amqpbridge)
 2022-11-27 21:44:27,076 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started webhook-amqpbridge-handler-route (rest://post:/webhook/amqpbridge)
 2022-11-27 21:44:27,076 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.14.2.redhat-00047 (camel-quarkus-rhoam-webhook-handler-api) started in 11ms (build:0ms init:9ms start:2ms)
-2022-11-27 21:44:27,078 INFO  [io.quarkus] (main) camel-quarkus-rhoam-webhook-handler-api 1.0.0 native (powered by Quarkus 2.7.6.Final-redhat-00006) started in 0.162s. Listening on: http://0.0.0.0:8080
+2022-11-27 21:44:27,078 INFO  [io.quarkus] (main) camel-quarkus-rhoam-webhook-handler-api 1.0.0 native (powered by Quarkus 2.13.7.SP1-redhat-00001) started in 0.162s. Listening on: http://0.0.0.0:8080
 2022-11-27 21:44:27,078 INFO  [io.quarkus] (main) Profile prod activated.
 2022-11-27 21:44:27,078 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jms, camel-microprofile-health, camel-microprofile-metrics, camel-openapi-java, camel-opentracing, camel-platform-http, camel-rest, camel-xpath, cdi, config-yaml, jaeger, kubernetes, kubernetes-client, qpid-jms, smallrye-context-propagation, smallrye-health, smallrye-metrics, smallrye-opentracing, vertx]
 ```
@@ -682,7 +682,7 @@ If you want to learn more about building native executables, please consult http
 - Camel Jackson ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-jackson)): Marshal POJOs to JSON and back using Jackson
 - YAML Configuration ([guide](https://quarkus.io/guides/config#yaml)): Use YAML to configure your Quarkus application
 - Camel Bean ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-bean)): Invoke methods of Java beans
-- Camel OpenTracing ([guide](https://camel.apache.org/camel-quarkus/latest/reference/extensions/opentracing.html)): Distributed tracing using OpenTracing
+- Camel OpenTelemetry ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-opentelemetry)): Distributed tracing using OpenTelemetry
 - Camel XPath ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-xpath)): Evaluates an XPath expression against an XML payload
 - Camel OpenAPI Java ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-openapi-java)): Expose OpenAPI resources defined in Camel REST DSL
 - Camel MicroProfile Health ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-microprofile-health)): Expose Camel health checks via MicroProfile Health

@@ -132,7 +132,7 @@ If you want to learn more about building native executables, please consult http
     ```
     podman run --rm -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
     -p 5775:5775/udp -p 6831:6831/udp -p 6832:6832/udp \
-    -p 5778:5778 -p 16686:16686 -p 14268:14268 -p 9411:9411 \
+    -p 5778:5778 -p 16686:16686 -p 14268:14268 -p 14250:14250 -p 9411:9411 \
     quay.io/jaegertracing/all-in-one:latest
     ```
 2. While the server is running, browse to http://localhost:16686 to view tracing events.
@@ -186,7 +186,7 @@ _**:warning: cluster-admin privileges are required**_
 - YAML Configuration ([guide](https://quarkus.io/guides/config#yaml)): Use YAML to configure your Quarkus application
 - RESTEasy JAX-RS ([guide](https://quarkus.io/guides/rest-json)): REST endpoint framework implementing JAX-RS and more
 - Camel Bean ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-bean)): Invoke methods of Java beans
-- Camel OpenTracing ([guide](https://camel.apache.org/camel-quarkus/latest/reference/extensions/opentracing.html)): Distributed tracing using OpenTracing
+- Camel OpenTelemetry ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-opentelemetry)): Distributed tracing using OpenTelemetry
 - Camel MicroProfile Health ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-microprofile-health)): Expose Camel health checks via MicroProfile Health
 - Camel MicroProfile Metrics ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-microprofile-metrics)): Expose metrics from Camel routes
 - Camel Timer ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-timer)): Generate messages in specified intervals using java.util.Timer

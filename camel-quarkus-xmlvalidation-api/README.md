@@ -11,6 +11,15 @@ It exposes the following RESTful service endpoints  using **Apache Camel REST DS
 ## Prerequisites
 - JDK 11 installed with `JAVA_HOME` configured appropriately
 - Apache Maven 3.8.1+
+- **OPTIONAL**: [**Jaeger**](https://www.jaegertracing.io/), a distributed tracing system for observability ([_open tracing_](https://opentracing.io/)).  :bulb: A simple way of starting a Jaeger tracing server is with `docker` or `podman`:
+    1. Start the Jaeger tracing server:
+        ```
+        podman run --rm -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
+        -p 5775:5775/udp -p 6831:6831/udp -p 6832:6832/udp \
+        -p 5778:5778 -p 16686:16686 -p 14268:14268 -p 14250:14250 -p 9411:9411 \
+        quay.io/jaegertracing/all-in-one:latest
+        ```
+    2. While the server is running, browse to http://localhost:16686 to view tracing events.
 
 ## Running the application in dev mode
 
