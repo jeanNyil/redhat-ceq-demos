@@ -73,11 +73,11 @@ According to your environment, you may want to customize:
     - `integrations-broker.username`
     - `integrations-broker.password`
 - The Jaeger collector endpoint by adding the following run-time _system properties_:
-    - `quarkus.jaeger.endpoint`
+    - `quarkus.opentelemetry.tracer.exporter.jaeger.endpoint`
 
 Example:
 ```
-java -Dintegrations-broker.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.jeannyil.sandbox1789.opentlc.com:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000" -Dquarkus.jaeger.endpoint="http://localhost:14268/api/traces" -jar target/quarkus-app/quarkus-run.jar
+java -Dintegrations-broker.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.jeannyil.sandbox1789.opentlc.com:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000" -Dquarkus.opentelemetry.tracer.exporter.jaeger.endpoint="http://localhost:14250" -jar target/quarkus-app/quarkus-run.jar
 ```
 
 ## :bulb: Packaging and running the application on Red Hat OpenShift

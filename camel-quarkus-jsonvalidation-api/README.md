@@ -53,11 +53,11 @@ java -Dquarkus.kubernetes-config.enabled=false -jar target/camel-quarkus-jsonval
 ```
 
 According to your environment, you may want to customize the Jaeger collector endpoint by adding the following run-time _system properties_:
-- `quarkus.jaeger.endpoint`
+- `quarkus.opentelemetry.tracer.exporter.jaeger.endpoint`
 
 Example:
 ```
-java -Dquarkus.kubernetes-config.enabled=false -Dquarkus.jaeger.endpoint=http://localhost:14268/api/traces -jar target/quarkus-app/quarkus-run.jar
+java -Dquarkus.kubernetes-config.enabled=false -Dquarkus.opentelemetry.tracer.exporter.jaeger.endpoint="http://localhost:14250" -jar target/quarkus-app/quarkus-run.jar
 ```
 
 ## Packaging and running the application on Red Hat OpenShift
