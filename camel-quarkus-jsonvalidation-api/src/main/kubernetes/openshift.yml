@@ -4,4 +4,4 @@ kind: ConfigMap
 metadata:
   name: camel-quarkus-jsonvalidation-api-config
 data:
-  quarkus.opentelemetry.tracer.exporter.jaeger.endpoint: http://jaeger-all-in-one-inmemory-collector.ceq-services-jvm.svc:14250
+  quarkus.opentelemetry.tracer.exporter.otlp.endpoint: http://jaeger-all-in-one-inmemory-collector.ceq-services-jvm.svc:4317

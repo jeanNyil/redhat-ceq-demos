@@ -67,11 +67,14 @@ quarkus:
         #     period: 30
 
     # OpenTelemetry configuration. This is leveraged by Camel Quarkus OpenTelemetry extension
+    ## Identifier for the origin of spans created by the application
+    application:
+        name: ${camel.context.name}
     opentelemetry:
         tracer:
             exporter:
-                jaeger:
-                    endpoint: http://localhost:14250
+                otlp:
+                    endpoint: http://localhost:4317
             
     ## DEPRECATED -  Configuration of the Quarkus Qpid JMS extension leveraged by Camel Quarkus AMQP extension
     ## I am using the Camel Quarkus JMS component - See integrations-broker.* properties above

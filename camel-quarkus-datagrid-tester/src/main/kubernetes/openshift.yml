@@ -6,7 +6,7 @@ metadata:
 data:
   datagrid.caches.fruits-legumes: fruits-legumes-replicated-cache
   datagrid.caches.idempotency: idempotency-replicated-cache
-  quarkus.opentelemetry.tracer.exporter.jaeger.endpoint: http://jaeger-all-in-one-inmemory-collector.ceq-services-jvm.svc:14250
+  quarkus.opentelemetry.tracer.exporter.otlp.endpoint: http://jaeger-all-in-one-inmemory-collector.ceq-services-jvm.svc:4317
 ---
 apiVersion: v1
 kind: Secret
