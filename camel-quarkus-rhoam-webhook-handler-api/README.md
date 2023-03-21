@@ -32,9 +32,9 @@ type: Opaque
 - **OPTIONAL**: [**Jaeger**](https://www.jaegertracing.io/), a distributed tracing system for observability ([_open tracing_](https://opentracing.io/)). :bulb: A simple way of starting a Jaeger tracing server is with `docker` or `podman`:
     1. Start the Jaeger tracing server:
         ```
-        podman run --rm -e COLLECTOR_ZIPKIN_HTTP_PORT=:9411 -e COLLECTOR_OTLP_ENABLED=true \
-        -p 5775:5775/udp -p 6831:6831/udp -p 6832:6832/udp \
-        -p 5778:5778 -p 16686:16686 -p 14268:14268 -p 14250:14250 -p 9411:9411 \
+        podman run --rm -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -e COLLECTOR_OTLP_ENABLED=true \
+        -p 6831:6831/udp -p 6832:6832/udp \
+        -p 5778:5778 -p 16686:16686 -p 4317:4317 -p 4318:4318 -p 14250:14250  -p 14268:14268 -p 14269:14269 -p 9411:9411 \
         quay.io/jaegertracing/all-in-one:latest
         ```
     2. While the server is running, browse to http://localhost:16686 to view tracing events.
@@ -73,11 +73,11 @@ According to your environment, you may want to customize:
     - `integrations-broker.username`
     - `integrations-broker.password`
 - The Jaeger collector endpoint by adding the following run-time _system properties_:
-    - `quarkus.opentelemetry.tracer.exporter.jaeger.endpoint`
+    - `quarkus.opentelemetry.tracer.exporter.otlp.endpoint`
 
 Example:
 ```
-java -Dintegrations-broker.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.jeannyil.sandbox1789.opentlc.com:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000" -Dquarkus.opentelemetry.tracer.exporter.jaeger.endpoint="http://localhost:14250" -jar target/quarkus-app/quarkus-run.jar
+java -Dintegrations-broker.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.jeannyil.sandbox1789.opentlc.com:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000" -Dquarkus.opentelemetry.tracer.exporter.otlp.endpoint="http://localhost:4317" -jar target/quarkus-app/quarkus-run.jar
 ```
 
 ## :bulb: Packaging and running the application on Red Hat OpenShift
