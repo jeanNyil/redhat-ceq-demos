@@ -175,6 +175,7 @@ _**:warning: cluster-admin privileges are required**_
                 log-level: info
         strategy: allInOne
     EOF
+    ```
 
 ## Related Guides
 
