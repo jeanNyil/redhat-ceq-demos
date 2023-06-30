@@ -1,0 +1,165 @@
+Crashlog created at 2023-06-30 12:15:52 +0200
+
+===== MESSAGE:
+
+[1m[31mURI::InvalidURIError: bad URI(is not URI?): "https://<replace_me_with_client_id>:<replace_me_with_client_secret>@sso.apps.cluster-px4m5.px4m5.sandbox2218.opentlc.com/auth/realms/openshift-cluster"[0m
+
+===== BACKTRACE:
+
+/Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/2.7.0/uri/rfc3986_parser.rb:67:in `split'
+/Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/2.7.0/uri/rfc3986_parser.rb:73:in `parse'
+/Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/2.7.0/uri/common.rb:234:in `parse'
+/Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/2.7.0/uri/common.rb:737:in `URI'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/helper.rb:28:in `parse_uri'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/commands/import_command/openapi/create_activedocs_step.rb:71:in `cleaned_issuer_endpoint'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/commands/import_command/openapi/create_activedocs_step.rb:77:in `authorization_url'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/commands/import_command/openapi/create_activedocs_step.rb:63:in `block in rewritten_openapi'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/commands/import_command/openapi/create_activedocs_step.rb:54:in `tap'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/commands/import_command/openapi/create_activedocs_step.rb:54:in `rewritten_openapi'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/commands/import_command/openapi/create_activedocs_step.rb:13:in `call'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/commands/import_command/openapi/import_product_step.rb:21:in `each'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/commands/import_command/openapi/import_product_step.rb:21:in `call'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/commands/import_command/openapi.rb:61:in `run'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/cri-2.15.11/lib/cri/command_runner.rb:34:in `call'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/cri-2.15.11/lib/cri/command_dsl.rb:294:in `block in runner'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/cri-2.15.11/lib/cri/command.rb:362:in `run_this'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/cri-2.15.11/lib/cri/command.rb:298:in `run'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/cri-2.15.11/lib/cri/command.rb:316:in `run'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/cri-2.15.11/lib/cri/command.rb:316:in `run'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/cli.rb:48:in `block in run'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/cli/error_handler.rb:5:in `block in error_watchdog'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/cli/error_handler.rb:11:in `error_watchdog'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/cli/error_handler.rb:5:in `error_watchdog'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib/3scale_toolbox/cli.rb:45:in `run'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/exe/3scale:15:in `<top (required)>'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/bin/3scale:23:in `load'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/bin/3scale:23:in `<main>'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/bin/ruby_executable_hooks:22:in `eval'
+/Users/jnyilimb/.rvm/gems/ruby-2.7.1/bin/ruby_executable_hooks:22:in `<main>'
+
+===== VERSION INFORMATION:
+
+0.20.0
+
+===== SYSTEM INFORMATION:
+
+{"sysname":"Darwin","nodename":"jean-mbp","release":"22.5.0","version":"Darwin Kernel Version 22.5.0: Thu Jun  8 22:22:22 PDT 2023; root:xnu-8796.121.3~7/RELEASE_X86_64","machine":"x86_64"}
+
+===== INSTALLED GEMS:
+
+  3scale-api 1.4.0, 1.6.0
+  3scale_toolbox 0.19.0, 0.20.0
+  activesupport 6.1.4.1
+  addressable 2.8.0
+  benchmark 0.1.0
+  bigdecimal 2.0.0
+  builder 3.2.4
+  bundler 2.1.4
+  bundler-unload 1.0.2
+  cgi 0.1.0
+  concurrent-ruby 1.1.9
+  cri 2.15.11
+  csv 3.1.2
+  date 3.0.0
+  dbm 1.1.0
+  deep_merge 1.2.1
+  delegate 0.1.0
+  did_you_mean 1.4.0
+  etc 1.1.0
+  executable-hooks 1.6.1
+  fcntl 1.0.0
+  fiddle 1.0.0
+  fileutils 1.4.1
+  forwardable 1.3.1
+  gdbm 2.1.0
+  gem-wrappers 1.4.0
+  getoptlong 0.1.0
+  hansi 0.2.0
+  hash-deep-merge 0.1.1
+  i18n 1.8.10
+  io-console 0.5.6
+  ipaddr 1.2.2
+  irb 1.2.3
+  json 2.3.0
+  json-schema 2.8.1
+  logger 1.4.2
+  matrix 0.2.0
+  minitest 5.13.0
+  mustermann 1.1.1
+  mustermann-contrib 1.1.1
+  mutex_m 0.1.0
+  net-pop 0.1.0
+  net-smtp 0.1.0
+  net-telnet 0.2.0
+  nokogiri 1.12.4
+  oas_parser 0.25.4
+  observer 0.1.0
+  open3 0.1.0
+  openssl 2.1.2
+  ostruct 0.2.0
+  power_assert 1.1.7
+  prime 0.1.1
+  pstore 0.1.0
+  psych 3.1.0
+  public_suffix 4.0.6
+  racc 1.4.16
+  rake 13.0.1
+  rdoc 6.2.1
+  readline 0.0.2
+  readline-ext 0.1.0
+  reline 0.1.3
+  rexml 3.2.3
+  rss 0.2.8
+  ruby2_keywords 0.0.5
+  rubygems-bundler 1.4.5
+  rvm 1.11.3.9
+  sdbm 1.0.0
+  singleton 0.1.0
+  stringio 0.1.0
+  strscan 1.0.3
+  test-unit 3.3.4
+  timeout 0.1.0
+  tracer 0.1.0
+  tzinfo 2.0.4
+  uri 0.10.0
+  webrick 1.6.0
+  xmlrpc 0.3.0
+  yaml 0.1.0
+  zeitwerk 2.4.2
+  zlib 1.1.0
+
+===== LOAD PATHS:
+
+  0. /Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/gems/2.7.0/gems/executable-hooks-1.6.1/lib
+  1. /Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/gems/2.7.0/extensions/x86_64-darwin-21/2.7.0/executable-hooks-1.6.1
+  2. /Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/gems/2.7.0/gems/bundler-unload-1.0.2/lib
+  3. /Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/gems/2.7.0/gems/rubygems-bundler-1.4.5/lib
+  4. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale-api-1.6.0/lib
+  5. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/cri-2.15.11/lib
+  6. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/public_suffix-4.0.6/lib
+  7. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/addressable-2.8.0/lib
+  8. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/json-schema-2.8.1/lib
+  9. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/deep_merge-1.2.1/lib
+  10. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/concurrent-ruby-1.1.9/lib/concurrent-ruby
+  11. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/i18n-1.8.10/lib
+  12. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/tzinfo-2.0.4/lib
+  13. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/zeitwerk-2.4.2/lib
+  14. /Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/gems/2.7.0/gems/minitest-5.13.0/lib
+  15. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/activesupport-6.1.4.1/lib
+  16. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/builder-3.2.4/lib
+  17. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/ruby2_keywords-0.0.5/lib
+  18. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/mustermann-1.1.1/lib
+  19. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/hansi-0.2.0/lib
+  20. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/mustermann-contrib-1.1.1/lib
+  21. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/nokogiri-1.12.4-x86_64-darwin/lib
+  22. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/hash-deep-merge-0.1.1/lib
+  23. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/oas_parser-0.25.4/lib
+  24. /Users/jnyilimb/.rvm/gems/ruby-2.7.1/gems/3scale_toolbox-0.20.0/lib
+  25. /Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/site_ruby/2.7.0
+  26. /Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/site_ruby/2.7.0/x86_64-darwin21
+  27. /Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/site_ruby
+  28. /Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/vendor_ruby/2.7.0
+  29. /Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/vendor_ruby/2.7.0/x86_64-darwin21
+  30. /Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/vendor_ruby
+  31. /Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/2.7.0
+  32. /Users/jnyilimb/.rvm/rubies/ruby-2.7.1/lib/ruby/2.7.0/x86_64-darwin21

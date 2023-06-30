@@ -1,0 +1,58 @@
+---
+plan:
+  name: Premium
+  state: published
+  setup_fee: 15.0
+  cost_per_month: 5.0
+  trial_period_days: 3
+  approval_required: false
+  default: false
+  system_name: premium_plan
+limits: []
+pricingrules:
+- cost_per_unit: '0.05'
+  min: 1
+  max: 200
+  metric_system_name: getfruits
+- cost_per_unit: '0.01'
+  min: 201
+  metric_system_name: getfruits
+- cost_per_unit: '0.05'
+  min: 1
+  max: 200
+  metric_system_name: addfruit
+- cost_per_unit: '0.01'
+  min: 201
+  metric_system_name: addfruit
+- cost_per_unit: '0.05'
+  min: 1
+  max: 200
+  metric_system_name: getlegumes
+- cost_per_unit: '0.01'
+  min: 201
+  metric_system_name: getlegumes
+plan_features:
+- name: 'Paid'
+  system_name: paid
+  scope: application_plan
+  visible: true
+  description: 'Paid'
+- name: 'Unlimited calls'
+  system_name: unlimited_calls
+  scope: application_plan
+  visible: true
+  description: 'Unlimited calls'
+metrics: []
+methods:
+- name: getfruits
+  system_name: getfruits
+  friendly_name: getFruits
+  description: Returns a list of hard-coded and added fruits
+- name: addfruit
+  system_name: addfruit
+  friendly_name: addFruit
+  description: Adds a fruit in the hard-coded list
+- name: getlegumes
+  system_name: getlegumes
+  friendly_name: getLegumes
+  description: Returns a list of hard-coded legumes

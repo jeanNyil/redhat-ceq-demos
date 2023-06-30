@@ -24,6 +24,7 @@ public class InfinispanIdempotentRepo {
     @Produces
     @Named("infinispanRepo")
     public InfinispanRemoteIdempotentRepository createInfinispanIdempotentRepo() {
+        
         InfinispanRemoteIdempotentRepository repo = new InfinispanRemoteIdempotentRepository(idempotencyCache);
         repo.setCacheContainer(remoteCacheManager);
         return repo;

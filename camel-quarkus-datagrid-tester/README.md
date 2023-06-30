@@ -10,9 +10,9 @@ The purpose is to demo the implementation of the _Infinispan Idempotent Reposito
 - JDK 17 installed with `JAVA_HOME` configured appropriately
 - A running [_Red Hat OpenShift 4_](https://access.redhat.com/documentation/en-us/openshift_container_platform) cluster
 - A running [_Red Hat Data Grid v8.3_](https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.3) cluster. 
-    >_**NOTE**_: The [`config`](./config) folder contains OpenShift _Cache Custom Resources_ to be created. For instance, the following command line would create the `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` replicated caches if the _Red Hat Data Grid_ cluster is deployed in the `datagrid-cluster` namespace: `oc -n datagrid-cluster apply -f ./config`
-    - [`fruits-legumes-replicated-cache-definition`](./config/fruits-legumes-replicated-cache_cr.yaml) : `fruits-legumes-replicated-cache` used by the [`FruitsAndLegumesAPI`](./src/main/java/io/jeannyil/routes/FruitsAndLegumesApiRoute.java).
-    - [`idempotency-replicated-cache-definition`](./config/idempotency-replicated-cache_cr.yaml) : `idempotency-replicated-cache` used for idempotency purposes by the [`FilePollerRoute`](./src/main/java/io/jeannyil/routes/FilePollerRoute.java).
+    >_**NOTE**_: The [`config/datagrid`](./config/datagrid) folder contains OpenShift _Cache Custom Resources_ to be created. For instance, the following command line would create the `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` replicated caches if the _Red Hat Data Grid_ cluster is deployed in the `datagrid-cluster` namespace: `oc -n datagrid-cluster apply -f ./config/datagrid`
+    - [`fruits-legumes-replicated-cache-definition`](./config/datagrid/fruits-legumes-replicated-cache_cr.yaml) : `fruits-legumes-replicated-cache` used by the [`FruitsAndLegumesAPI`](./src/main/java/io/jeannyil/routes/FruitsAndLegumesApiRoute.java).
+    - [`idempotency-replicated-cache-definition`](./config/datagrid/idempotency-replicated-cache_cr.yaml) : `idempotency-replicated-cache` used for idempotency purposes by the [`FilePollerRoute`](./src/main/java/io/jeannyil/routes/FilePollerRoute.java).
 - A truststore containing the [_Red Hat Data Grid v8.3_](https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.3) server public certificate. Below are sample command lines to generate one:
     ```script shell
     # Use the Java cacerts as the basis for the truststore
@@ -26,7 +26,7 @@ The purpose is to demo the implementation of the _Infinispan Idempotent Reposito
     ```script shell
     openssl s_client -showcerts -servername <Red Hat Data Grid cluster OpenShift route> -connect <Red Hat Data Grid cluster OpenShift route>:443
     ```
-    with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid-cluster.apps.cluster-9pmvg.9pmvg.sandbox3187.opentlc.com`
+    with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid-cluster.apps.cluster-px4m5.px4m5.sandbox2218.opentlc.com`
 
 ## Running the application in dev mode
 
@@ -76,7 +76,7 @@ If you want to learn more about building native executables, please consult http
 ### Prerequisites
 - The `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` caches have been created in the _Red Hat Data Grid_ cluster.
 
->_**NOTE**_: The [`config`](./config) folder contains OpenShift _Cache Custom Resources_ to be created. For instance, the following command line would create the `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` replicated caches if the _Red Hat Data Grid_ cluster is deployed in the `datagrid-cluster` namespace: `oc -n datagrid-cluster apply -f ./config`
+>_**NOTE**_: The [`config/datagrid`](./config/datagrid) folder contains OpenShift _Cache Custom Resources_ to be created. For instance, the following command line would create the `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` replicated caches if the _Red Hat Data Grid_ cluster is deployed in the `datagrid-cluster` namespace: `oc -n datagrid-cluster apply -f ./config/datagrid`
 
 ### Instructions
 
@@ -213,16 +213,46 @@ The Quarkus application configuration is located in `src/main/resources/applicat
 
 ### Create the API Product from the OpenAPI Specification
 
-The following command line imports the API in _Red Hat 3scale API Management_ and secures it using OpenID Connect from the OpenAPI Specification. _Red Hat SSO 7_ is used as the OpenID Connect Authorization Server.
+The following [3scale Toolbox](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.13/html/operating_3scale/the-threescale-toolbox) command line imports the API in _Red Hat 3scale API Management_ and secures it using OpenID Connect from the OpenAPI Specification. _Red Hat SSO 7_ is used as the OpenID Connect Authorization Server.
 
 > :bulb: **NOTE:** Adapt the values according to your environment.
 
 ```script shell
 3scale import openapi \
 --override-private-base-url='http://camel-quarkus-datagrid-tester.ceq-services-jvm.svc' \
---production-public-base-url='https://rhdg-fruits-and-legumes-api.apps.cluster-9pmvg.9pmvg.sandbox3187.opentlc.com'  \
---staging-public-base-url='https://rhdg-fruits-and-legumes-api-staging.apps.cluster-9pmvg.9pmvg.sandbox3187.opentlc.com'  \
 --oidc-issuer-type=keycloak \
---oidc-issuer-endpoint='https://<replace_me_with_client_id>:<replace_me_with_client_secret>@sso.apps.cluster-9pmvg.9pmvg.sandbox3187.opentlc.com/auth/realms/openshift-cluster' \
+--oidc-issuer-endpoint='https://<replace_me_with_client_id>:<replace_me_with_client_secret>@sso.apps.cluster-px4m5.px4m5.sandbox2218.opentlc.com/auth/realms/openshift-cluster' \
+--target_system_name=fruits_and_legumes_api \
 --verbose -d rhpds-apim-demo ./src/main/resources/openapi/openapi.json
 ```
+
+> :bulb: **NOTE:** The following command lines create the application plans and update the policy chain respectively using the resources in the [`config/threescale`](./config/threescale) folder.
+
+- **Application plans**:
+    ```script shell
+    ### Basic plan
+    3scale application-plan import \
+    --file=./config/threescale/application_plans/basic-plan.yaml \
+    rhpds-apim-demo fruits_and_legumes_api
+
+    ### Premium plan
+    3scale application-plan import \
+    --file=./config/threescale/application_plans/premium-plan.yaml \
+    rhpds-apim-demo fruits_and_legumes_api
+    ```
+
+- **Policy chain**:
+    ```script shell
+    3scale policies import \
+    --file='./config/threescale/policies/policy_chain.yaml' \
+    rhpds-apim-demo fruits_and_legumes_api
+    ```
+
+- **Promotion of the new configuration to 3scale _staging_ and _production_ environments**:
+    ```script shell
+    ## Promote the APIcast configuration to the Staging Environment
+    3scale proxy deploy rhpds-apim-demo fruits_and_legumes_api
+
+    ## Promote latest staging Proxy Configuration to the production environment
+    3scale proxy-config promote rhpds-apim-demo fruits_and_legumes_api
+    ```
