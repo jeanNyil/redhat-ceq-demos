@@ -208,51 +208,50 @@ The Quarkus application configuration is located in `src/main/resources/applicat
 
 ### :bulb: Pre-requisite
 
-- A running [_Red Hat 3scale API Management v2.12_](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.12) platform and [_Red Hat SSO 7.6_](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.6) instance to secure the API.
+- A running [_Red Hat 3scale API Management v2.13_](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.13) platform and [_Red Hat SSO 7.6_](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.6) instance to secure the API.
 - The [_3scale Toolbox_](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.13/html/operating_3scale/the-threescale-toolbox) CLI installed.
 
 ### Create the API Product from the OpenAPI Specification
 
-The following [3scale Toolbox](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.13/html/operating_3scale/the-threescale-toolbox) command line imports the API in _Red Hat 3scale API Management_ and secures it using OpenID Connect from the OpenAPI Specification. _Red Hat SSO 7_ is used as the OpenID Connect Authorization Server.
+1. The following [3scale Toolbox](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.13/html/operating_3scale/the-threescale-toolbox) command line imports the API in _Red Hat 3scale API Management_ and secures it using OpenID Connect from the OpenAPI Specification. _Red Hat SSO 7_ is used as the OpenID Connect Authorization Server.
+    > :bulb: **NOTE:** Adapt the values according to your environment.
 
-> :bulb: **NOTE:** Adapt the values according to your environment.
-
-```script shell
-3scale import openapi \
---override-private-base-url='http://camel-quarkus-datagrid-tester.ceq-services-jvm.svc' \
---oidc-issuer-type=keycloak \
---oidc-issuer-endpoint='https://<replace_me_with_client_id>:<replace_me_with_client_secret>@sso.apps.cluster-px4m5.px4m5.sandbox2218.opentlc.com/auth/realms/openshift-cluster' \
---target_system_name=fruits_and_legumes_api \
---verbose -d rhpds-apim-demo ./src/main/resources/openapi/openapi.json
-```
-
-> :bulb: **NOTE:** The following command lines create the application plans and update the policy chain respectively using the resources in the [`config/threescale`](./config/threescale) folder.
-
-- **Application plans**:
     ```script shell
-    ### Basic plan
-    3scale application-plan import \
-    --file=./config/threescale/application_plans/basic-plan.yaml \
-    rhpds-apim-demo fruits_and_legumes_api
-
-    ### Premium plan
-    3scale application-plan import \
-    --file=./config/threescale/application_plans/premium-plan.yaml \
-    rhpds-apim-demo fruits_and_legumes_api
+    3scale import openapi \
+    --override-private-base-url='http://camel-quarkus-datagrid-tester.ceq-services-jvm.svc' \
+    --oidc-issuer-type=keycloak \
+    --oidc-issuer-endpoint='https://<replace_me_with_client_id>:<replace_me_with_client_secret>@sso.apps.cluster-px4m5.px4m5.sandbox2218.opentlc.com/auth/realms/openshift-cluster' \
+    --target_system_name=fruits_and_legumes_api \
+    --verbose -d rhpds-apim-demo ./src/main/resources/openapi/openapi.json
     ```
 
-- **Policy chain**:
-    ```script shell
-    3scale policies import \
-    --file='./config/threescale/policies/policy_chain.yaml' \
-    rhpds-apim-demo fruits_and_legumes_api
-    ```
+2. The following command lines create the application plans and update the policy chain respectively using the resources in the [`config/threescale`](./config/threescale) folder.
 
-- **Promotion of the new configuration to 3scale _staging_ and _production_ environments**:
-    ```script shell
-    ## Promote the APIcast configuration to the Staging Environment
-    3scale proxy deploy rhpds-apim-demo fruits_and_legumes_api
+    - **Application plans**:
+        ```script shell
+        ### Basic plan
+        3scale application-plan import \
+        --file=./config/threescale/application_plans/basic-plan.yaml \
+        rhpds-apim-demo fruits_and_legumes_api
 
-    ## Promote latest staging Proxy Configuration to the production environment
-    3scale proxy-config promote rhpds-apim-demo fruits_and_legumes_api
-    ```
+        ### Premium plan
+        3scale application-plan import \
+        --file=./config/threescale/application_plans/premium-plan.yaml \
+        rhpds-apim-demo fruits_and_legumes_api
+        ```
+
+    - **Policy chain**:
+        ```script shell
+        3scale policies import \
+        --file='./config/threescale/policies/policy_chain.yaml' \
+        rhpds-apim-demo fruits_and_legumes_api
+        ```
+
+    - **Promotion of the new configuration to 3scale _staging_ and _production_ environments**:
+        ```script shell
+        ## Promote the APIcast configuration to the Staging Environment
+        3scale proxy deploy rhpds-apim-demo fruits_and_legumes_api
+
+        ## Promote latest staging Proxy Configuration to the production environment
+        3scale proxy-config promote rhpds-apim-demo fruits_and_legumes_api
+        ```
