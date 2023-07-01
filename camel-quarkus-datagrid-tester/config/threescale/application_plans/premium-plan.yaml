@@ -5,7 +5,7 @@ plan:
   setup_fee: 15.0
   cost_per_month: 5.0
   trial_period_days: 3
-  approval_required: false
+  approval_required: true
   default: false
   system_name: premium_plan
 limits: []
