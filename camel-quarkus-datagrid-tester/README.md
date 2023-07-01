@@ -233,26 +233,26 @@ The Quarkus application configuration is located in `src/main/resources/applicat
         ### Basic plan
         3scale application-plan import \
         --file=./config/threescale/application_plans/basic-plan.yaml \
-        rhpds-apim-demo fruits_and_legumes_api
+        --verbose rhpds-apim-demo fruits_and_legumes_api
 
         ### Premium plan
         3scale application-plan import \
         --file=./config/threescale/application_plans/premium-plan.yaml \
-        rhpds-apim-demo fruits_and_legumes_api
+        --verbose rhpds-apim-demo fruits_and_legumes_api
         ```
 
     - **Policy chain**:
         ```script shell
         3scale policies import \
         --file='./config/threescale/policies/policy_chain.yaml' \
-        rhpds-apim-demo fruits_and_legumes_api
+        --verbose rhpds-apim-demo fruits_and_legumes_api
         ```
 
     - **Promotion of the new configuration to 3scale _staging_ and _production_ environments**:
         ```script shell
         ## Promote the APIcast configuration to the Staging Environment
-        3scale proxy deploy rhpds-apim-demo fruits_and_legumes_api
+        3scale proxy deploy rhpds-apim-demo fruits_and_legumes_api --verbose
 
         ## Promote latest staging Proxy Configuration to the production environment
-        3scale proxy-config promote rhpds-apim-demo fruits_and_legumes_api
+        3scale proxy-config promote rhpds-apim-demo fruits_and_legumes_api --verbose
         ```
