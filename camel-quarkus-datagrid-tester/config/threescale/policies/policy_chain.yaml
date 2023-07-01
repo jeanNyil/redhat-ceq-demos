@@ -12,6 +12,11 @@
     - POST
     - OPTIONS
   enabled: true
+- name: caching
+  version: builtin
+  configuration:
+    caching_type: resilient
+  enabled: true
 - name: logging
   version: builtin
   configuration:
