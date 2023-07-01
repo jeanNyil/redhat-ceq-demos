@@ -6,7 +6,7 @@
     allow_headers:
     - Authorization
     - Content-Type
-    allow_origin: "(apim-demo|apim-demo-admin).apps.cluster-w86t9.w86t9.sandbox348.opentlc.com"
+    allow_origin: "(apim-demo|apim-demo-admin).apps.cluster-px4m5.px4m5.sandbox2218.opentlc.com"
     allow_methods:
     - GET
     - POST
