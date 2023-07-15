@@ -40,7 +40,7 @@ quarkus:
     # Expose OpenShift route
     route:
       expose: true
-      host: fruits-and-legumes-api.apps.cluster-px4m5.px4m5.sandbox2218.opentlc.com
+      host: fruits-and-legumes-api.apps.cluster-5f9dj.5f9dj.sandbox2939.opentlc.com
     # CPU and Memory resources requirements when deployed on Kubernetes/OpenShift
     resources:
       requests:
@@ -59,20 +59,20 @@ quarkus:
       truststore-volume:
         path: /mnt/ssl
 
-    # OpenTelemetry configuration. This is leveraged by Camel Quarkus OpenTelemetry extension
-    ## Identifier for the origin of spans created by the application
-    application:
-      name: ${camel.context.name}
-    opentelemetry:
-        tracer:
-            exporter:
-                otlp:
-                    endpoint: http://localhost:4317
+  # OpenTelemetry configuration. This is leveraged by Camel Quarkus OpenTelemetry extension
+  ## Identifier for the origin of spans created by the application
+  application:
+    name: ${camel.context.name}
+  opentelemetry:
+      tracer:
+          exporter:
+              otlp:
+                  endpoint: http://localhost:4317
 
   # Red Hat Data Grid (Infinispan)
   infinispan-client:
     # Server address
-    server-list: datagrid-cluster.apps.cluster-px4m5.px4m5.sandbox2218.opentlc.com:443
+    server-list: datagrid-cluster.apps.cluster-5f9dj.5f9dj.sandbox2939.opentlc.com:443
     # Server name used by authentication
     auth-server-name: datagrid-cluster
     # Realm used by authentication
