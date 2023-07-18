@@ -1,11 +1,4 @@
-#Maven
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-release.properties
-
-# Eclipse
+x# Eclipse
 .project
 .classpath
 .settings/
@@ -22,7 +15,6 @@ nb-configuration.xml
 
 # Visual Studio Code
 .vscode
-.factorypath
 
 # OSX
 .DS_Store
@@ -35,5 +27,12 @@ nb-configuration.xml
 *.orig
 *.rej
 
-# Local environment
-.env
+# logs
+*.log
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties

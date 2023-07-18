@@ -1,4 +1,4 @@
-# Eclipse
+x# Eclipse
 .project
 .classpath
 .settings/
@@ -26,6 +26,9 @@ nb-configuration.xml
 # patch
 *.orig
 *.rej
+
+# logs
+*.log
 
 # Maven
 target/
