@@ -26,7 +26,7 @@ The purpose is to demo the implementation of the _Infinispan Idempotent Reposito
     ```script shell
     openssl s_client -showcerts -servername <Red Hat Data Grid cluster OpenShift route> -connect <Red Hat Data Grid cluster OpenShift route>:443
     ```
-    with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid-cluster.apps.cluster-6nk4t.6nk4t.sandbox2675.opentlc.com`
+    with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid-cluster.apps.cluster-tpbfg.tpbfg.sandbox318.opentlc.com`
 
 ## Running the application in dev mode
 
@@ -221,7 +221,7 @@ The Quarkus application configuration is located in `src/main/resources/applicat
     3scale import openapi \
     --override-private-base-url='http://camel-quarkus-datagrid-tester.ceq-services-jvm.svc' \
     --oidc-issuer-type=keycloak \
-    --oidc-issuer-endpoint='https://<replace_me_with_client_id>:<replace_me_with_client_secret>@sso.apps.cluster-6nk4t.6nk4t.sandbox2675.opentlc.com/auth/realms/openshift-cluster' \
+    --oidc-issuer-endpoint='https://<replace_me_with_client_id>:<replace_me_with_client_secret>@sso.apps.cluster-tpbfg.tpbfg.sandbox318.opentlc.com/auth/realms/openshift-cluster' \
     --target_system_name=fruits_and_legumes_api \
     --verbose -d rhpds-apim-demo ./src/main/resources/openapi/openapi.json
     ```
