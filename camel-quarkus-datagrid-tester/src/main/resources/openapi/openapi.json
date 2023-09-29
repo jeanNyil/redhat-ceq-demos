@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.2",
     "info": {
-        "title": "Camel Quarkus Fruits and Legumes API (Red Hat Data Grid)",
+        "title": "Fruits and Legumes API",
         "version": "1.0.0",
         "description": "A simple API to test mainly the Apache Camel Quarkus Platform HTTP and Infinispan extensions.",
         "contact": {
@@ -14,13 +14,16 @@
     },
     "servers": [
         {
-            "url": "http://rhdg-fruits-and-legumes-api.apps.cluster-6nk4t.6nk4t.sandbox2675.opentlc.com",
+            "url": "https://fruits-and-legumes-api.apps.cluster-tpbfg.tpbfg.sandbox318.opentlc.com",
             "description": "API Backend URL"
         }
     ],
     "paths": {
         "/fruits": {
             "get": {
+                "tags": [
+                    "fruits"
+                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -82,6 +85,9 @@
                     },
                     "required": true
                 },
+                "tags": [
+                    "fruits"
+                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -130,6 +136,9 @@
         },
         "/legumes": {
             "get": {
+                "tags": [
+                    "legumes"
+                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -211,22 +220,35 @@
             }
         },
         "securitySchemes": {
-            "oauth2": {
+            "oicd": {
                 "flows": {
                     "clientCredentials": {
-                        "tokenUrl": "https://sso.apps.cluster-6nk4t.6nk4t.sandbox2675.opentlc.com/auth/realms/openshift-cluster/protocol/openid-connect/token",
+                        "tokenUrl": "https://sso.apps.cluster-tpbfg.tpbfg.sandbox318.opentlc.com/auth/realms/openshift-cluster/protocol/openid-connect/token",
                         "scopes": {
-                            "openid": "OpenID Connect Protocol"
+                            "openid": ""
                         }
                     }
                 },
-                "type": "oauth2"
+                "type": "oauth2",
+                "description": "OpenID Connect"
             }
         }
     },
     "security": [
         {
-            "oauth2": []
+            "oicd": [
+                "openid"
+            ]
+        }
+    ],
+    "tags": [
+        {
+            "name": "fruits",
+            "description": ""
+        },
+        {
+            "name": "legumes",
+            "description": ""
         }
     ]
 }
