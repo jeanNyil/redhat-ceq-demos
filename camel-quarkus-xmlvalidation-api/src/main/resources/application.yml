@@ -17,6 +17,11 @@ quarkus:
     ssl:
         native: true
 
+    # The container registry to use
+    container-image:
+        registry: image-registry.openshift-image-registry.svc:5000
+
+    ## Quarkus OpenShift extension configuration
     openshift:
         # The kind of the deployment resource to use. Supported values are 'Deployment', 'StatefulSet', 'Job', 'CronJob' and 'DeploymentConfig' defaulting to the latter.
         deployment-kind: Deployment
@@ -48,10 +53,10 @@ quarkus:
     ## Identifier for the origin of spans created by the application
     application:
         name: ${camel.context.name}
-    opentelemetry:
-        tracer:
-            exporter:
-                otlp:
+    otel:
+        exporter:
+            otlp:
+                traces:
                     endpoint: http://localhost:4317
 
     ## Quarkus native build 
@@ -78,14 +83,14 @@ quarkus:
         health:
             enabled: true
 
-        # Microprofile Camel Metrics
-        # Cf. https://camel.apache.org/camel-quarkus/latest/extensions/microprofile-metrics.html
+        # Micrometer Camel Metrics
+        # Cf. https://camel.apache.org/camel-quarkus/3.2.x/reference/extensions/micrometer.html
         metrics:
             enable-route-policy: true
             enable-message-history: false
             enable-exchange-event-notifier: true
             enable-route-event-notifier: true
-            enable-camel-context-event-notifier: true
+            enable-instrumented-thread-pool-factory: false
 
         # native mode configuration
         native:

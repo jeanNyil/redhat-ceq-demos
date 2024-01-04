@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.jeannyil</groupId>
     <artifactId>demo-ceq-dependencies</artifactId>
-    <version>2.13.7</version>
+    <version>3.2.9</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>

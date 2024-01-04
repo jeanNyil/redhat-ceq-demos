@@ -3,8 +3,8 @@ package io.jeannyil.quarkus.camel.jsonvalidation.beans;
 import io.jeannyil.quarkus.camel.jsonvalidation.models.ValidationResult;
 import io.jeannyil.quarkus.camel.jsonvalidation.models.ValidationResult_;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**

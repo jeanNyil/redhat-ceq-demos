@@ -8,7 +8,7 @@ camel:
 # integrations-broker (Red Hat AMQ 7 Broker) - configuration leveraged by the Camel Quarkus JMS extension
 integrations-broker:
     # Connection URL
-    url: amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.cluster-l5mt5.l5mt5.sandbox1873.opentlc.com:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000
+    url: amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.cluster-hntwr.hntwr.sandbox1255.opentlc.com:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000
     # Username for authentication
     username: ${camel.context.name}
     # Password for authentication
@@ -29,6 +29,10 @@ quarkus:
     # Enable native SSL support
     ssl:
         native: true
+
+    # The container registry to use
+    container-image:
+        registry: image-registry.openshift-image-registry.svc:5000
 
     ## Quarkus OpenShift extension configuration for S2I binary workflow builds
     openshift:
@@ -70,21 +74,31 @@ quarkus:
     ## Identifier for the origin of spans created by the application
     application:
         name: ${camel.context.name}
-    opentelemetry:
-        tracer:
-            exporter:
-                otlp:
+    otel:
+        exporter:
+            otlp:
+                traces:
                     endpoint: http://localhost:4317
-            
-    ## DEPRECATED -  Configuration of the Quarkus Qpid JMS extension leveraged by Camel Quarkus AMQP extension
-    ## I am using the Camel Quarkus JMS component - See integrations-broker.* properties above
-    # qpid-jms:
-    #     # Connection URL for the injected factory
-    #     url: amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.cluster-l5mt5.l5mt5.sandbox1873.opentlc.com:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000
-    #     # Username to set on the factory
-    #     username: ${camel.context.name}
-    #     # Password to set on the factory
-    #     password: P@ssw0rd
+    
+    # Camel Quarkus AMQP extension configuration (leverages the Quarkus Qpid JMS extension)
+    qpid-jms:
+        # Connection URL for the injected factory
+        url: amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.cluster-hntwr.hntwr.sandbox1255.opentlc.com:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000
+        # Username to set on the factory
+        username: ${camel.context.name}
+        # Password to set on the factory
+        password: P@ssw0rd
+        # Enable pooling support on the Camel Quarkus AMQP extension
+        wrap: true
+    # JMS Connection Pooling 
+    pooled-jms:
+        # Determines the maximum number of Connections the pool maintains in a single Connection pool (defaults to one).
+        max-connections: 1
+        # For each Connection in the pool there can be a configured maximum number of Sessions that the pooled Connection will loan out 
+        # before either blocking or throwing an error (based on configuration). 
+        # By default this value is 500 meaning that each provider Connection is limited to 500 sessions, 
+        # this limit can be disabled by setting the value to a negative number.
+        max-sessions-per-connection: 500
     
     ## Quarkus native build 
     native:
@@ -110,14 +124,14 @@ quarkus:
         health:
             enabled: true
 
-        # Microprofile Camel Metrics
-        # Cf. https://camel.apache.org/camel-quarkus/latest/extensions/microprofile-metrics.html
+        # Micrometer Camel Metrics
+        # Cf. https://camel.apache.org/camel-quarkus/3.2.x/reference/extensions/micrometer.html
         metrics:
             enable-route-policy: true
             enable-message-history: false
             enable-exchange-event-notifier: true
             enable-route-event-notifier: true
-            enable-camel-context-event-notifier: true
+            enable-instrumented-thread-pool-factory: false
 
         # native mode configuration
         native:

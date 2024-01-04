@@ -6,17 +6,17 @@ metadata:
 data:
   datagrid.caches.fruits-legumes: fruits-legumes-replicated-cache
   datagrid.caches.idempotency: idempotency-replicated-cache
-  quarkus.opentelemetry.tracer.exporter.otlp.endpoint: http://jaeger-all-in-one-inmemory-collector.ceq-services-jvm.svc:4317
+  quarkus.otel.exporter.otlp.traces.endpoint: http://jaeger-all-in-one-inmemory-collector.ceq-services-jvm.svc:4317
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: camel-quarkus-datagrid-tester-secret
 stringData:
-  quarkus.infinispan-client.server-list: datagrid-cluster.datagrid-cluster.svc:11222
+  quarkus.infinispan-client.hosts: datagrid-cluster.datagrid-cluster.svc:11222
   quarkus.infinispan-client.auth-server-name: datagrid-cluster
-  quarkus.infinispan-client.auth-username: cameluser
-  quarkus.infinispan-client.auth-password: P@ssw0rd
+  quarkus.infinispan-client.username: cameluser
+  quarkus.infinispan-client.password: P@ssw0rd
   quarkus.infinispan-client.client-intelligence: HASH_DISTRIBUTION_AWARE
   quarkus.infinispan-client.sasl-mechanism: PLAIN
   quarkus.infinispan-client.trust-store: /mnt/ssl/truststore.p12

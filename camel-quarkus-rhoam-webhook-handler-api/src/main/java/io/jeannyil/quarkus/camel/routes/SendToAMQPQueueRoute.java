@@ -1,6 +1,6 @@
 package io.jeannyil.quarkus.camel.routes;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
@@ -56,7 +56,7 @@ public class SendToAMQPQueueRoute extends RouteBuilder {
             .setHeader("RHOAM_EVENT_TYPE").xpath("//event/type", String.class)
             .setHeader("RHOAM_EVENT_ACTION").xpath("//event/action", String.class)
             .log(LoggingLevel.INFO, logName, ">>> ${routeId} - Sending to RHOAM.WEBHOOK.EVENTS.QUEUE AMQP address...")
-            .to(ExchangePattern.InOnly, "jms:queue:RHOAM.WEBHOOK.EVENTS.QUEUE")
+            .to(ExchangePattern.InOnly, "amqp:queue:RHOAM.WEBHOOK.EVENTS.QUEUE")
 			.setBody()
 				.method("responseMessageHelper", "generateOKResponseMessage()")
 				.id("set-OK-reponseMessage")

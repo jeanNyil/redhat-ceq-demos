@@ -5,7 +5,7 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 /* Route that validates a sample XML data against the Membership XML schema.
    Expects the sample XML as a Camel message body.

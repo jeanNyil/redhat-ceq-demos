@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.jeannyil</groupId>
     <artifactId>demo-ceq-dependencies</artifactId>
-    <version>2.13.7</version>
+    <version>3.2.9</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -14,21 +14,16 @@
   <version>1.0.0</version>
   
   <dependencies>
-    <!-- JMS 2.0 Connection pool manager - See https://github.com/messaginghub/pooled-jms -->
+    <!-- Quarkus Messaginghub Pooled JMS - See https://docs.quarkiverse.io/quarkus-pooled-jms/dev/index.html -->
     <dependency>
-      <groupId>org.messaginghub</groupId>
-      <artifactId>pooled-jms</artifactId>
-      <version>${pooled-jms.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.amqphub.quarkus</groupId>
-      <artifactId>quarkus-qpid-jms</artifactId>
+      <groupId>io.quarkiverse.messaginghub</groupId>
+      <artifactId>quarkus-pooled-jms</artifactId>
     </dependency>
 
     <!-- Camel Quarkus extensions  -->
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
-      <artifactId>camel-quarkus-jms</artifactId>
+      <artifactId>camel-quarkus-amqp</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>

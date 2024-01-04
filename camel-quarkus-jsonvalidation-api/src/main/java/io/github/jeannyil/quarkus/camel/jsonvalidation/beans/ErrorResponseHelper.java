@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import io.jeannyil.quarkus.camel.jsonvalidation.models.Error;
 import io.jeannyil.quarkus.camel.jsonvalidation.models.ErrorResponse;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**

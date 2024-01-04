@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "https://fruits-and-legumes-api.apps.cluster-tpbfg.tpbfg.sandbox318.opentlc.com",
+            "url": "https://fruits-and-legumes-api.apps.cluster-hntwr.hntwr.sandbox1255.opentlc.com",
             "description": "API Backend URL"
         }
     ],
@@ -223,7 +223,7 @@
             "oicd": {
                 "flows": {
                     "clientCredentials": {
-                        "tokenUrl": "https://sso.apps.cluster-tpbfg.tpbfg.sandbox318.opentlc.com/auth/realms/openshift-cluster/protocol/openid-connect/token",
+                        "tokenUrl": "https://sso.apps.cluster-hntwr.hntwr.sandbox1255.opentlc.com/auth/realms/openshift-cluster/protocol/openid-connect/token",
                         "scopes": {
                             "openid": ""
                         }

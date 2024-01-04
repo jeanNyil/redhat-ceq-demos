@@ -1,9 +1,9 @@
 package io.jeannyil.quarkus.camel.routes;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -106,7 +106,7 @@ public class RhoamWebhookEventsHandlerApiRoute extends RouteBuilder {
 			// Handles the RHOAM Admin/Developer Portal webhook event and sends it to an AMQP queue
 			.post("/webhook/amqpbridge")
 				.id("webhook-amqpbridge-handler-route")
-				.consumes(MediaType.WILDCARD)
+				.consumes(MediaType.APPLICATION_XML)
 				.produces(MediaType.APPLICATION_JSON)
 				.description("Sends RHOAM Admin/Developer Portal webhook event to an AMQP queue")
 				.param()

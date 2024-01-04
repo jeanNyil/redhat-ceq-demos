@@ -1,7 +1,7 @@
 package io.jeannyil.quarkus.camel.beans;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 import io.jeannyil.quarkus.camel.models.ErrorMessageType;
 import io.jeannyil.quarkus.camel.models.ResponseMessage;
