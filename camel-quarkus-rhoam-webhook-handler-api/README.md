@@ -1,6 +1,6 @@
 # Camel-Quarkus-RHOAM-Webhook-Handler-Api project
 
-This project leverages **Red Hat build of Quarkus 2.13.x**, the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat Camel Extensions for Quarkus 2.13.x**](https://access.redhat.com/documentation/en-us/red_hat_integration/2023.q1/html/getting_started_with_camel_extensions_for_quarkus/index).
+This project leverages **Red Hat build of Quarkus 3.2.x**, the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat build of Apache Camel 4.x for Quarkus**](https://access.redhat.com/documentation/en-us/red_hat_build_of_apache_camel).
 
 It exposes the following RESTful service endpoints  using **Apache Camel REST DSL** and the **Apache Camel Quarkus Platform HTTP** extension:
 - `/webhook/amqpbridge` : 
@@ -94,7 +94,7 @@ java -Dintegrations-broker.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broke
 
 2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `ceq-services-jvm`
     ```shell script
-    oc new-project ceq-services-jvm --display-name="Red Hat Camel Extensions for Quarkus Apps - JVM Mode"
+    oc new-project ceq-services-jvm --display-name="Red Hat build of Apache Camel for Quarkus Apps - JVM Mode"
     ```
         
 3. Create an `allInOne` Jaeger instance.
@@ -564,7 +564,7 @@ If you want to learn more about building native executables, please consult http
 
 2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `ceq-services-serverless`
     ```shell script
-    oc new-project ceq-services-serverless --display-name="Red Hat Camel Extensions for Quarkus Apps - Native Mode and Serverless"
+    oc new-project ceq-services-serverless --display-name="Red Hat build of Apache Camel for Quarkus Apps - Native Mode and Serverless"
     ```
         
 3. Create an `allInOne` Jaeger instance.

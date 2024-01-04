@@ -1,6 +1,6 @@
 # camel-quarkus-datagrid-tester Project
 
-This project leverages **Red Hat build of Quarkus 2.13.x**, the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat Camel Extensions for Quarkus 2.13.x**](https://access.redhat.com/documentation/en-us/red_hat_integration/2023.q1/html/getting_started_with_camel_extensions_for_quarkus/index).
+This project leverages **Red Hat build of Quarkus 3.2.x**, the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat build of Apache Camel 4.x for Quarkus**](https://access.redhat.com/documentation/en-us/red_hat_build_of_apache_camel).
 
 The purpose is to demo the implementation of the _Infinispan Idempotent Repository_ to synchronize concurrent access as well as the use of the _Apache Camel Quarkus Infinispan_ extension.
 
@@ -19,20 +19,20 @@ The purpose is to demo the implementation of the _Infinispan Idempotent Reposito
     cp ${JAVA_HOME}/lib/security/cacerts ./tls-keys/truststore.p12
     keytool -storepasswd -keystore ./tls-keys/truststore.p12 -storepass changeit -new 'P@ssw0rd'
     # Importing the Red Hat Data Grid server public certificate into the truststore
-    keytool -importcert -trustcacerts -alias datagrid-cluster -keystore ./tls-keys/truststore.p12 -file ./tls-keys/datagrid-cluster.crt -storepass P@ssw0rd -v -noprompt
+    keytool -importcert -trustcacerts -keystore ./tls-keys/truststore.p12 -file ./tls-keys/rhdg.fullchain.pem -storepass P@ssw0rd -v -noprompt
     ```
 
     > :bulb: **Example on how to obtain the Red Hat Data Grid server public certificate:**
     ```script shell
-    openssl s_client -showcerts -servername <Red Hat Data Grid cluster OpenShift route> -connect <Red Hat Data Grid cluster OpenShift route>:443
+    openssl s_client -showcerts -servername <Red Hat Data Grid cluster OpenShift route> -connect <Red Hat Data Grid cluster OpenShift route>:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p'
     ```
-    with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid-cluster.apps.cluster-tpbfg.tpbfg.sandbox318.opentlc.com`
+    with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid-cluster.apps.cluster-hntwr.hntwr.sandbox1255.opentlc.com`
 
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
 ```shell script
-./mvnw quarkus:dev -Djavax.net.debug=all
+./mvnw quarkus:dev
 ```
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
@@ -87,7 +87,7 @@ If you want to learn more about building native executables, please consult http
 
 2. Create an OpenShift project to host the service
     ```script shell
-    oc new-project ceq-services-jvm --display-name="Red Hat Camel Extensions for Quarkus Apps - JVM Mode"
+    oc new-project ceq-services-jvm --display-name="Red Hat build of Apache Camel for Quarkus Apps - JVM Mode"
     ```
 
 3. Create secret containing the camel-quarkus-datagrid-tester truststore
@@ -221,7 +221,7 @@ The Quarkus application configuration is located in `src/main/resources/applicat
     3scale import openapi \
     --override-private-base-url='http://camel-quarkus-datagrid-tester.ceq-services-jvm.svc' \
     --oidc-issuer-type=keycloak \
-    --oidc-issuer-endpoint='https://<replace_me_with_client_id>:<replace_me_with_client_secret>@sso.apps.cluster-tpbfg.tpbfg.sandbox318.opentlc.com/auth/realms/openshift-cluster' \
+    --oidc-issuer-endpoint='https://<replace_me_with_client_id>:<replace_me_with_client_secret>@sso.apps.cluster-hntwr.hntwr.sandbox1255.opentlc.com/auth/realms/openshift-cluster' \
     --target_system_name=fruits_and_legumes_api \
     --verbose -d rhpds-apim-demo ./src/main/resources/openapi/openapi.json
     ```

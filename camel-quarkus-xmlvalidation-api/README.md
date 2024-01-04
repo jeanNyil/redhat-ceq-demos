@@ -1,6 +1,6 @@
 # Camel-Quarkus-XmlValidation-Api project
 
-This project leverages **Red Hat build of Quarkus 2.13.x**, the Supersonic Subatomic Java Framework.
+This project leverages **Red Hat build of Quarkus 3.2.x**, the Supersonic Subatomic Java Framework.
 
 It exposes the following RESTful service endpoints  using **Apache Camel REST DSL** and the **Apache Camel Quarkus Platform HTTP** extension:
 - `/validateMembershipXML` : validates a sample `Membership` XML instance through the `POST` HTTP method.
@@ -48,7 +48,7 @@ The application is now runnable using `java -jar target/camel-quarkus-xmlvalidat
     ```
 2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `camel-quarkus`
     ```zsh
-    oc new-project camel-quarkus-jvm --display-name="Apache Camel Quarkus Apps - JVM Mode"
+    oc new-project ceq-services-jvm --display-name="Red Hat build of Apache Camel for Quarkus Apps - JVM Mode"
     ```
 3. Use either the _**S2I binary workflow**_ or _**S2I source workflow**_ to deploy the `Camel-Quarkus-XmlValidation-Api.postman_collection` app as described below.
 
@@ -57,7 +57,7 @@ The application is now runnable using `java -jar target/camel-quarkus-xmlvalidat
 This leverages the _Quarkus OpenShift_ extension and is only recommended for development and testing purposes.
 
 ```zsh
-./mvnw clean package -Dquarkus.kubernetes.deploy=true -Dquarkus.container-image.group=camel-quarkus-jvm
+./mvnw clean package -Dquarkus.kubernetes.deploy=true -Dquarkus.container-image.group=ceq-services-jvm
 ```
 ```zsh
 [...]
@@ -66,16 +66,16 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 - "org.apache.camel.main" found in [org.apache.camel:camel-base-engine::jar, org.apache.camel:camel-main::jar]
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.api.jeannyil.sandbox1789.opentlc.com:6443/' successfully contacted.
 [INFO] Checking for existing resources in: /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-xmlvalidation-api/src/main/kubernetes.
-[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Performing openshift binary build with jar on server: https://api.api.jeannyil.sandbox1789.opentlc.com:6443/ in namespace:camel-quarkus-jvm.
+[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Performing openshift binary build with jar on server: https://api.api.jeannyil.sandbox1789.opentlc.com:6443/ in namespace:ceq-services-jvm.
 [...]
-[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Pushing image image-registry.openshift-image-registry.svc:5000/camel-quarkus-jvm/camel-quarkus-xmlvalidation-api:1.0.0 ...
+[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Pushing image image-registry.openshift-image-registry.svc:5000/ceq-services-jvm/camel-quarkus-xmlvalidation-api:1.0.0 ...
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Getting image source signatures
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Copying blob sha256:4a1b2e71b0ec9ecbbaec252160f0b48be035515b04035a25aa50bfb2c7e4d6c2
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Copying blob sha256:4418ace46c3dd933f98d83f357f31048e72d5db3d97bccfdb0acef769ee8234f
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Copying blob sha256:2a99c93da16827d9a6254f86f495d2c72c62a916f9c398577577221d35d2c790
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Copying blob sha256:b4a4e359e27438bf3181a61aaa0dbe0ca8cc310a9d41f4470189170107ecff08
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Copying config sha256:ddd77d2015664bcccedecbec9138f843340e0c04570085d8345f9c2c98cc4c48
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.api.jeannyil.sandbox1789.opentlc.com:6443/ in namespace: camel-quarkus-jvm.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.api.jeannyil.sandbox1789.opentlc.com:6443/ in namespace: ceq-services-jvm.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ServiceAccount camel-quarkus-xmlvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Service camel-quarkus-xmlvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Role view-secrets.
@@ -86,7 +86,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: BuildConfig camel-quarkus-xmlvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Deployment camel-quarkus-xmlvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Route camel-quarkus-xmlvalidation-api.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-xmlvalidation-api-camel-quarkus-jvm.apps.api.jeannyil.sandbox1789.opentlc.com
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-xmlvalidation-api-ceq-services-jvm.apps.api.jeannyil.sandbox1789.opentlc.com
 [INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 64279ms
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -124,7 +124,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
             Author: Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
             Date:   Thu May 27 12:55:19 2021 +0200
     [...]
-    Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-jvm/camel-quarkus-xmlvalidation-api@sha256:ea4efcaf1444867e863dfddbe192754435a4c62ab616039ffd49659b09d9df43
+    Successfully pushed image-registry.openshift-image-registry.svc:5000/ceq-services-jvm/camel-quarkus-xmlvalidation-api@sha256:ea4efcaf1444867e863dfddbe192754435a4c62ab616039ffd49659b09d9df43
     Push successful
     ```
 4. Create a non-secure route to expose the `Camel-Quarkus-XmlValidation-Api.postman_collection` service outside the OpenShift cluster
@@ -440,9 +440,9 @@ If you want to learn more about building native executables, please consult http
     oc login ...
     ```
 
-2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `camel-quarkus-native`
+2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `ceq-services-native`
     ```zsh
-    oc new-project camel-quarkus-native --display-name="Apache Camel Quarkus Apps - Native Mode"
+    oc new-project ceq-services-native --display-name="Red Hat build of Apache Camel for Quarkus - Native Mode"
     ```
 
 3. Build a Linux executable using a container build. Compiling a Quarkus application to a native executable consumes a lot of memory during analysis and optimization. You can limit the amount of memory used during native compilation by setting the `quarkus.native.native-image-xmx` configuration property. Setting low memory limits might increase the build time.
@@ -494,7 +494,7 @@ If you want to learn more about building native executables, please consult http
         Receiving source from STDIN as archive ...
         Replaced Dockerfile FROM image registry.access.redhat.com/ubi8/ubi-minimal:8.1
         [...]
-        Successfully pushed image-registry.openshift-image-registry.svc:5000/camel-quarkus-native/camel-quarkus-xmlvalidation-api@sha256:538fa66e80ad038dcf21d4e01c5380000365d64b5dfc9d2a442ca0d597d5d601
+        Successfully pushed image-registry.openshift-image-registry.svc:5000/ceq-services-native/camel-quarkus-xmlvalidation-api@sha256:538fa66e80ad038dcf21d4e01c5380000365d64b5dfc9d2a442ca0d597d5d601
         Push successful
         ```
 
@@ -502,7 +502,7 @@ If you want to learn more about building native executables, please consult http
     ```zsh
     kn service create camel-quarkus-xmlvalidation-api \
     --label app.openshift.io/runtime=quarkus \
-    --image image-registry.openshift-image-registry.svc:5000/camel-quarkus-native/camel-quarkus-xmlvalidation-api:latest
+    --image image-registry.openshift-image-registry.svc:5000/ceq-services-native/camel-quarkus-xmlvalidation-api:latest
     ```
 
 6. To verify that the `camel-quarkus-xmlvalidation-api` service is ready, enter the following command.
