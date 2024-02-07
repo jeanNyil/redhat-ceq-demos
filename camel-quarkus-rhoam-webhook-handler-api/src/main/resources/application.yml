@@ -70,7 +70,7 @@ quarkus:
     # Camel Quarkus AMQP extension configuration (leverages the Quarkus Qpid JMS extension)
     qpid-jms:
         # Connection URL for the injected factory
-        url: amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.cluster-hntwr.hntwr.sandbox1255.opentlc.com:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000
+        url: amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.cluster-njb6f.njb6f.sandbox2810.opentlc.com:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000
         # Username to set on the factory
         username: ${camel.context.name}
         # Password to set on the factory
