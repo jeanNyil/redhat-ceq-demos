@@ -20,9 +20,6 @@
     <quarkus.platform.group-id>com.redhat.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>3.2.9.Final-redhat-00003</quarkus.platform.version>
 
-    <!-- Other libraries versions -->
-    <pooled-jms.version>2.0.4.redhat-00001</pooled-jms.version>
-
     <!-- Plugins versons -->
     <surefire-plugin.version>3.0.0</surefire-plugin.version>
 
