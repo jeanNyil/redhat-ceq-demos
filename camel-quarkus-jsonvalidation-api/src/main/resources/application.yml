@@ -38,6 +38,8 @@ quarkus:
         # Expose OpenShift route
         route:
             expose: true
+            tls:
+                termination: edge
         # The type of service that will be generated for the application
         service-type: ClusterIP
         # CPU and Memory resources requirements when deployed on Kubernetes/OpenShift

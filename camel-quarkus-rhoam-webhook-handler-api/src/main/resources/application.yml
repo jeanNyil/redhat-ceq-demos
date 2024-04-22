@@ -38,6 +38,8 @@ quarkus:
         # Expose OpenShift route
         route:
             expose: true
+            tls:
+                termination: edge
         # CPU and Memory resources requirements when deployed on Kubernetes/OpenShift
         resources:
             requests:
