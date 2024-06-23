@@ -234,7 +234,7 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
 
 1. Get the OpenShift route hostname
     ```shell script
-    URL="http://$(oc get route camel-quarkus-rhoam-webhook-handler-api -o jsonpath='{.spec.host}')"
+    URL="https://$(oc get route camel-quarkus-rhoam-webhook-handler-api -o jsonpath='{.spec.host}')"
     ```
     
 2. Test the `/webhook/amqpbridge` endpoint
