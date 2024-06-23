@@ -117,7 +117,7 @@ quarkus:
         # Cf. https://camel.apache.org/camel-quarkus/3.2.x/reference/extensions/micrometer.html
         metrics:
             enable-route-policy: true
-            enable-message-history: false
+            enable-message-history: true
             enable-exchange-event-notifier: true
             enable-route-event-notifier: true
             enable-instrumented-thread-pool-factory: false
