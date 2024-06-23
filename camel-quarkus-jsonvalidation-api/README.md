@@ -113,15 +113,7 @@ java -Dquarkus.kubernetes-config.enabled=false -Dquarkus.opentelemetry.tracer.ex
         EOF
         ```
 
-4. Create the `quarkus-opentracing-endpoint-secret` containing the _QUARKUS OPENTRACING_ [endpoint configuration options](https://quarkus.io/version/main/guides/opentracing#configuration-reference). These options are leveraged by the _Camel Quarkus Opentracing_ extension to connect to the jaeger collector. Adapt the `quarkus.jaeger.endpoint`according to your environment.
-
-    :warning: _Replace jaeger endpoint according to your environment_
-    ```zsh
-    oc create secret generic quarkus-opentracing-endpoint-secret \
-    --from-literal=quarkus.jaeger.endpoint="http://jaeger-all-in-one-inmemory-collector.ceq-services-jvm.svc:14268/api/traces"
-    ```
-
-5. Use either the _**S2I binary workflow**_ or _**S2I source workflow**_ to deploy the `camel-quarkus-jsonvalidation-api` app as described below.
+4. Use either the _**S2I binary workflow**_ or _**S2I source workflow**_ to deploy the `camel-quarkus-jsonvalidation-api` app as described below.
 
 ### OpenShift S2I binary workflow 
 
