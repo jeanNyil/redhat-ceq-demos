@@ -136,7 +136,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 
 1. Get the OpenShift route hostname
     ```zsh
-    URL="http://$(oc get route camel-quarkus-xmlvalidation-api -o jsonpath='{.spec.host}')"
+    URL="https://$(oc get route camel-quarkus-xmlvalidation-api -o jsonpath='{.spec.host}')"
     ```
 2. Test the `/validateMembershipJSON` endpoint
     ```zsh
