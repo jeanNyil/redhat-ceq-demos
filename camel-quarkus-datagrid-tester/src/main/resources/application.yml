@@ -44,7 +44,6 @@ quarkus:
     # Expose OpenShift route
     route:
       expose: true
-      host: fruits-and-legumes-api.apps.ocp4.jnyilimb.eu
       tls:
         termination: edge
     # CPU and Memory resources requirements when deployed on Kubernetes/OpenShift
@@ -78,7 +77,7 @@ quarkus:
   # Red Hat Data Grid (Infinispan)
   infinispan-client:
     # Sets the host name/port to connect to. Each one is separated by a semicolon
-    hosts: datagrid.apps.cluster-njb6f.njb6f.sandbox2810.opentlc.com:443
+    hosts: datagrid.apps.ocp4.jnyilimb.eu:443
     # Server name used by authentication
     auth-server-name: datagrid-cluster
     # Realm used by authentication
