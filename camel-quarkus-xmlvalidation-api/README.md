@@ -1,6 +1,6 @@
 # Camel-Quarkus-XmlValidation-Api project
 
-This project leverages **Red Hat build of Quarkus 3.2.x**, the Supersonic Subatomic Java Framework.
+This project leverages **Red Hat build of Quarkus 3.8.x**, the Supersonic Subatomic Java Framework.
 
 It exposes the following RESTful service endpoints  using **Apache Camel REST DSL** and the **Apache Camel Quarkus Platform HTTP** extension:
 - `/validateMembershipXML` : validates a sample `Membership` XML instance through the `POST` HTTP method.
