@@ -19,6 +19,7 @@ stringData:
   quarkus.infinispan-client.password: P@ssw0rd
   quarkus.infinispan-client.client-intelligence: HASH_DISTRIBUTION_AWARE
   quarkus.infinispan-client.sasl-mechanism: PLAIN
+  quarkus.infinispan-client.sni-host-name: datagrid-cluster.datagrid-cluster.svc
   quarkus.infinispan-client.trust-store: /mnt/ssl/truststore.p12
   quarkus.infinispan-client.trust-store-password: P@ssw0rd
 type: Opaque

@@ -87,6 +87,7 @@ quarkus:
     password: P@ssw0rd
     client-intelligence: BASIC
     sasl-mechanism: PLAIN
+    sni-host-name: datagrid.apps.ocp4.jnyilimb.eu
     trust-store: ./tls-keys/truststore.p12
     trust-store-password: P@ssw0rd
   
