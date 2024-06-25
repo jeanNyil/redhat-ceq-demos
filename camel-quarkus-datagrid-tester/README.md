@@ -26,7 +26,7 @@ The purpose is to demo the implementation of the _Infinispan Idempotent Reposito
     ```script shell
     openssl s_client -showcerts -servername <Red Hat Data Grid cluster OpenShift route> -connect <Red Hat Data Grid cluster OpenShift route>:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p'
     ```
-    with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid-cluster.apps.cluster-njb6f.njb6f.sandbox2810.opentlc.com`
+    with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid.apps.ocp4.jnyilimb.eu`
 
 ## Running the application in dev mode
 
@@ -117,7 +117,7 @@ If you want to learn more about building native executables, please consult http
 
 4. Deploy the CEQ service
     ```script shell
-    ./mvnw clean package -Dquarkus.kubernetes.deploy=true -Dquarkus.container-image.group=ceq-services-jvm
+    ./mvnw clean package -Dquarkus.openshift.deploy-true -Dquarkus.container-image.group=ceq-services-jvm
     ```
 
 ### OpenTelemetry with Jaeger

@@ -120,7 +120,7 @@ java -Dquarkus.kubernetes-config.enabled=false -Dquarkus.opentelemetry.tracer.ex
 This leverages the _Quarkus OpenShift_ extension and is only recommended for development and testing purposes.
 
 ```zsh
-./mvnw clean package -Dquarkus.kubernetes.deploy=true -Dquarkus.container-image.group=ceq-services-jvm
+./mvnw clean package -Dquarkus.openshift.deploy-true -Dquarkus.container-image.group=ceq-services-jvm
 ```
 ```zsh
 [...]

@@ -141,7 +141,7 @@ java -Dintegrations-broker.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broke
 This leverages the **Quarkus OpenShift** extension and is only recommended for development and testing purposes.
 
 ```shell script
-./mvnw clean package -Dquarkus.kubernetes.deploy=true -Dquarkus.container-image.group=ceq-services-jvm
+./mvnw clean package -Dquarkus.openshift.deploy-true -Dquarkus.container-image.group=ceq-services-jvm
 ```
 
 ### OpenShift S2I source workflow (recommended for PRODUCTION use)
@@ -609,7 +609,7 @@ If you want to learn more about building native executables, please consult http
         ```shell script
         ./mvnw clean package -Pnative -Dquarkus.native.container-runtime=podman \
         -Dquarkus.native.builder-image=registry.access.redhat.com/quarkus/mandrel-21-jdk17-rhel8:latest \
-        -Dquarkus.kubernetes.deploy=true \
+        -Dquarkus.openshift.deploy-true \
         -Dquarkus.kubernetes.deployment-target=knative \
         -Dquarkus.container-image.group=ceq-services-serverless
         ```
@@ -617,7 +617,7 @@ If you want to learn more about building native executables, please consult http
         ```shell script
 	    ./mvnw clean package -Pnative -Dquarkus.native.container-runtime=docker \
         -Dquarkus.native.builder-image=registry.access.redhat.com/quarkus/mandrel-21-jdk17-rhel8:latest \
-        -Dquarkus.kubernetes.deploy=true \
+        -Dquarkus.openshift.deploy-true \
         -Dquarkus.kubernetes.deployment-target=knative \
         -Dquarkus.container-image.group=ceq-services-serverless
         ```
