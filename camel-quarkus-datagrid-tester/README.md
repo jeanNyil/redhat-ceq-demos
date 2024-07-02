@@ -117,7 +117,7 @@ If you want to learn more about building native executables, please consult http
 
 4. Deploy the CEQ service
     ```script shell
-    ./mvnw clean package -Dquarkus.openshift.deploy-true -Dquarkus.container-image.group=ceq-services-jvm
+    ./mvnw clean package -Dquarkus.openshift.deploy=true -Dquarkus.container-image.group=ceq-services-jvm
     ```
 
 ### OpenTelemetry with Jaeger
