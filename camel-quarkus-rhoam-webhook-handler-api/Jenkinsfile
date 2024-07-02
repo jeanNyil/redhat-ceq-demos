@@ -307,7 +307,7 @@ def deploy(folderName, projName) {
     sh """
         cd ${folderName}
         oc project ${projName}
-        ./mvnw package -Dquarkus.openshift.deploy-true -Dquarkus.openshift.replicas=1
+        ./mvnw package -Dquarkus.openshift.deploy=true -Dquarkus.openshift.replicas=1
     """
 }
 
