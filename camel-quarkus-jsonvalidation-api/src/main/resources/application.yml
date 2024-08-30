@@ -34,7 +34,7 @@ quarkus:
         # The default Dockerfile to use for native builds
         native-dockerfile: src/main/docker/Dockerfile.native
         # The number of desired pods
-        replicas: 2
+        replicas: 1
         # Expose OpenShift route
         route:
             expose: true
@@ -42,6 +42,10 @@ quarkus:
                 termination: edge
         # The type of service that will be generated for the application
         service-type: ClusterIP
+        # Requirement of "hawtio-enabled" deployments. A container needsto have a port named "jolokia"
+        ports:
+            jolokia:
+                container-port: 8778
         # CPU and Memory resources requirements when deployed on Kubernetes/OpenShift
         resources:
             requests:

@@ -56,6 +56,10 @@ quarkus:
         memory: 256Mi
     # The type of service that will be generated for the application
     service-type: ClusterIP
+    # Requirement of "hawtio-enabled" deployments. A container needsto have a port named "jolokia"
+    ports:
+      jolokia:
+        container-port: 8778
     # Secret to mount and where to mount it
     secret-volumes:
       truststore-volume:

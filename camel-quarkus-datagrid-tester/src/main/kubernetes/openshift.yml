@@ -13,13 +13,13 @@ kind: Secret
 metadata:
   name: camel-quarkus-datagrid-tester-secret
 stringData:
-  quarkus.infinispan-client.hosts: datagrid-cluster.datagrid-cluster.svc:11222
+  quarkus.infinispan-client.hosts: datagrid.apps.ocp4.jnyilimb.eu:443
   quarkus.infinispan-client.auth-server-name: datagrid-cluster
   quarkus.infinispan-client.username: cameluser
   quarkus.infinispan-client.password: P@ssw0rd
   quarkus.infinispan-client.client-intelligence: HASH_DISTRIBUTION_AWARE
   quarkus.infinispan-client.sasl-mechanism: PLAIN
-  quarkus.infinispan-client.sni-host-name: datagrid-cluster.datagrid-cluster.svc
+  quarkus.infinispan-client.sni-host-name: datagrid.apps.ocp4.jnyilimb.eu
   quarkus.infinispan-client.trust-store: /mnt/ssl/truststore.p12
   quarkus.infinispan-client.trust-store-password: P@ssw0rd
 type: Opaque
