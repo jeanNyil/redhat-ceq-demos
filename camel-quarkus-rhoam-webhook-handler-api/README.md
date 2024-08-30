@@ -77,7 +77,7 @@ According to your environment, you may want to customize:
 
 Example:
 ```
-java -Dintegrations-broker.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.jeannyil.sandbox1789.opentlc.com:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000" -Dquarkus.opentelemetry.tracer.exporter.otlp.endpoint="http://localhost:4317" -jar target/quarkus-app/quarkus-run.jar
+java -Dintegrations-broker.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.ocp4.jnyilimb.eu:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000" -Dquarkus.opentelemetry.tracer.exporter.otlp.endpoint="http://localhost:4317" -jar target/quarkus-app/quarkus-run.jar
 ```
 
 ## :bulb: Packaging and running the application on Red Hat OpenShift
@@ -146,7 +146,7 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
 
 ### OpenShift S2I source workflow (recommended for PRODUCTION use)
 
-1. Make sure the latest supported OpenJDK 11 image is imported in OpenShift
+1. Make sure the latest supported OpenJDK 21 image is imported in OpenShift
     ```shell script
     oc import-image --confirm openjdk-17-ubi8 \
     --from=registry.access.redhat.com/ubi8/openjdk-17:1.11 \
@@ -392,7 +392,7 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
         "servers": [
             {
                 "description": "API Backend URL",
-                "url": "http://rhoam-webhook-events-handler-api.apps.jeannyil.sandbox1789.opentlc.com"
+                "url": "http://rhoam-webhook-events-handler-api.apps.ocp4.jnyilimb.eu"
             }
         ]
     }

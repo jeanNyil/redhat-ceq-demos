@@ -9,7 +9,7 @@ It exposes the following RESTful service endpoints  using **Apache Camel REST DS
 - `/q/metrics` : the _Camel Quarkus MicroProfile_ metrics
 
 ## Prerequisites
-- JDK 11 installed with `JAVA_HOME` configured appropriately
+- JDK 21 installed with `JAVA_HOME` configured appropriately
 - Apache Maven 3.8.1+
 - **OPTIONAL**: [**Jaeger**](https://www.jaegertracing.io/), a distributed tracing system for observability ([_open tracing_](https://opentracing.io/)).  :bulb: A simple way of starting a Jaeger tracing server is with `docker` or `podman`:
     1. Start the Jaeger tracing server:
@@ -64,9 +64,9 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Selecting target 'openshift' since it has the highest priority among the implicitly enabled deployment targets
 [WARNING] [io.quarkus.arc.deployment.SplitPackageProcessor] Detected a split package usage which is considered a bad practice and should be avoided. Following packages were detected in multiple archives: 
 - "org.apache.camel.main" found in [org.apache.camel:camel-base-engine::jar, org.apache.camel:camel-main::jar]
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.api.jeannyil.sandbox1789.opentlc.com:6443/' successfully contacted.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.api.ocp4.jnyilimb.eu:6443/' successfully contacted.
 [INFO] Checking for existing resources in: /Users/jnyilimb/workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-xmlvalidation-api/src/main/kubernetes.
-[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Performing openshift binary build with jar on server: https://api.api.jeannyil.sandbox1789.opentlc.com:6443/ in namespace:ceq-services-jvm.
+[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Performing openshift binary build with jar on server: https://api.api.ocp4.jnyilimb.eu:6443/ in namespace:ceq-services-jvm.
 [...]
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Pushing image image-registry.openshift-image-registry.svc:5000/ceq-services-jvm/camel-quarkus-xmlvalidation-api:1.0.0 ...
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Getting image source signatures
@@ -75,7 +75,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Copying blob sha256:2a99c93da16827d9a6254f86f495d2c72c62a916f9c398577577221d35d2c790
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Copying blob sha256:b4a4e359e27438bf3181a61aaa0dbe0ca8cc310a9d41f4470189170107ecff08
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Copying config sha256:ddd77d2015664bcccedecbec9138f843340e0c04570085d8345f9c2c98cc4c48
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.api.jeannyil.sandbox1789.opentlc.com:6443/ in namespace: ceq-services-jvm.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.api.ocp4.jnyilimb.eu:6443/ in namespace: ceq-services-jvm.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ServiceAccount camel-quarkus-xmlvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Service camel-quarkus-xmlvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Role view-secrets.
@@ -86,7 +86,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: BuildConfig camel-quarkus-xmlvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Deployment camel-quarkus-xmlvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Route camel-quarkus-xmlvalidation-api.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-xmlvalidation-api-ceq-services-jvm.apps.api.jeannyil.sandbox1789.opentlc.com
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-xmlvalidation-api-ceq-services-jvm.apps.api.ocp4.jnyilimb.eu
 [INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 64279ms
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -98,7 +98,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 
 ### OpenShift S2I source workflow (recommended for PRODUCTION use)
 
-1. Make sure the latest supported OpenJDK 11 image is imported in OpenShift
+1. Make sure the latest supported OpenJDK 21 image is imported in OpenShift
     ```zsh
     oc import-image --confirm openjdk-11-ubi8 \
     --from=registry.access.redhat.com/ubi8/openjdk-11 \
@@ -172,7 +172,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         },
         "servers": [
             {
-                "url": "https://camel-quarkus-xml-validation-api.apps.jeannyil.sandbox1789.opentlc.com"
+                "url": "https://camel-quarkus-xml-validation-api.apps.ocp4.jnyilimb.eu"
             }
         ],
         "paths": {

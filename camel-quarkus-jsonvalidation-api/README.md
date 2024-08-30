@@ -9,7 +9,7 @@ It exposes the following RESTful service endpoints  using **Apache Camel REST DS
 - `/q/metrics` : the _Camel Quarkus MicroProfile_ metrics
 
 ## Prerequisites
-- JDK 11 installed with `JAVA_HOME` configured appropriately
+- JDK 21 installed with `JAVA_HOME` configured appropriately
 - Apache Maven 3.8.1+
 - **OPTIONAL**: [**Jaeger**](https://www.jaegertracing.io/), a distributed tracing system for observability ([_open tracing_](https://opentracing.io/)).  :bulb: A simple way of starting a Jaeger tracing server is with `docker` or `podman`:
     1. Start the Jaeger tracing server:
@@ -125,13 +125,13 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 ```zsh
 [...]
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Selecting target 'openshift' since it has the highest priority among the implicitly enabled deployment targets
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.jeannyil.sandbox1789.opentlc.com:6443/' successfully contacted.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.ocp4.jnyilimb.eu:6443/' successfully contacted.
 [...]
-[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Performing openshift binary build with jar on server: https://api.jeannyil.sandbox1789.opentlc.com:6443/ in namespace:ceq-services-jvm.
+[INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Performing openshift binary build with jar on server: https://api.ocp4.jnyilimb.eu:6443/ in namespace:ceq-services-jvm.
 [...]
 [INFO] [io.quarkus.container.image.openshift.deployment.OpenshiftProcessor] Pushing image image-registry.openshift-image-registry.svc:5000/ceq-services-jvm/camel-quarkus-jsonvalidation-api:1.0.0 ...
 [...]
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.jeannyil.sandbox1789.opentlc.com:6443/ in namespace: ceq-services-jvm.
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Deploying to openshift server: https://api.ocp4.jnyilimb.eu:6443/ in namespace: ceq-services-jvm.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: ServiceAccount camel-quarkus-jsonvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Service camel-quarkus-jsonvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Role view-secrets.
@@ -142,7 +142,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: BuildConfig camel-quarkus-jsonvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Deployment camel-quarkus-jsonvalidation-api.
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Applied: Route camel-quarkus-jsonvalidation-api.
-[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-jsonvalidation-api-ceq-services-jvm.apps.jeannyil.sandbox1789.opentlc.com
+[INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] The deployed application can be accessed at: http://camel-quarkus-jsonvalidation-api-ceq-services-jvm.apps.ocp4.jnyilimb.eu
 [INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 74311ms
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -154,7 +154,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 
 ### OpenShift S2I source workflow (recommended for PRODUCTION use)
 
-1. Make sure the latest supported OpenJDK 11 image is imported in OpenShift
+1. Make sure the latest supported OpenJDK 21 image is imported in OpenShift
     ```zsh
     oc import-image --confirm openjdk-11-ubi8 \
     --from=registry.access.redhat.com/ubi8/openjdk-11 \
@@ -228,7 +228,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
         },
         "servers": [
             {
-                "url": "http://camel-quarkus-json-validation-api.apps.jeannyil.sandbox1789.opentlc.com",
+                "url": "http://camel-quarkus-json-validation-api.apps.ocp4.jnyilimb.eu",
                 "description": "API Backend URL"
             }
         ],
