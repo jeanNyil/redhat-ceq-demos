@@ -50,10 +50,10 @@ quarkus:
         resources:
             requests:
                 cpu: 30m
-                memory: 256Mi
+                memory: 512Mi
             limits:
                 cpu: 500m
-                memory: 256Mi
+                memory: 512Mi
 
     # OpenTelemetry configuration. This is leveraged by Camel Quarkus OpenTelemetry extension
     ## Identifier for the origin of spans created by the application
