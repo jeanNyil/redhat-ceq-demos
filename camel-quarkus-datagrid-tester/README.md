@@ -14,7 +14,7 @@ The purpose is to demo the implementation of the _Infinispan Idempotent Reposito
     - [`fruits-legumes-replicated-cache-definition`](./config/datagrid/fruits-legumes-replicated-cache_cr.yaml) : `fruits-legumes-replicated-cache` used by the [`FruitsAndLegumesAPI`](./src/main/java/io/jeannyil/routes/FruitsAndLegumesApiRoute.java).
     - [`idempotency-replicated-cache-definition`](./config/datagrid/idempotency-replicated-cache_cr.yaml) : `idempotency-replicated-cache` used for idempotency purposes by the [`FilePollerRoute`](./src/main/java/io/jeannyil/routes/FilePollerRoute.java).
 - A truststore containing the [_Red Hat Data Grid v8.3_](https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.3) server public certificate. Below are sample command lines to generate one:
-    ```script shell
+    ```shell
     # Use the Java cacerts as the basis for the truststore
     cp ${JAVA_HOME}/lib/security/cacerts ./tls-keys/truststore.p12
     keytool -storepasswd -keystore ./tls-keys/truststore.p12 -storepass changeit -new 'P@ssw0rd'
@@ -23,7 +23,7 @@ The purpose is to demo the implementation of the _Infinispan Idempotent Reposito
     ```
 
     > :bulb: **Example on how to obtain the Red Hat Data Grid server public certificate:**
-    ```script shell
+    ```shell
     openssl s_client -showcerts -servername <Red Hat Data Grid cluster OpenShift route> -connect <Red Hat Data Grid cluster OpenShift route>:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p'
     ```
     with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid.apps.ocp4.jnyilimb.eu`
@@ -81,12 +81,12 @@ If you want to learn more about building native executables, please consult http
 ### Instructions
 
 1. Login to the OpenShift cluster
-    ```script shell
+    ```shell
     oc login ...
     ```
 
 2. Create an OpenShift project to host the service
-    ```script shell
+    ```shell
     oc new-project ceq-services-jvm --display-name="Red Hat build of Apache Camel for Quarkus Apps - JVM Mode"
     ```
 
@@ -116,7 +116,7 @@ If you want to learn more about building native executables, please consult http
     ```
 
 4. Deploy the CEQ service
-    ```script shell
+    ```shell
     ./mvnw clean package -Dquarkus.openshift.deploy=true -Dquarkus.container-image.group=ceq-services-jvm
     ```
 
@@ -158,12 +158,12 @@ _**:warning: cluster-admin privileges are required**_
     ```
 
 2. Verify the successful installation of the Red Hat OpenShift distributed tracing platform operator
-    ```script shell
+    ```shell
     watch oc get sub,csv
     ```
 
 3. Create the allInOne Jaeger instance in the dsna-pilot OpenShift project
-    ```script shell
+    ```shell
     oc apply -f - <<EOF
     apiVersion: jaegertracing.io/v1
     kind: Jaeger
@@ -217,7 +217,7 @@ The Quarkus application configuration is located in `src/main/resources/applicat
 1. The following [3scale Toolbox](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.13/html/operating_3scale/the-threescale-toolbox) command line imports the API in _Red Hat 3scale API Management_ and secures it using OpenID Connect from the OpenAPI Specification. _Red Hat SSO 7_ is used as the OpenID Connect Authorization Server.
     > :bulb: **NOTE:** Adapt the values according to your environment.
 
-    ```script shell
+    ```shell
     3scale import openapi \
     --override-private-base-url='http://camel-quarkus-datagrid-tester.ceq-services-jvm.svc' \
     --oidc-issuer-type=keycloak \
@@ -229,7 +229,7 @@ The Quarkus application configuration is located in `src/main/resources/applicat
 2. The following command lines create the application plans and update the policy chain respectively using the resources in the [`config/threescale`](./config/threescale) folder.
 
     - **Application plans**:
-        ```script shell
+        ```shell
         ### Basic plan
         3scale application-plan import \
         --file=./config/threescale/application_plans/basic-plan.yaml \
@@ -242,14 +242,14 @@ The Quarkus application configuration is located in `src/main/resources/applicat
         ```
 
     - **Policy chain**:
-        ```script shell
+        ```shell
         3scale policies import \
         --file='./config/threescale/policies/policy_chain.yaml' \
         --verbose rhpds-apim-demo fruits_and_legumes_api
         ```
 
     - **Promotion of the new configuration to 3scale _staging_ and _production_ environments**:
-        ```script shell
+        ```shell
         ## Promote the APIcast configuration to the Staging Environment
         3scale proxy deploy rhpds-apim-demo fruits_and_legumes_api --verbose
 
