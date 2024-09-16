@@ -27,6 +27,9 @@ quarkus:
         deployment-kind: Deployment
         # Part of the `RHAF-CEQ-Demo` Application Group
         part-of: RHAF-CEQ-Demo
+        # Apache Camel icon
+        labels:
+            app.openshift.io/runtime: camel
         # The build config strategy to use
         build-strategy: docker
         # The default Dockerfile to use for jvm builds
