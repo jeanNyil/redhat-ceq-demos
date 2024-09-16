@@ -201,7 +201,7 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
     --context-dir=camel-quarkus-rhoam-webhook-handler-api \
     --name=camel-quarkus-rhoam-webhook-handler-api \
     --image-stream="openshift/openjdk-17-ubi8" \
-    --labels=app.openshift.io/runtime=quarkus
+    --labels=app.openshift.io/runtime=camel
     ```
 
 4. Follow the log of the S2I build

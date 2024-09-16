@@ -112,7 +112,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     --image-stream="openshift/openjdk-11-ubi8" \
     --labels=app.kubernetes.io/name=camel-quarkus-xmlvalidation-api \
     --labels=app.kubernetes.io/version=1.0.0 \
-    --labels=app.openshift.io/runtime=quarkus
+    --labels=app.openshift.io/runtime=camel
     ```
 3. Follow the log of the S2I build
     ```zsh
@@ -501,7 +501,7 @@ If you want to learn more about building native executables, please consult http
 5. Deploy the `camel-quarkus-xmlvalidation-api` as a serverless application
     ```zsh
     kn service create camel-quarkus-xmlvalidation-api \
-    --label app.openshift.io/runtime=quarkus \
+    --label app.openshift.io/runtime=camel \
     --image image-registry.openshift-image-registry.svc:5000/ceq-services-native/camel-quarkus-xmlvalidation-api:latest
     ```
 
