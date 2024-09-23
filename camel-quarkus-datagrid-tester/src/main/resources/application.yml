@@ -11,6 +11,14 @@ datagrid:
     fruits-legumes: fruits-legumes-replicated-cache
     idempotency: idempotency-replicated-cache
 
+# FTP server
+ftp-server:
+  host: localhost
+  username: ftpuser
+  password: P@ssw0rd
+  directory: ftp/input # This is a relative path
+  data-timeout-inms: 30000
+
 # Quarkus
 quarkus:
   # Display the banner
@@ -29,6 +37,10 @@ quarkus:
 
   ## Quarkus OpenShift extension configuration
   openshift:
+    annotations:
+      # OpenShift web console visual connection to the ftp-server
+      app.openshift.io/connects-to: >-
+        [{"apiVersion":"apps/v1","kind":"Deployment","name":"ftp-server"}]
     # The kind of the deployment resource to use. Supported values are 'Deployment', 'StatefulSet', 'Job', 'CronJob' and 'DeploymentConfig' defaulting to the latter.
     deployment-kind: Deployment
     # Part of the `RHAF-CEQ-Demo` Application Group
@@ -113,7 +125,7 @@ quarkus:
     # large, eviction of previously selected resources could be triggered
     # with <code>excludePatterns</code>.
     resources:
-      includes: openapi/*
+      includes: openapi/*,ftp-test-files/*
 
   ## Camel Quarkus
   camel:

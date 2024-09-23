@@ -1,0 +1,177 @@
+## Run with podman:
+# podman volume create ftp-server-data
+# podman run --name ftp-server \
+# 	--detach \
+# 	--env FTP_PASS=P@ssw0rd \
+# 	--env FTP_USER=ftpuser \
+# 	--publish 20-21:20-21/tcp \
+# 	--publish 40000-40009:40000-40009/tcp \
+# 	--volume ftp-server-data:/home/user \
+# 	docker.io/garethflowers/ftp-server
+#
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: ftp-server
+    app.kubernetes.io/part-of: FTP
+  name: ftp-server
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ftp-server
+    app.kubernetes.io/part-of: FTP 
+  name: ftp-server
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ftp-server
+    app.kubernetes.io/part-of: FTP
+  name: ftp-server-anyuid-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:openshift:scc:anyuid  # This refers to the "anyuid" SCC
+subjects:
+- kind: ServiceAccount
+  name: ftp-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ftp-server
+    app.kubernetes.io/part-of: FTP
+  name: ftp-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ftp-server
+  template:
+    metadata:
+      labels:
+        app: ftp-server
+    spec:
+      serviceAccountName: ftp-server
+      containers:
+      - name: ftp-server
+        image: docker.io/garethflowers/ftp-server:latest # https://github.com/garethflowers/docker-ftp-server
+        securityContext:
+          runAsUser: 0
+        ports:
+        - containerPort: 20
+          protocol: TCP
+        - containerPort: 21
+          protocol: TCP
+        - containerPort: 40000
+          protocol: TCP
+        - containerPort: 40001
+          protocol: TCP
+        - containerPort: 40002
+          protocol: TCP
+        - containerPort: 40003
+          protocol: TCP
+        - containerPort: 40004
+          protocol: TCP
+        - containerPort: 40005
+          protocol: TCP
+        - containerPort: 40006
+          protocol: TCP
+        - containerPort: 40007
+          protocol: TCP
+        - containerPort: 40008
+          protocol: TCP
+        - containerPort: 40009
+          protocol: TCP
+        env:
+        - name: FTP_USER
+          value: "ftpuser"
+        - name: FTP_PASS
+          value: "P@ssw0rd"
+        volumeMounts:
+        - name: ftp-data
+          mountPath: /home/user
+        resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 30m
+              memory: 512Mi
+      volumes:
+      - name: ftp-data
+        persistentVolumeClaim:
+          claimName: ftp-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ftp-server
+    app.kubernetes.io/part-of: FTP
+  name: ftp-server
+spec:
+  selector:
+    app: ftp-server
+  ports:
+  - name: ftp-data-20
+    protocol: TCP
+    port: 20
+    targetPort: 20
+  - name: ftp-command-21
+    protocol: TCP
+    port: 21
+    targetPort: 21
+  - name: ftp-passive-40000-40009
+    protocol: TCP
+    port: 40000
+    targetPort: 40000
+  - name: ftp-passive-40001
+    protocol: TCP
+    port: 40001
+    targetPort: 40001
+  - name: ftp-passive-40002
+    protocol: TCP
+    port: 40002
+    targetPort: 40002
+  - name: ftp-passive-40003
+    protocol: TCP
+    port: 40003
+    targetPort: 40003
+  - name: ftp-passive-40004
+    protocol: TCP
+    port: 40004
+    targetPort: 40004
+  - name: ftp-passive-40005
+    protocol: TCP
+    port: 40005
+    targetPort: 40005
+  - name: ftp-passive-40006
+    protocol: TCP
+    port: 40006
+    targetPort: 40006
+  - name: ftp-passive-40007
+    protocol: TCP
+    port: 40007
+    targetPort: 40007
+  - name: ftp-passive-40008
+    protocol: TCP
+    port: 40008
+    targetPort: 40008
+  - name: ftp-passive-40009
+    protocol: TCP
+    port: 40009
+    targetPort: 40009
+  type: ClusterIP

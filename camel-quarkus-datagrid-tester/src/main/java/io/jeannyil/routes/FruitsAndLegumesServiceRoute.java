@@ -14,7 +14,7 @@ import org.apache.camel.model.rest.RestBindingMode;
 
 import io.jeannyil.models.Fruit;
 
-/* FruitsAndLegumesApi route definition
+/* FruitsAndLegumesService route definition
 
 /!\ The @ApplicationScoped annotation is required for @Inject and @ConfigProperty to work in a RouteBuilder. 
 	Note that the @ApplicationScoped beans are managed by the CDI container and their life cycle is thus a bit 
@@ -22,9 +22,9 @@ import io.jeannyil.models.Fruit;
 	In other words, using @ApplicationScoped in RouteBuilder comes with some boot time penalty and you should 
 	therefore only annotate your RouteBuilder with @ApplicationScoped when you really need it. */
 @ApplicationScoped
-public class FruitsAndLegumesApiRoute extends RouteBuilder {
+public class FruitsAndLegumesServiceRoute extends RouteBuilder {
 
-    private static String logName = FruitsAndLegumesApiRoute.class.getName();
+    private static String logName = FruitsAndLegumesServiceRoute.class.getName();
 
     @Inject
 	CamelContext camelctx;
@@ -55,30 +55,31 @@ public class FruitsAndLegumesApiRoute extends RouteBuilder {
             .enableCORS(true)
             .bindingMode(RestBindingMode.off) // RESTful responses will be explicitly marshaled for logging purposes
             .dataFormatProperty("prettyPrint", "true")
-            .contextPath("/")
+            .contextPath("/api/v1")
         ;
 
-        // REST endpoint for the FruitsAndLegumesApi OpenAPI specification
-        rest()
+        // REST endpoint for the FruitsAndLegumesService OpenAPI specification
+        rest("/fruits-and-legumes-api")
             .produces(MediaType.APPLICATION_JSON)
             .get("/openapi.json")
-                .id("get-oas-route")
+                .id("get-fruits-and-legumes-api-oas-rest")
                 .description("Gets the OpenAPI specification for this service in JSON format")
-                .to("direct:getOAS")
+                .to("direct:get-fruits-and-legumes-api-oas")
         ;
 
-        // Returns the OAS
-        from("direct:getOAS")
+        // Returns the FruitsAndLegumesService OAS
+        from("direct:get-fruits-and-legumes-api-oas")
+            .routeId("get-fruits-and-legumes-api-oas-route")
             .log(LoggingLevel.INFO, logName, ">>> IN: headers:[${headers}] - body:[${body}]")
             .setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json"))
-            .setBody().constant("resource:classpath:openapi/openapi.json")
+            .setBody().constant("resource:classpath:openapi/fruits-and-legumes-api.json")
             .log(LoggingLevel.INFO, logName, ">>> OUT: headers:[${headers}] - body:[${body}]")
         ;
 
         // REST endpoint for the fruits API
-        rest("/fruits")
+        rest("/fruits-and-legumes-api/fruits")
             .get()
-                .id("get-fruits-route")
+                .id("get-fruits-rest")
                 .produces(MediaType.APPLICATION_JSON)
                 .description("Returns a list of hard-coded and added fruits")
                 // Call the getFruits route
@@ -86,7 +87,7 @@ public class FruitsAndLegumesApiRoute extends RouteBuilder {
             
             // Adds a fruit
             .post()
-                .id("add-fruit-route")
+                .id("add-fruit-rest")
                 .consumes(MediaType.APPLICATION_JSON)
                 .produces(MediaType.APPLICATION_JSON)
                 .description("Adds a fruit")
@@ -95,9 +96,9 @@ public class FruitsAndLegumesApiRoute extends RouteBuilder {
         ;
 
         // REST endpoint for the legumes API
-        rest("/legumes")
+        rest("/fruits-and-legumes-api/legumes")
             .get()
-                .id("get-legumes-route")
+                .id("get-legumes-rest")
                 .produces(MediaType.APPLICATION_JSON)
                 .description("Returns a list of hard-coded legumes")
                 // Call the getFruits route

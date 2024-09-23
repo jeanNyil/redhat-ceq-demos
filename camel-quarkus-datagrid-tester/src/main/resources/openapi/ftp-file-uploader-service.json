@@ -1,0 +1,244 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "FTP File Uploader Service",
+        "version": "1.0.0",
+        "description": "A service that triggers the FTP put operation for three fruits files (JSON, XML, CSV).",
+        "contact": {
+            "name": "Jean Nyilimbibi"
+        },
+        "license": {
+            "name": "MIT License",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "servers": [
+        {
+            "url": "http://fruits-and-legumes-api.apps.ocp4.jnyilimb.eu/api/v1/ftp-file-uploader-service",
+            "description": "API Backend URL"
+        }
+    ],
+    "paths": {
+        "/json": {
+            "post": {
+                "tags": [
+                    "FTP Upload"
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/responseMessage",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "fruits.json uploaded to FTP server successfully"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "fruits.json": {
+                                        "value": {
+                                            "fileName": "fruits.json",
+                                            "content": "[{\"description\": \"Winter fruit\", \"name\": \"Apple\"}, {\"description\": \"Tropical fruit\", \"name\": \"Pineapple\"}, {\"description\": \"Tropical fruit\", \"name\": \"Mango\"}, {\"description\": \"Tropical fruit\", \"name\": \"Banana\"}]"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "JSON file uploaded successfully"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorMessage",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error while uploading fruits.json to FTP server"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "internalServerError": {
+                                        "value": {
+                                            "code": "500",
+                                            "description": "Internal server error",
+                                            "message": "java.lang.Exception: mocked error"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Error during the JSON file upload process"
+                    }
+                },
+                "operationId": "uploadJsonFile",
+                "summary": "Upload fruits.json file to FTP server"
+            }
+        },
+        "/xml": {
+            "post": {
+                "tags": [
+                    "FTP Upload"
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/responseMessage",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "fruits.xml uploaded to FTP server successfully"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "fruits.xml": {
+                                        "value": {
+                                            "fileName": "fruits.xml",
+                                            "content": "<fruits><fruit><name>Apple</name><description>Winter fruit</description></fruit><fruit><name>Pineapple</name><description>Tropical fruit</description></fruit><fruit><name>Mango</name><description>Tropical fruit</description></fruit><fruit><name>Banana</name><description>Tropical fruit</description></fruit></fruits>"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "XML file uploaded successfully"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorMessage",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error while uploading fruits.xml to FTP server"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "internalServerError": {
+                                        "value": {
+                                            "code": "500",
+                                            "description": "Internal server error",
+                                            "message": "java.lang.Exception: mocked error"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Error during the XML file upload process"
+                    }
+                },
+                "operationId": "uploadXmlFile",
+                "summary": "Upload fruits.xml file to FTP server"
+            }
+        },
+        "/csv": {
+            "post": {
+                "tags": [
+                    "FTP Upload"
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/responseMessage"
+                                },
+                                "examples": {
+                                    "fruits.csv": {
+                                        "value": {
+                                            "fileName": "fruits.csv",
+                                            "content": "name,description\nApple,Winter fruit\nPineapple,Tropical fruit\nMango,Tropical fruit\nBanana,Tropical fruit"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "CSV file uploaded successfully"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorMessage",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error while uploading fruits.csv to FTP server"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "internalServerError": {
+                                        "value": {
+                                            "code": "500",
+                                            "description": "Internal server error",
+                                            "message": "java.lang.Exception: mocked error"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Error during the CSV file upload process"
+                    }
+                },
+                "operationId": "uploadCsvFile",
+                "summary": "Upload fruits.csv file to FTP server"
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "responseMessage": {
+                "title": "Root Type for responseMessage",
+                "description": "",
+                "type": "object",
+                "properties": {
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "fileName": "fruits.json",
+                    "content": "[{\"description\": \"Winter fruit\", \"name\": \"Apple\"}, {\"description\": \"Tropical fruit\", \"name\": \"Pineapple\"}, {\"description\": \"Tropical fruit\", \"name\": \"Mango\"}, {\"description\": \"Tropical fruit\", \"name\": \"Banana\"}]"
+                }
+            },
+            "errorMessage": {
+                "title": "Root Type for errorMessage",
+                "description": "",
+                "required": [
+                    "code",
+                    "description",
+                    "message"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "code": "500",
+                    "description": "Internal server error",
+                    "message": "java.lang.Exception: mocked error"
+                }
+            }
+        }
+    }
+}

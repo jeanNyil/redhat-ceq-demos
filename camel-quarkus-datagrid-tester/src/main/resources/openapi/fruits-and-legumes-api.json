@@ -1,5 +1,5 @@
 {
-    "openapi": "3.0.2",
+    "openapi": "3.0.3",
     "info": {
         "title": "Fruits and Legumes API",
         "version": "1.0.0",
@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "https://fruits-and-legumes-api.apps.cluster-njb6f.njb6f.sandbox2810.opentlc.com",
+            "url": "http://fruits-and-legumes-api.apps.ocp4.jnyilimb.eu/api/v1/fruits-and-legumes-api",
             "description": "API Backend URL"
         }
     ],
@@ -220,25 +220,16 @@
             }
         },
         "securitySchemes": {
-            "oicd": {
-                "flows": {
-                    "clientCredentials": {
-                        "tokenUrl": "https://sso.apps.cluster-njb6f.njb6f.sandbox2810.opentlc.com/auth/realms/openshift-cluster/protocol/openid-connect/token",
-                        "scopes": {
-                            "openid": ""
-                        }
-                    }
-                },
-                "type": "oauth2",
+            "oidc": {
+                "openIdConnectUrl": "https://sso.apps.ocp4.jnyilimb.eu/realms/openshift-cluster/.well-known/openid-configuration",
+                "type": "openIdConnect",
                 "description": "OpenID Connect"
             }
         }
     },
     "security": [
         {
-            "oicd": [
-                "openid"
-            ]
+            "oidc": []
         }
     ],
     "tags": [

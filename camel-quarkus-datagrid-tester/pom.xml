@@ -17,7 +17,7 @@
     <!-- Camel Quarkus extensions -->
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
-      <artifactId>camel-quarkus-file</artifactId>
+      <artifactId>camel-quarkus-ftp</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>

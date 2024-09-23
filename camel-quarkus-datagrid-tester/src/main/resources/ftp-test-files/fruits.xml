@@ -1,0 +1,18 @@
+<fruits>
+    <fruit>
+        <name>Apple</name>
+        <description>Winter fruit</description>
+    </fruit>
+    <fruit>
+        <name>Pineapple</name>
+        <description>Tropical fruit</description>
+    </fruit>
+    <fruit>
+        <name>Mango</name>
+        <description>Tropical fruit</description>
+    </fruit>
+    <fruit>
+        <name>Banana</name>
+        <description>Tropical fruit</description>
+    </fruit>
+</fruits>
