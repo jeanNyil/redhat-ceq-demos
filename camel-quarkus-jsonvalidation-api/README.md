@@ -25,30 +25,30 @@ It exposes the following RESTful service endpoints  using **Apache Camel REST DS
 
 You can run your application in dev mode that enables live coding using:
 ```
-./mvnw quarkus:dev -Dquarkus.kubernetes-config.enabled=false
+./mvnw compile quarkus:dev -Dquarkus.kubernetes-config.enabled=false
 ```
 
 ## Packaging and running the application locally
 
 The application can be packaged using:
-```zsh
+```shell
 ./mvnw clean package
 ```
 It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
 Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
 
 The application is now runnable using:
-```zsh
+```shell
 java -Dquarkus.kubernetes-config.enabled=false -jar target/quarkus-app/quarkus-run.jar
 ```
 
 If you want to build an _über-jar_, execute the following command:
-```zsh
+```shell
 ./mvnw clean package -Dquarkus.package.type=uber-jar
 ```
 
 The application, packaged as an _über-jar_, is now runnable using:
-```zsh
+```shell
 java -Dquarkus.kubernetes-config.enabled=false -jar target/camel-quarkus-jsonvalidation-api-1.0.0-runner.jar
 ```
 
@@ -67,19 +67,19 @@ java -Dquarkus.kubernetes-config.enabled=false -Dquarkus.opentelemetry.tracer.ex
 - User has self-provisioner privilege or has access to a working OpenShift project
 
 1. Login to the OpenShift cluster
-    ```zsh
+    ```shell
     oc login ...
     ```
 
 2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `camel-quarkus`
-    ```zsh
+    ```shell
     oc new-project ceq-services-jvm --display-name="Red Hat build of Apache Camel for Quarkus Apps - JVM Mode"
     ```
 
 3. Create an `allInOne` Jaeger instance.
     1. **IF NOT ALREADY INSTALLED**:
         1. Install, via OLM, the `Red Hat OpenShift distributed tracing platform` (Jaeger) operator with an `AllNamespaces` scope. :warning: Needs `cluster-admin` privileges
-            ```zsh
+            ```shell
             oc create --save-config -f - <<EOF
             apiVersion: operators.coreos.com/v1alpha1
             kind: Subscription
@@ -95,11 +95,11 @@ java -Dquarkus.kubernetes-config.enabled=false -Dquarkus.opentelemetry.tracer.ex
             EOF
             ```
         2. Verify the successful installation of the `Red Hat OpenShift distributed tracing platform` operator
-            ```zsh
+            ```shell
             watch oc get sub,csv
             ```
     2. Create the `allInOne` Jaeger instance.
-        ```zsh
+        ```shell
         oc create --save-config -f - <<EOF
         apiVersion: jaegertracing.io/v1
         kind: Jaeger
@@ -119,10 +119,10 @@ java -Dquarkus.kubernetes-config.enabled=false -Dquarkus.opentelemetry.tracer.ex
 
 This leverages the _Quarkus OpenShift_ extension and is only recommended for development and testing purposes.
 
-```zsh
+```shell
 ./mvnw clean package -Dquarkus.openshift.deploy=true -Dquarkus.container-image.group=ceq-services-jvm
 ```
-```zsh
+```shell
 [...]
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeployer] Selecting target 'openshift' since it has the highest priority among the implicitly enabled deployment targets
 [INFO] [io.quarkus.kubernetes.deployment.KubernetesDeploy] Kubernetes API Server at 'https://api.ocp4.jnyilimb.eu:6443/' successfully contacted.
@@ -155,13 +155,13 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
 ### OpenShift S2I source workflow (recommended for PRODUCTION use)
 
 1. Make sure the latest supported OpenJDK 21 image is imported in OpenShift
-    ```zsh
+    ```shell
     oc import-image --confirm openjdk-11-ubi8 \
     --from=registry.access.redhat.com/ubi8/openjdk-11 \
     -n openshift
     ```
 2. Create the `camel-quarkus-jsonvalidation-api` OpenShift application from the git repository
-    ```zsh
+    ```shell
     oc new-app https://github.com/jeanNyil/redhat-ceq-demos.git \
     --context-dir=camel-quarkus-jsonvalidation-api \
     --name=camel-quarkus-jsonvalidation-api \
@@ -171,10 +171,10 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     --labels=app.openshift.io/runtime=camel
     ```
 3. Follow the log of the S2I build
-    ```zsh
+    ```shell
     oc logs bc/camel-quarkus-jsonvalidation-api -f
     ```
-    ```zsh
+    ```shell
     Cloning "https://github.com/jeanNyil/redhat-ceq-demos.git" ...
             Commit: 7da594c26cdcb2e85cd94032415d72726b6eb162 (Upgraded to Red Hat build of Quarkus 1.11)
             Author: Jean Armand Nyilimbibi <jean.nyilimbibi@gmail.com>
@@ -184,18 +184,18 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     Push successful
     ```
 4. Create a non-secure route to expose the `camel-quarkus-jsonvalidation-api` service outside the OpenShift cluster
-    ```zsh
+    ```shell
     oc expose svc/camel-quarkus-jsonvalidation-api
     ```
 
 ## Testing the application on OpenShift
 
 1. Get the OpenShift route hostname
-    ```zsh
+    ```shell
     URL="https://$(oc get route camel-quarkus-jsonvalidation-api -o jsonpath='{.spec.host}')"
     ```
 2. Test the `/validateMembershipJSON` endpoint
-    ```zsh
+    ```shell
     curl -w '\n' -X POST -H 'Content-Type: application/json' \
     -d '{"requestType": "API","requestID": 5948,"memberID": 85623617,"status": "A","enrolmentDate": "2020-09-05","changedBy": "JaLiLa","forcedLevelCode": "69","vipOnInvitation": "Y","startDate": "2020-09-05","endDate": "2100-09-05"}' \
     $URL/validateMembershipJSON
@@ -208,7 +208,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     }
     ```
 3. Test the `/openapi.json` endpoint
-    ```zsh
+    ```shell
     curl -w '\n' $URL/openapi.json
     ```
     ```json
@@ -455,7 +455,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     }
     ```
 4. Test the `/q/health` endpoint
-    ```zsh
+    ```shell
     curl -w '\n' $URL/q/health
     ```
     ```json
@@ -482,7 +482,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     }
     ```
 5. Test the `/q/health/live` endpoint
-    ```zsh
+    ```shell
     curl -w '\n' $URL/q/health/live
     ```
     ```json
@@ -497,7 +497,7 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     }
     ```
 6. Test the `/q/health/ready` endpoint
-    ```zsh
+    ```shell
     curl -w '\n' $URL/q/health/ready
     ```
     ```json
@@ -520,10 +520,10 @@ This leverages the _Quarkus OpenShift_ extension and is only recommended for dev
     }
     ```
 7. Test the `/q/metrics` endpoint
-    ```zsh
+    ```shell
     curl -w '\n' $URL/q/metrics
     ```
-    ```zsh
+    ```shell
     [...]
     # HELP application_camel_context_exchanges_total The total number of exchanges for a route or Camel Context
     # TYPE application_camel_context_exchanges_total counter
@@ -571,28 +571,28 @@ If you want to learn more about building native executables, please consult http
 #### Instructions
 
 1. Login to the OpenShift cluster
-    ```zsh
+    ```shell
     oc login ...
     ```
 
 2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `ceq-services-native`
-    ```zsh
+    ```shell
     oc new-project ceq-services-native --display-name="Red Hat build of Apache Camel for Quarkus - Native Mode"
     ```
 
 3. Build a Linux executable using a container build. Compiling a Quarkus application to a native executable consumes a lot of memory during analysis and optimization. You can limit the amount of memory used during native compilation by setting the `quarkus.native.native-image-xmx` configuration property. Setting low memory limits might increase the build time.
     1. For Docker use:
-        ```zsh
+        ```shell
         ./mvnw package -Pnative -Dquarkus.native.container-build=true \
         -Dquarkus.native.native-image-xmx=6g
         ```
     2. For Podman use:
-        ```zsh
+        ```shell
         ./mvnw package -Pnative -Dquarkus.native.container-build=true \
         -Dquarkus.native.container-runtime=podman \
         -Dquarkus.native.native-image-xmx=6g
         ```
-    ```zsh
+    ```shell
     [...]
     INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building native image source jar: /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-native-image-source-jar/camel-quarkus-jsonvalidation-api-1.0.0-runner.jar
     [INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Building native image from /Users/jeannyil/Workdata/myGit/Quarkus/rh-build-quarkus-camel-demos/camel-quarkus-jsonvalidation-api/target/camel-quarkus-jsonvalidation-api-1.0.0-native-image-source-jar/camel-quarkus-jsonvalidation-api-1.0.0-runner.jar
@@ -611,15 +611,15 @@ If you want to learn more about building native executables, please consult http
 
 4. Create the `camel-quarkus-jsonvalidation-api` container image using the _OpenShift Docker build_ strategy. This strategy creates a container using a build configuration in the cluster.
     1. Create a build config based on the [`src/main/docker/Dockerfile.native`](./src/main/docker/Dockerfile.native) file:
-        ```zsh
+        ```shell
         cat src/main/docker/Dockerfile.native | oc new-build \
         --name camel-quarkus-jsonvalidation-api --strategy=docker --dockerfile -
         ```
     2. Build the project:
-        ```zsh
+        ```shell
         oc start-build camel-quarkus-jsonvalidation-api --from-dir . -F
         ```
-        ```zsh
+        ```shell
         Uploading directory "." as binary input for the build ...
         ....
         Uploading finished
@@ -632,14 +632,14 @@ If you want to learn more about building native executables, please consult http
         ```
 
 5. Deploy the `camel-quarkus-jsonvalidation-api` as a serverless application
-    ```zsh
+    ```shell
     kn service create camel-quarkus-jsonvalidation-api \
     --label app.openshift.io/runtime=camel \
     --image image-registry.openshift-image-registry.svc:5000/ceq-services-native/camel-quarkus-jsonvalidation-api:latest
     ```
 
 6. To verify that the `camel-quarkus-jsonvalidation-api` service is ready, enter the following command.
-    ```zsh
+    ```shell
     kn service list camel-quarkus-jsonvalidation-api
     ```
     The output in the column called "READY" reads `True` if the service is ready.
@@ -648,7 +648,7 @@ If you want to learn more about building native executables, please consult http
 
 ### JVM mode
 
-```zsh
+```shell
 2021-11-20 21:35:16,664 INFO  [org.apa.cam.qua.cor.CamelBootstrapRecorder] (main) Bootstrap runtime: org.apache.camel.quarkus.main.CamelMainRuntime
 2021-11-20 21:35:16,864 INFO  [org.apa.cam.mai.BaseMainSupport] (main) Auto-configuration summary
 2021-11-20 21:35:16,865 INFO  [org.apa.cam.mai.BaseMainSupport] (main)     camel.context.name=camel-quarkus-jsonvalidation-api
@@ -667,7 +667,7 @@ If you want to learn more about building native executables, please consult http
 
 ### Native mode
 
-```zsh
+```shell
 [...]
 2021-05-27 12:57:16,930 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.7.0 (camel-1) is starting
 [...]

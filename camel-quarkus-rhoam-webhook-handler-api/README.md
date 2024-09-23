@@ -43,7 +43,7 @@ type: Opaque
 
 You can run your application in dev mode that enables live coding using:
 ```
-./mvnw quarkus:dev
+./mvnw compile quarkus:dev
 ```
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
@@ -51,20 +51,26 @@ You can run your application in dev mode that enables live coding using:
 ## Packaging and running the application locally
 
 The application can be packaged using:
-```shell script
+```shell
 ./mvnw package
 ```
 It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
 Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
 
-The application is now runnable using `java -Dquarkus.kubernetes-config.enabled=false -jar target/quarkus-app/quarkus-run.jar`.
+The application is now runnable using:
+```shell
+java -Dquarkus.kubernetes-config.enabled=false -jar target/quarkus-app/quarkus-run.jar
+```
 
 If you want to build an _über-jar_, execute the following command:
-```shell script
+```shell
 ./mvnw package -Dquarkus.package.type=uber-jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -Dquarkus.kubernetes-config.enabled=false -jar target/*-runner.jar`.
+The application, packaged as an _über-jar_, is now runnable using:
+```shell
+java -Dquarkus.kubernetes-config.enabled=false -jar target/*-runner.jar
+```
 
 
 According to your environment, you may want to customize:
@@ -88,19 +94,19 @@ java -Dintegrations-broker.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broke
 - An [**AMQP 1.0 protocol**](https://www.amqp.org/) compliant broker should already be installed and running. [**Red Hat AMQ 7.10 broker on OpenShift**](https://access.redhat.com/documentation/en-us/red_hat_amq_broker/7.10/html/deploying_amq_broker_on_openshift/index) with an SSL-enabled AMQP acceptor has been used for testing.
 
 1. Login to the OpenShift cluster
-    ```shell script
+    ```shell
     oc login ...
     ```
 
 2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `ceq-services-jvm`
-    ```shell script
+    ```shell
     oc new-project ceq-services-jvm --display-name="Red Hat build of Apache Camel for Quarkus Apps - JVM Mode"
     ```
         
 3. Create an `allInOne` Jaeger instance.
     1. **IF NOT ALREADY INSTALLED**:
         1. Install, via OLM, the `Red Hat OpenShift distributed tracing platform` (Jaeger) operator with an `AllNamespaces` scope. :warning: Needs `cluster-admin` privileges
-            ```shell script
+            ```shell
             oc apply -f - <<EOF
             apiVersion: operators.coreos.com/v1alpha1
             kind: Subscription
@@ -116,11 +122,11 @@ java -Dintegrations-broker.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broke
             EOF
             ```
         2. Verify the successful installation of the `Red Hat OpenShift distributed tracing platform` operator
-            ```shell script
+            ```shell
             watch oc get sub,csv
             ```
     2. Create the `allInOne` Jaeger instance.
-        ```shell script
+        ```shell
         oc apply -f - <<EOF
         apiVersion: jaegertracing.io/v1
         kind: Jaeger
@@ -140,21 +146,21 @@ java -Dintegrations-broker.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broke
 
 This leverages the **Quarkus OpenShift** extension and is only recommended for development and testing purposes.
 
-```shell script
+```shell
 ./mvnw clean package -Dquarkus.openshift.deploy=true -Dquarkus.container-image.group=ceq-services-jvm
 ```
 
 ### OpenShift S2I source workflow (recommended for PRODUCTION use)
 
 1. Make sure the latest supported OpenJDK 21 image is imported in OpenShift
-    ```shell script
+    ```shell
     oc import-image --confirm openjdk-17-ubi8 \
     --from=registry.access.redhat.com/ubi8/openjdk-17:1.11 \
     -n openshift
     ```
 
 2. Create the `view-secrets` role and bind it, along with the `view` cluster role, to the `default` service account used to run the quarkus application. These permissions allow the `default` service account to access secrets.
-    ```shell script
+    ```shell
     oc apply -f <(echo '
     ---
     apiVersion: rbac.authorization.k8s.io/v1
@@ -196,7 +202,7 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
     ```
 
 3. Create the `camel-quarkus-rhoam-webhook-handler-api` OpenShift application from the git repository
-    ```shell script
+    ```shell
     oc new-app https://github.com/jeannyil-apis-playground/apicurio-generated-projects.git \
     --context-dir=camel-quarkus-rhoam-webhook-handler-api \
     --name=camel-quarkus-rhoam-webhook-handler-api \
@@ -205,10 +211,10 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
     ```
 
 4. Follow the log of the S2I build
-    ```shell script
+    ```shell
     oc logs bc/camel-quarkus-rhoam-webhook-handler-api -f
     ```
-    ```shell script
+    ```shell
     Cloning "https://github.com/jeannyil-apis-playground/apicurio-generated-projects.git" ...
             Commit: bcb6e69e2f0285ef1e9dcdb4abb47ede80fb43e1 (Adapted S2I Configuration to RH build of Quarkus v2.2.3.Final-redhat-00013)
             Author: jeanNyil <jean.nyilimbibi@gmail.com>
@@ -219,7 +225,7 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
     ```
 
 5. Create a non-secure route to expose the `camel-quarkus-rhoam-webhook-handler-api` service outside the OpenShift cluster
-    ```shell script
+    ```shell
     oc expose svc/camel-quarkus-rhoam-webhook-handler-api
     ```
 
@@ -233,7 +239,7 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
 ### Testing instructions:
 
 1. Get the OpenShift route hostname
-    ```shell script
+    ```shell
     URL="https://$(oc get route camel-quarkus-rhoam-webhook-handler-api -o jsonpath='{.spec.host}')"
     ```
     
@@ -241,10 +247,10 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
 
     - `GET /webhook/amqpbridge` :
 
-        ```shell script
+        ```shell
         http -v $URL/webhook/amqpbridge
         ```
-        ```shell script
+        ```shell
         [...]
         HTTP/1.1 200 OK
         [...]
@@ -262,7 +268,7 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
 
         - `OK` response:
 
-            ```shell script
+            ```shell
             echo '<?xml version="1.0" encoding="UTF-8"?>
             <event>
             <action>updated</action>
@@ -308,7 +314,7 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
             </object>
             </event>' | http -v POST $URL/webhook/amqpbridge content-type:application/xml
             ```
-            ```shell script
+            ```shell
             [...]
             HTTP/1.1 200 OK
             Access-Control-Allow-Headers: Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers
@@ -329,10 +335,10 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
 
         - `KO` response:
 
-            ```shell script
+            ```shell
             echo 'PLAIN TEXT' | http -v POST $URL/webhook/amqpbridge content-type:application/xml
             ```
-            ```shell script
+            ```shell
             [...]
             HTTP/1.1 400 Bad Request
             Access-Control-Allow-Headers: Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers
@@ -355,10 +361,10 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
             ```
 
 3. Test the `/openapi.json` endpoint
-    ```shell script
+    ```shell
     http -v $URL/openapi.json
     ```
-    ```shell script
+    ```shell
     [...]
     HTTP/1.1 200 OK
     Accept: */*
@@ -399,10 +405,10 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
     ```
 
 4. Test the `/q/health` endpoint
-    ```shell script
+    ```shell
     http -v $URL/q/health
     ```
-    ```shell script
+    ```shell
     HTTP/1.1 200 OK
     Set-Cookie: 0d5acfcb0ca2b6f2520831b8d4bd4031=2cd3ddf89a39206056fcce59b93f59aa; path=/; HttpOnly
     cache-control: private
@@ -435,10 +441,10 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
     ```
 
 5. Test the `/q/health/live` endpoint
-    ```shell script
+    ```shell
     http -v $URL/q/health/live
     ```
-    ```shell script
+    ```shell
     HTTP/1.1 200 OK
     Set-Cookie: 0d5acfcb0ca2b6f2520831b8d4bd4031=a9c4acc377212f7232380c78ddbbf21f; path=/; HttpOnly
     cache-control: private
@@ -458,10 +464,10 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
     ```
 
 6. Test the `/q/health/ready` endpoint
-    ```shell script
+    ```shell
     http -v $URL/q/health/ready
     ```
-    ```shell script
+    ```shell
     HTTP/1.1 200 OK
     Set-Cookie: 0d5acfcb0ca2b6f2520831b8d4bd4031=a9c4acc377212f7232380c78ddbbf21f; path=/; HttpOnly
     cache-control: private
@@ -490,10 +496,10 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
     ```
 
 7. Test the `/q/metrics` endpoint
-    ```shell script
+    ```shell
     http -v $URL/q/metrics
     ```
-    ```shell script
+    ```shell
     [...]
     HTTP/1.1 200 OK
     Access-Control-Allow-Credentials: true
@@ -558,19 +564,19 @@ If you want to learn more about building native executables, please consult http
 #### Instructions
 
 1. Login to the OpenShift cluster
-    ```shell script
+    ```shell
     oc login ...
     ```
 
 2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `ceq-services-serverless`
-    ```shell script
+    ```shell
     oc new-project ceq-services-serverless --display-name="Red Hat build of Apache Camel for Quarkus Apps - Native Mode and Serverless"
     ```
         
 3. Create an `allInOne` Jaeger instance.
     1. **IF NOT ALREADY INSTALLED**:
         1. Install, via OLM, the `Red Hat OpenShift distributed tracing platform` (Jaeger) operator with an `AllNamespaces` scope. :warning: Needs `cluster-admin` privileges
-            ```shell script
+            ```shell
             oc apply -f - <<EOF
             apiVersion: operators.coreos.com/v1alpha1
             kind: Subscription
@@ -586,11 +592,11 @@ If you want to learn more about building native executables, please consult http
             EOF
             ```
         2. Verify the successful installation of the `Red Hat OpenShift distributed tracing platform` operator
-            ```shell script
+            ```shell
             watch oc get sub,csv
             ```
     2. Create the `allInOne` Jaeger instance.
-        ```shell script
+        ```shell
         oc apply -f - <<EOF
         apiVersion: jaegertracing.io/v1
         kind: Jaeger
@@ -606,7 +612,7 @@ If you want to learn more about building native executables, please consult http
 
 4. Package and deploy to OpenShift
     -  Using podman to build the native binary:
-        ```shell script
+        ```shell
         ./mvnw clean package -Pnative -Dquarkus.native.container-runtime=podman \
         -Dquarkus.native.builder-image=registry.access.redhat.com/quarkus/mandrel-21-jdk17-rhel8:latest \
         -Dquarkus.openshift.deploy=true \
@@ -614,7 +620,7 @@ If you want to learn more about building native executables, please consult http
         -Dquarkus.container-image.group=ceq-services-serverless
         ```
     -  Using docker to build the native binary:
-        ```shell script
+        ```shell
 	    ./mvnw clean package -Pnative -Dquarkus.native.container-runtime=docker \
         -Dquarkus.native.builder-image=registry.access.redhat.com/quarkus/mandrel-21-jdk17-rhel8:latest \
         -Dquarkus.openshift.deploy=true \
@@ -629,7 +635,7 @@ If you want to learn more about building native executables, please consult http
 
 ### JVM mode - **2.594s**
 
-```shell script
+```shell
 2022-11-27 20:50:48,033 INFO  [org.apa.cam.qua.cor.CamelBootstrapRecorder] (main) Bootstrap runtime: org.apache.camel.quarkus.main.CamelMainRuntime
 2022-11-27 20:50:48,076 INFO  [org.apa.cam.mai.BaseMainSupport] (main) Auto-configuration summary
 2022-11-27 20:50:48,077 INFO  [org.apa.cam.mai.BaseMainSupport] (main)     camel.context.name=camel-quarkus-rhoam-webhook-handler-api
@@ -652,7 +658,7 @@ If you want to learn more about building native executables, please consult http
 
 ### Native mode - **0.162s**
 
-```shell script
+```shell
 2022-11-27 21:44:27,061 INFO  [org.apa.cam.qua.cor.CamelBootstrapRecorder] (main) Bootstrap runtime: org.apache.camel.quarkus.main.CamelMainRuntime
 2022-11-27 21:44:27,064 INFO  [org.apa.cam.mai.BaseMainSupport] (main) Auto-configuration summary
 2022-11-27 21:44:27,064 INFO  [org.apa.cam.mai.BaseMainSupport] (main)     camel.context.name=camel-quarkus-rhoam-webhook-handler-api
