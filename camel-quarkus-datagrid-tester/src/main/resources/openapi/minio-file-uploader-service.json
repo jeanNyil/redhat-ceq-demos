@@ -1,9 +1,9 @@
 {
     "openapi": "3.0.3",
     "info": {
-        "title": "FTP File Uploader Service",
+        "title": "MinIO File Uploader Service",
         "version": "1.0.0",
-        "description": "A service that triggers the FTP put operation for three fruits files (JSON, XML, CSV).",
+        "description": "A service that triggers the MinIO upload operation for three fruits files (JSON, XML, CSV).",
         "contact": {
             "name": "Jean Nyilimbibi"
         },
@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "http://fruits-and-legumes-api.apps.ocp4.jnyilimb.eu/api/v1/ftp-file-uploader-service",
+            "url": "http://fruits-and-legumes-api.apps.ocp4.jnyilimb.eu/api/v1/minio-file-uploader-service",
             "description": "API Backend URL"
         }
     ],
@@ -22,7 +22,7 @@
         "/json": {
             "post": {
                 "tags": [
-                    "FTP Upload"
+                    "MinIO Upload"
                 ],
                 "responses": {
                     "201": {
@@ -33,7 +33,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "fruits.json uploaded to FTP server successfully"
+                                            "example": "fruits.json uploaded to MinIO server successfully"
                                         }
                                     }
                                 },
@@ -57,7 +57,7 @@
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "Error while uploading fruits.json to FTP server"
+                                            "example": "Error while uploading fruits.json to MinIO server"
                                         }
                                     }
                                 },
@@ -76,13 +76,13 @@
                     }
                 },
                 "operationId": "uploadJsonFile",
-                "summary": "Upload fruits.json file to FTP server"
+                "summary": "Upload fruits.json file to MinIO server"
             }
         },
         "/xml": {
             "post": {
                 "tags": [
-                    "FTP Upload"
+                    "MinIO Upload"
                 ],
                 "responses": {
                     "201": {
@@ -93,7 +93,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "fruits.xml uploaded to FTP server successfully"
+                                            "example": "fruits.xml uploaded to MinIO server successfully"
                                         }
                                     }
                                 },
@@ -117,7 +117,7 @@
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "Error while uploading fruits.xml to FTP server"
+                                            "example": "Error while uploading fruits.xml to MinIO server"
                                         }
                                     }
                                 },
@@ -136,13 +136,13 @@
                     }
                 },
                 "operationId": "uploadXmlFile",
-                "summary": "Upload fruits.xml file to FTP server"
+                "summary": "Upload fruits.xml file to MinIO server"
             }
         },
         "/csv": {
             "post": {
                 "tags": [
-                    "FTP Upload"
+                    "MinIO Upload"
                 ],
                 "responses": {
                     "201": {
@@ -171,7 +171,7 @@
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "Error while uploading fruits.csv to FTP server"
+                                            "example": "Error while uploading fruits.csv to MinIO server"
                                         }
                                     }
                                 },
@@ -190,7 +190,7 @@
                     }
                 },
                 "operationId": "uploadCsvFile",
-                "summary": "Upload fruits.csv file to FTP server"
+                "summary": "Upload fruits.csv file to MinIO server"
             }
         }
     },

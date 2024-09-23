@@ -11,17 +11,18 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
+import org.apache.camel.component.minio.MinioConstants;
 
-/* FtpFileUploaderServiceRoute route definition
+/* MinioFileUploaderServiceRoute route definition
 
 /!\ The @ApplicationScoped annotation is required for @Inject and @ConfigProperty to work in a RouteBuilder. 
 	Note that the @ApplicationScoped beans are managed by the CDI container and their life cycle is thus a bit 
 	more complex than the one of the plain RouteBuilder. 
 	In other words, using @ApplicationScoped in RouteBuilder comes with some boot time penalty and you should 
 	therefore only annotate your RouteBuilder with @ApplicationScoped when you really need it. */
-public class FtpFileUploaderServiceRoute extends RouteBuilder {
+public class MinioFileUploaderServiceRoute extends RouteBuilder {
     
-    private static String logName = FtpFileUploaderServiceRoute.class.getName();
+    private static String logName = MinioFileUploaderServiceRoute.class.getName();
     
     @Override
     public void configure() throws Exception {
@@ -38,44 +39,45 @@ public class FtpFileUploaderServiceRoute extends RouteBuilder {
             .log(LoggingLevel.INFO, logName, ">>> OUT: headers:[${headers}] - body:[${body}]")
         ;
 
-        // REST endpoint for the FruitsAndLegumesService
-        rest("/ftp-file-uploader-service")
+        // REST endpoint for the MinioFileUploaderService
+        rest("/minio-file-uploader-service")
             .produces(MediaType.APPLICATION_JSON)
             .get("/openapi.json")
-                .id("get-ftp-file-uploader-service-oas-rest")
+                .id("get-minio-file-uploader-service-oas-rest")
                 .description("Gets the OpenAPI specification for this service in JSON format")
-                .to("direct:get-ftp-file-uploader-service-oas")
-            // Upload the fruits.csv file to FTP server
+                .to("direct:get-minio-file-uploader-service-oas")
+            // Upload the fruits.csv file to MinIO server
             .post("csv")
                 .id("upload-fruits-csv-rest")
                 .produces(MediaType.APPLICATION_JSON)
-                .description("Upload the fruits.csv file to FTP server")
+                .description("Upload the fruits.csv file to MinIO server")
                 // Call the uploadCsvFile route
                 .to("direct:uploadCsvFile")
         ;
 
-        // Returns the FtpFileUploaderService OAS
-        from("direct:get-ftp-file-uploader-service-oas")
-            .routeId("get-ftp-file-uploader-service-oas-route")
+        // Returns the MinioFileUploaderService OAS
+        from("direct:get-minio-file-uploader-service-oas")
+            .routeId("get-minio-file-uploader-service-oas-route")
             .log(LoggingLevel.INFO, logName, ">>> IN: headers:[${headers}] - body:[${body}]")
             .setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json"))
-            .setBody().constant("resource:classpath:openapi/ftp-file-uploader-service.json")
+            .setBody().constant("resource:classpath:openapi/minio-file-uploader-service.json")
             .log(LoggingLevel.INFO, logName, ">>> OUT: headers:[${headers}] - body:[${body}]")
         ;
 
         // Implements the uploadCsvFile operation
         from("direct:uploadCsvFile")
             .routeId("uploadCsvFile")
-            .log(LoggingLevel.INFO, logName, ">>> Uploading the fruits.csv file to FTP server...")
-            .setBody().constant("resource:classpath:ftp-test-files/fruits.csv")
-            .to("ftp://{{ftp-server.username}}@{{ftp-server.host}}/{{ftp-server.directory}}" +
-                "?password={{ftp-server.password}}" +
-                "&ftpClient.dataTimeout={{ftp-server.data-timeout-inms}}" +
-                "&charset=utf-8" +
-                "&passiveMode=true" +
-                "&fileName=fruits.csv" +
-                "&doneFileName=fruits.csv.done")
-            .log(LoggingLevel.INFO, logName, ">>> fruits.csv file uploaded to FTP server - DONE!")
+            .log(LoggingLevel.INFO, logName, ">>> Uploading the fruits.csv file to MinIO server...")
+            .setBody().constant("resource:classpath:minio-test-files/fruits.csv")
+            .log(LoggingLevel.DEBUG, logName, ">>> fruits.csv file content:\n${body}")
+            .setHeader(MinioConstants.OBJECT_NAME, constant("fruits.csv"))
+            .to("minio://camel-quarkus-datagrid-tester" +
+                "?autoCreateBucket=true" +
+                "&endpoint={{minio.endpoint}}" +
+                "&secure=true" +
+                "&accessKey={{minio.access-key}}" +
+                "&secretKey={{minio.secret-key}}")
+            .log(LoggingLevel.INFO, logName, ">>> fruits.csv file uploaded to MinIO server - DONE!")
             // TO COMPLETE
         ;
 

@@ -11,13 +11,11 @@ datagrid:
     fruits-legumes: fruits-legumes-replicated-cache
     idempotency: idempotency-replicated-cache
 
-# FTP server
-ftp-server:
-  host: localhost
-  username: ftpuser
-  password: P@ssw0rd
-  directory: ftp/input # This is a relative path
-  data-timeout-inms: 30000
+# MinIO
+minio:
+  endpoint: http://localhost:9000
+  access-key: minioadmin
+  secret-key: d-XT,YJ.XF3c_WT[
 
 # Quarkus
 quarkus:
@@ -40,7 +38,7 @@ quarkus:
     annotations:
       # OpenShift web console visual connection to the ftp-server
       app.openshift.io/connects-to: >-
-        [{"apiVersion":"apps/v1","kind":"Deployment","name":"ftp-server"}]
+        [{"apiVersion":"apps/v1","kind":"Deployment","name":"minio"}]
     # The kind of the deployment resource to use. Supported values are 'Deployment', 'StatefulSet', 'Job', 'CronJob' and 'DeploymentConfig' defaulting to the latter.
     deployment-kind: Deployment
     # Part of the `RHAF-CEQ-Demo` Application Group
