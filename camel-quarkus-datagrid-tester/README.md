@@ -186,20 +186,20 @@ _**:warning: cluster-admin privileges are required**_
 ## Related Guides
 
 - OpenShift ([guide](https://quarkus.io/guides/deploying-to-openshift)): Generate OpenShift resources from annotations
-- Camel FTP ([guide](https://docs.redhat.com/en/documentation/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-ftp)): Upload and download files to/from SFTP, FTP or SFTP servers
-- Camel Platform HTTP ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-platform-http)): Expose HTTP endpoints using the HTTP server available in the current platform
-- Camel Direct ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-direct)): Call another endpoint from the same Camel Context synchronously
-- Camel Jackson ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-jackson)): Marshal POJOs to JSON and back using Jackson
+- Camel Minio ([guide](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.4/html/red_hat_build_of_apache_camel_for_quarkus_reference/camel-quarkus-extensions-reference#extensions-minio-whats-inside)): Store and retrieve objects from Minio Storage Service using Minio SDK
+- Camel Platform HTTP ([guide](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.4/html/red_hat_build_of_apache_camel_for_quarkus_reference/camel-quarkus-extensions-reference#extensions-platform-http-whats-inside)): Expose HTTP endpoints using the HTTP server available in the current platform
+- Camel Direct ([guide](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.4/html/red_hat_build_of_apache_camel_for_quarkus_reference/camel-quarkus-extensions-reference#extensions-direct-whats-inside)): Call another endpoint from the same Camel Context synchronously
+- Camel Jackson ([guide](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.4/html/red_hat_build_of_apache_camel_for_quarkus_reference/camel-quarkus-extensions-reference#extensions-jackson-maven-coordinates)): Marshal POJOs to JSON and back using Jackson
 - YAML Configuration ([guide](https://quarkus.io/guides/config#yaml)): Use YAML to configure your Quarkus application
 - RESTEasy JAX-RS ([guide](https://quarkus.io/guides/rest-json)): REST endpoint framework implementing JAX-RS and more
-- Camel Bean ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-bean)): Invoke methods of Java beans
-- Camel OpenTelemetry ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-opentelemetry)): Distributed tracing using OpenTelemetry
-- Camel MicroProfile Health ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-microprofile-health)): Expose Camel health checks via MicroProfile Health
-- Camel MicroProfile Metrics ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-microprofile-metrics)): Expose metrics from Camel routes
-- Camel Timer ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-timer)): Generate messages in specified intervals using java.util.Timer
-- Camel Infinispan ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-infinispan)): Read and write from/to Infinispan distributed key/value store and data grid
+- Camel Bean ([guide](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.4/html/red_hat_build_of_apache_camel_for_quarkus_reference/camel-quarkus-extensions-reference#extensions-bean-whats-inside)): Invoke methods of Java beans
+- Camel OpenTelemetry ([guide](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.4/html/red_hat_build_of_apache_camel_for_quarkus_reference/camel-quarkus-extensions-reference#extensions-opentelemetry-whats-inside)): Distributed tracing using OpenTelemetry
+- Camel MicroProfile Health ([guide](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.4/html/red_hat_build_of_apache_camel_for_quarkus_reference/camel-quarkus-extensions-reference#extensions-microprofile-health-whats-inside)): Expose Camel health checks via MicroProfile Health
+- Camel Micrometer ([guide](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.4/html/red_hat_build_of_apache_camel_for_quarkus_reference/camel-quarkus-extensions-reference#extensions-micrometer-whats-inside)): Collect various metrics directly from Camel routes using the Micrometer library
+- Camel Timer ([guide](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.4/html/red_hat_build_of_apache_camel_for_quarkus_reference/camel-quarkus-extensions-reference#extensions-timer-whats-inside)): Generate messages in specified intervals using java.util.Timer
+- Camel Infinispan ([guide](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.4/html/red_hat_build_of_apache_camel_for_quarkus_reference/camel-quarkus-extensions-reference#extensions-infinispan-whats-inside)): Read and write from/to Infinispan distributed key/value store and data grid
 - Kubernetes Config ([guide](https://quarkus.io/guides/kubernetes-config)): Read runtime configuration from Kubernetes ConfigMaps and Secrets
-- Camel Rest ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-rest)): Expose REST services and their OpenAPI Specification or call external REST services
+- Camel Rest ([guide](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.4/html/red_hat_build_of_apache_camel_for_quarkus_reference/camel-quarkus-extensions-reference#extensions-rest-whats-inside)): Expose REST services and their OpenAPI Specification or call external REST services
 
 ## Provided Code
 
