@@ -25,7 +25,7 @@ It exposes the following RESTful service endpoints  using **Apache Camel REST DS
 
 You can run your application in dev mode that enables live coding using:
 ```
-./mvnw compile quarkus:dev -Dquarkus.kubernetes-config.enabled=false
+./mvnw clean compile quarkus:dev -Dquarkus.kubernetes-config.enabled=false
 ```
 
 ## Packaging and running the application locally

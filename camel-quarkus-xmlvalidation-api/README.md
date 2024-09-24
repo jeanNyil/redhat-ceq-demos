@@ -25,7 +25,7 @@ It exposes the following RESTful service endpoints  using **Apache Camel REST DS
 
 You can run your application in dev mode that enables live coding using:
 ```
-./mvnw compile quarkus:dev
+./mvnw clean compile quarkus:dev
 ```
 
 ## Packaging and running the application locally
