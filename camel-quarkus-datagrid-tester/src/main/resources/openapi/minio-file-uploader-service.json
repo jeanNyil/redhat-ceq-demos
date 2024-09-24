@@ -76,7 +76,7 @@
                     }
                 },
                 "operationId": "uploadJsonFile",
-                "summary": "Upload fruits.json file to MinIO server"
+                "summary": "Upload the fruits.json file to MinIO server"
             }
         },
         "/xml": {
@@ -136,7 +136,7 @@
                     }
                 },
                 "operationId": "uploadXmlFile",
-                "summary": "Upload fruits.xml file to MinIO server"
+                "summary": "Upload the fruits.xml file to MinIO server"
             }
         },
         "/csv": {
@@ -190,7 +190,7 @@
                     }
                 },
                 "operationId": "uploadCsvFile",
-                "summary": "Upload fruits.csv file to MinIO server"
+                "summary": "Upload the fruits.csv file to MinIO server"
             }
         }
     },

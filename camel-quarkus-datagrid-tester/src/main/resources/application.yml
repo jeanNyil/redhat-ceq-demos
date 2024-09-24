@@ -16,6 +16,9 @@ minio:
   endpoint: http://localhost:9000
   access-key: minioadmin
   secret-key: d-XT,YJ.XF3c_WT[
+  bucket-name: ${camel.context.name}
+  delete-after-read: false # I deactivated the delete after object retrieval for the Idempotent Consumer EIP using RHDG demo purposes. Default is usually `true`.
+  next-poll-delay-in-ms: 30000 # Milliseconds before the next poll. I set it to 30000ms for demo purposes. Default is usually `500`.
 
 # Quarkus
 quarkus:

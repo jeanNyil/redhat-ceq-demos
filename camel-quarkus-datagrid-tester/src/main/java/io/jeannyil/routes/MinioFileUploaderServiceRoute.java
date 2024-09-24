@@ -13,6 +13,8 @@ import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.component.minio.MinioConstants;
 
+import io.jeannyil.constants.DirectEndpointConstants;
+
 /* MinioFileUploaderServiceRoute route definition
 
 /!\ The @ApplicationScoped annotation is required for @Inject and @ConfigProperty to work in a RouteBuilder. 
@@ -32,33 +34,40 @@ public class MinioFileUploaderServiceRoute extends RouteBuilder {
             .handled(true)
             .maximumRedeliveries(0)
             .log(LoggingLevel.ERROR, logName, ">>> Caught exception: ${exception.stacktrace}")
-            .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
-            .setHeader(Exchange.HTTP_RESPONSE_TEXT, constant(Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase()))
-            .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
-            .setBody(simple("${exception}"))
-            .log(LoggingLevel.INFO, logName, ">>> OUT: headers:[${headers}] - body:[${body}]")
+            .to(DirectEndpointConstants.DIRECT_GENERATE_ERROR_MESSAGE)
         ;
 
         // REST endpoint for the MinioFileUploaderService
         rest("/minio-file-uploader-service")
             .produces(MediaType.APPLICATION_JSON)
+            // Get the MinioFileUploaderService OAS
             .get("/openapi.json")
                 .id("get-minio-file-uploader-service-oas-rest")
                 .description("Gets the OpenAPI specification for this service in JSON format")
-                .to("direct:get-minio-file-uploader-service-oas")
+                .to("direct:get-minio-file-uploader-service-oas") // Call the get-minio-file-uploader-service-oas-route
             // Upload the fruits.csv file to MinIO server
-            .post("csv")
+            .post("/csv")
                 .id("upload-fruits-csv-rest")
-                .produces(MediaType.APPLICATION_JSON)
                 .description("Upload the fruits.csv file to MinIO server")
-                // Call the uploadCsvFile route
-                .to("direct:uploadCsvFile")
+                .to("direct:uploadCsvFile") // Call the uploadCsvFile route
+            // Upload the fruits.json file to MinIO server
+            .post("/json")
+                .id("upload-fruits-json-rest")
+                .description("Upload the fruits.json file to MinIO server")
+                .to("direct:uploadJsonFile") // Call the uploadCsvFile route
+            // Upload the fruits.xml file to MinIO server
+            .post("/xml")
+                .id("upload-fruits-xml-rest")
+                .description("Upload the fruits.xml file to MinIO server")
+                .to("direct:uploadXmlFile") // Call the uploadCsvFile route
         ;
 
         // Returns the MinioFileUploaderService OAS
         from("direct:get-minio-file-uploader-service-oas")
             .routeId("get-minio-file-uploader-service-oas-route")
             .log(LoggingLevel.INFO, logName, ">>> IN: headers:[${headers}] - body:[${body}]")
+            .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.OK.getStatusCode()))
+			.setHeader(Exchange.HTTP_RESPONSE_TEXT, constant(Response.Status.OK.getReasonPhrase()))
             .setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json"))
             .setBody().constant("resource:classpath:openapi/minio-file-uploader-service.json")
             .log(LoggingLevel.INFO, logName, ">>> OUT: headers:[${headers}] - body:[${body}]")
@@ -67,18 +76,58 @@ public class MinioFileUploaderServiceRoute extends RouteBuilder {
         // Implements the uploadCsvFile operation
         from("direct:uploadCsvFile")
             .routeId("uploadCsvFile")
-            .log(LoggingLevel.INFO, logName, ">>> Uploading the fruits.csv file to MinIO server...")
+            .setHeader(MinioConstants.OBJECT_NAME, simple("fruits-${date:now:yyyyMMdd-HHmmss}.csv"))
+            .log(LoggingLevel.INFO, logName, ">>> Uploading ${header.CamelMinioObjectName} to MinIO server...")
             .setBody().constant("resource:classpath:minio-test-files/fruits.csv")
-            .log(LoggingLevel.DEBUG, logName, ">>> fruits.csv file content:\n${body}")
-            .setHeader(MinioConstants.OBJECT_NAME, constant("fruits.csv"))
+            .log(LoggingLevel.DEBUG, logName, ">>> ${header.CamelMinioObjectName} file content:\n${body}")
             .to("minio://camel-quarkus-datagrid-tester" +
                 "?autoCreateBucket=true" +
                 "&endpoint={{minio.endpoint}}" +
                 "&secure=true" +
                 "&accessKey={{minio.access-key}}" +
                 "&secretKey={{minio.secret-key}}")
-            .log(LoggingLevel.INFO, logName, ">>> fruits.csv file uploaded to MinIO server - DONE!")
-            // TO COMPLETE
+            .log(LoggingLevel.INFO, logName, ">>> ${header.CamelMinioObjectName} uploaded to MinIO server - DONE!")
+            .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.CREATED.getStatusCode()))
+			.setHeader(Exchange.HTTP_RESPONSE_TEXT, constant(Response.Status.CREATED.getReasonPhrase()))
+            .to(DirectEndpointConstants.DIRECT_GENERATE_OK_MESSAGE)
+        ;
+
+        // Implements the uploadJsonFile operation
+        from("direct:uploadJsonFile")
+            .routeId("uploadJsonFile")
+            .setHeader(MinioConstants.OBJECT_NAME, simple("fruits-${date:now:yyyyMMdd-HHmmss}.json"))
+            .log(LoggingLevel.INFO, logName, ">>> Uploading ${header.CamelMinioObjectName} to MinIO server...")
+            .setBody().constant("resource:classpath:minio-test-files/fruits.json")
+            .log(LoggingLevel.DEBUG, logName, ">>> ${header.CamelMinioObjectName} file content:\n${body}")
+            .to("minio://camel-quarkus-datagrid-tester" +
+                "?autoCreateBucket=true" +
+                "&endpoint={{minio.endpoint}}" +
+                "&secure=true" +
+                "&accessKey={{minio.access-key}}" +
+                "&secretKey={{minio.secret-key}}")
+            .log(LoggingLevel.INFO, logName, ">>> ${header.CamelMinioObjectName} uploaded to MinIO server - DONE!")
+            .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.CREATED.getStatusCode()))
+			.setHeader(Exchange.HTTP_RESPONSE_TEXT, constant(Response.Status.CREATED.getReasonPhrase()))
+            .to(DirectEndpointConstants.DIRECT_GENERATE_OK_MESSAGE)
+        ;
+
+        // Implements the uploadXmlFile operation
+        from("direct:uploadXmlFile")
+            .routeId("uploadXmlFile")
+            .setHeader(MinioConstants.OBJECT_NAME, simple("fruits-${date:now:yyyyMMdd-HHmmss}.xml"))
+            .log(LoggingLevel.INFO, logName, ">>> Uploading ${header.CamelMinioObjectName} to MinIO server...")
+            .setBody().constant("resource:classpath:minio-test-files/fruits.xml")
+            .log(LoggingLevel.DEBUG, logName, ">>> ${header.CamelMinioObjectName} file content:\n${body}")
+            .to("minio://camel-quarkus-datagrid-tester" +
+                "?autoCreateBucket=true" +
+                "&endpoint={{minio.endpoint}}" +
+                "&secure=true" +
+                "&accessKey={{minio.access-key}}" +
+                "&secretKey={{minio.secret-key}}")
+            .log(LoggingLevel.INFO, logName, ">>> ${header.CamelMinioObjectName} uploaded to MinIO server - DONE!")
+            .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.CREATED.getStatusCode()))
+			.setHeader(Exchange.HTTP_RESPONSE_TEXT, constant(Response.Status.CREATED.getReasonPhrase()))
+            .to(DirectEndpointConstants.DIRECT_GENERATE_OK_MESSAGE)
         ;
 
     }

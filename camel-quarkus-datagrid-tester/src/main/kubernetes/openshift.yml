@@ -6,6 +6,8 @@ metadata:
 data:
   datagrid.caches.fruits-legumes: fruits-legumes-replicated-cache
   datagrid.caches.idempotency: idempotency-replicated-cache
+  minio.delete-after-read: "false" # I deactivated the delete after object retrieval for the Idempotent Consumer EIP using RHDG demo purposes. Default is usually `true`.
+  minio.next-poll-delay-in-ms: "30000" # Milliseconds before the next poll. I set it to 30000ms for demo purposes. Default is usually `500`.
   quarkus.otel.exporter.otlp.traces.endpoint: http://jaeger-all-in-one-inmemory-collector.ceq-services-jvm.svc:4317
 ---
 apiVersion: v1
