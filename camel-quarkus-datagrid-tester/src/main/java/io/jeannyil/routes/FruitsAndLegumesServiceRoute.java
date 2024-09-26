@@ -134,6 +134,8 @@ public class FruitsAndLegumesServiceRoute extends RouteBuilder {
             .to("direct:put-fruits-in-cache")
             // New Fruits set as a response for the addFruit operation
             .setBody(exchangeProperty("newFruitsSet"))
+            .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.CREATED.getStatusCode()))
+			.setHeader(Exchange.HTTP_RESPONSE_TEXT, constant(Response.Status.CREATED.getReasonPhrase()))
             .log(LoggingLevel.INFO, logName, ">>> Processing POST fruits DONE: ${body}")
         ;
         
