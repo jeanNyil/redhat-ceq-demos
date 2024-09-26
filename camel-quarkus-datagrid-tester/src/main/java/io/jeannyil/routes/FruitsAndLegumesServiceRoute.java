@@ -42,11 +42,7 @@ public class FruitsAndLegumesServiceRoute extends RouteBuilder {
             .handled(true)
             .maximumRedeliveries(0)
             .log(LoggingLevel.ERROR, logName, ">>> Caught exception: ${exception.stacktrace}")
-            .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
-			.setHeader(Exchange.HTTP_RESPONSE_TEXT, constant(Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase()))
-			.setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
-			.setBody(simple("${exception}"))
-            .log(LoggingLevel.INFO, logName, ">>> OUT: headers:[${headers}] - body:[${body}]")
+            .to(DirectEndpointConstants.DIRECT_GENERATE_ERROR_MESSAGE)
         ;
         
         //REST configuration with Camel Quarkus Platform HTTP component

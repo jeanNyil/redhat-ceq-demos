@@ -59,6 +59,25 @@
                             }
                         },
                         "description": "Fruits found"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorMessage"
+                                },
+                                "examples": {
+                                    "internalServerError": {
+                                        "value": {
+                                            "code": "500",
+                                            "description": "Internal server error",
+                                            "message": "java.lang.Exception: mocked error"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Internal server error"
                     }
                 },
                 "operationId": "getFruits",
@@ -127,6 +146,25 @@
                             }
                         },
                         "description": "Fruit added"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorMessage"
+                                },
+                                "examples": {
+                                    "internalServerError": {
+                                        "value": {
+                                            "code": "500",
+                                            "description": "Internal server error",
+                                            "message": "java.lang.Exception: mocked error"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Internal server error"
                     }
                 },
                 "operationId": "addFruit",
@@ -166,6 +204,25 @@
                             }
                         },
                         "description": "Legumes found"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/errorMessage"
+                                },
+                                "examples": {
+                                    "internalServerError": {
+                                        "value": {
+                                            "code": "500",
+                                            "description": "Internal server error",
+                                            "message": "java.lang.Exception: mocked error"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Internal server error"
                     }
                 },
                 "operationId": "getLegumes",
@@ -216,6 +273,32 @@
                 "example": {
                     "name": "Carrot",
                     "description": "Root vegetable, usually orange"
+                }
+            },
+            "errorMessage": {
+                "title": "Root Type for errorMessage",
+                "description": "",
+                "required": [
+                    "code",
+                    "description",
+                    "message"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "code": "500",
+                    "description": "Internal server error",
+                    "message": "java.lang.Exception: mocked error"
                 }
             }
         },
