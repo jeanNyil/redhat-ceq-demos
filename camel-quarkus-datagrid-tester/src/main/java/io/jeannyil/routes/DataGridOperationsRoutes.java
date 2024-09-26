@@ -5,6 +5,8 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.infinispan.InfinispanConstants;
 import org.apache.camel.component.infinispan.InfinispanOperation;
 
+import io.jeannyil.constants.DirectEndpointConstants;
+
 /* DataGridOperations routes definitions
 
 /!\ The @ApplicationScoped annotation is required for @Inject and @ConfigProperty to work in a RouteBuilder. 
@@ -18,6 +20,14 @@ public class DataGridOperationsRoutes extends RouteBuilder {
     
     @Override
     public void configure() throws Exception {
+
+        // Catch unexpected exceptions
+		onException(Exception.class)
+            .handled(true)
+            .maximumRedeliveries(0)
+            .log(LoggingLevel.ERROR, logName, ">>> Caught exception: ${exception.stacktrace}")
+            .to(DirectEndpointConstants.DIRECT_GENERATE_ERROR_MESSAGE)
+        ;
 
         // PUT fruits in cache - expects the payload in the message body
         from("direct:put-fruits-in-cache")
