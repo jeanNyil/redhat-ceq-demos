@@ -12,6 +12,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 
+import io.jeannyil.constants.DirectEndpointConstants;
 import io.jeannyil.models.Fruit;
 
 /* FruitsAndLegumesService route definition
