@@ -5,18 +5,3 @@ metadata:
   name: camel-quarkus-jsonvalidation-api-config
 data:
   quarkus.otel.exporter.otlp.traces.endpoint: http://jaeger-all-in-one-inmemory-collector.ceq-services-jvm.svc:4317
----
-apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
-metadata:
-  labels:
-    app.kubernetes.io/name: camel-quarkus-jsonvalidation-api
-  name: camel-quarkus-jsonvalidation-api
-spec:
-  podMetricsEndpoints:
-  - path: /q/metrics
-    port: http
-    scheme: http
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: camel-quarkus-jsonvalidation-api
