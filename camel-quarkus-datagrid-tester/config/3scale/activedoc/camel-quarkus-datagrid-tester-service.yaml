@@ -1,0 +1,12 @@
+apiVersion: capabilities.3scale.net/v1beta1
+kind: ActiveDoc
+metadata:
+  name: camel-quarkus-datagrid-tester-service
+spec:
+  activeDocOpenAPIRef:
+    url: >-
+      https://raw.githubusercontent.com/jeanNyil/redhat-ceq-demos/refs/heads/main/camel-quarkus-datagrid-tester/src/main/resources/openapi/3scale-consolidated-api-product.json
+  name: Camel Quarkus & Datagrid Tester Service
+  productSystemName: camel-quarkus-datagrid-tester-service
+  published: true
+  systemName: camelquarkusdatagridtesterservice
