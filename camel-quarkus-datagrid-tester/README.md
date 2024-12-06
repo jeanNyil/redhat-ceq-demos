@@ -1,6 +1,6 @@
 # camel-quarkus-datagrid-tester Project
 
-This project leverages **Red Hat build of Quarkus 3.8.x**, the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat build of Apache Camel 4.4.x for Quarkus**](https://access.redhat.com/documentation/en-us/red_hat_build_of_apache_camel).
+This project leverages **Red Hat build of Quarkus 3.15.x**, the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat build of Apache Camel for Quarkus v4.8.x**](https://access.redhat.com/documentation/en-us/red_hat_build_of_apache_camel).
 
 The purpose is to demo the implementation of the _Infinispan Idempotent Repository_ to synchronize concurrent access as well as the use of the _Apache Camel Quarkus Infinispan_ extension.
 
