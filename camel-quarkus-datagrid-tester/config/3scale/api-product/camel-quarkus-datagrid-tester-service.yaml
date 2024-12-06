@@ -230,7 +230,7 @@ spec:
       authentication:
         oidc:
           issuerType: keycloak
-          issuerEndpoint: https://threescale-zync:Mk8au5yvkDcu6BB023WNGcz3d318lDpv@sso-rhbk22.apps.ocp4.jnyilimb.eu/realms/poc
+          issuerEndpoint: https://threescale-apim-demo-zync:idaiFvGJviFDxYzwlz4wjW4BZV550JRS@sso.apps.ocp4.jnyilimb.eu/realms/openshift-cluster
           jwtClaimWithClientID: azp
           jwtClaimWithClientIDType: plain
           authenticationFlow:
