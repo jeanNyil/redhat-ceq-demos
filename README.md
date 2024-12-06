@@ -2,7 +2,7 @@
 
 This repository contains examples of _Red Hat build of Apache Camel for Quarkus_ projects to demonstrate various features.
 
-All projects leverage **Red Hat build of Quarkus 3.15.x**, the Supersonic Subatomic Java Framework. More specifically, the projects are implemented using [**Red Hat build of Apache Camel for Quarkus v4.8.x**](https://access.redhat.com/documentation/en-us/red_hat_build_of_apache_camel).
+All projects leverage **Red Hat build of Quarkus 3.15.x**, the Supersonic Subatomic Java Framework. More specifically, the projects are implemented using [**Red Hat build of Apache Camel v4.8.x for Quarkus**](https://access.redhat.com/documentation/en-us/red_hat_build_of_apache_camel).
 
 Their purpose is to provide small, specific and working examples that can be used for reference in your own projects.
 
