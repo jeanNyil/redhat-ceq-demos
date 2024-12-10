@@ -614,7 +614,6 @@ If you want to learn more about building native executables, please consult http
     -  Using podman to build the native binary:
         ```shell
         ./mvnw clean package -Pnative -Dquarkus.native.container-runtime=podman \
-        -Dquarkus.native.builder-image=registry.access.redhat.com/quarkus/mandrel-for-jdk-21-rhel8:latest\
         -Dquarkus.openshift.deploy=true \
         -Dquarkus.kubernetes.deployment-target=knative \
         -Dquarkus.container-image.group=ceq-services-serverless
@@ -622,7 +621,6 @@ If you want to learn more about building native executables, please consult http
     -  Using docker to build the native binary:
         ```shell
 	    ./mvnw clean package -Pnative -Dquarkus.native.container-runtime=docker \
-        -Dquarkus.native.builder-image=registry.access.redhat.com/quarkus/mandrel-for-jdk-21-rhel8:latest\
         -Dquarkus.openshift.deploy=true \
         -Dquarkus.kubernetes.deployment-target=knative \
         -Dquarkus.container-image.group=ceq-services-serverless
