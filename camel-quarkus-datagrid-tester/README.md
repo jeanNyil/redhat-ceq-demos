@@ -13,6 +13,25 @@ The purpose is to demo the implementation of the _Infinispan Idempotent Reposito
     >_**NOTE**_: The [`config/datagrid`](./config/datagrid) folder contains OpenShift _Cache Custom Resources_ to be created. For instance, the following command line would create the `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` replicated caches if the _Red Hat Data Grid_ cluster is deployed in the `datagrid-cluster` namespace: `oc -n datagrid-cluster apply -f ./config/datagrid`
     - [`fruits-legumes-replicated-cache-definition`](./config/datagrid/fruits-legumes-replicated-cache_cr.yaml) : `fruits-legumes-replicated-cache` used by the [`FruitsAndLegumesAPI`](./src/main/java/io/jeannyil/routes/FruitsAndLegumesApiRoute.java).
     - [`idempotency-replicated-cache-definition`](./config/datagrid/idempotency-replicated-cache_cr.yaml) : `idempotency-replicated-cache` used for idempotency purposes by the [`FilePollerRoute`](./src/main/java/io/jeannyil/routes/FilePollerRoute.java).
+- A running [MinIO](https://min.io/) server to provide object storage used by the idempotent consumer route.
+    >_**NOTE**_: The [`config/minio`](./config/minio/) folder contains resources to deploy a simple MinIO server in the `ceq-services-jvm` namespace on OpenShift.
+    - You can run a simple MinIO server locally in container with the following `podman` instructions:
+        1. Create the podman volume to persist MinIO data:
+            ```shell
+            podman volume create minio-data
+            ```
+        2. Run the MinIO container:
+            ```shell
+            podman run -d --name minio \
+            -p 9000:9000 \
+            -p 9090:9090 \
+            -v minio-data:/data \
+            -e "MINIO_ROOT_USER=minioadmin" \
+            -e "MINIO_ROOT_PASSWORD=d-XT,YJ.XF3c_WT[" \
+            quay.io/minio/minio server /data --console-address ":9090"
+            ```
+            - The MinIO administration web console is then available at http://localhost:9090/login
+            - The MinIO API endpoint is also available at http://localhost:9000
 - A truststore containing the [_Red Hat Data Grid v8.3_](https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.3) server public certificate. Below are sample command lines to generate one:
     ```shell
     # Use the Java cacerts as the basis for the truststore
@@ -80,23 +99,31 @@ If you want to learn more about building native executables, please consult http
 ## Deploy to OpenShift
 
 ### Prerequisites
+
 - The `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` caches have been created in the _Red Hat Data Grid_ cluster.
 
->_**NOTE**_: The [`config/datagrid`](./config/datagrid) folder contains OpenShift _Cache Custom Resources_ to be created. For instance, the following command line would create the `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` replicated caches if the _Red Hat Data Grid_ cluster is deployed in the `datagrid-cluster` namespace: `oc -n datagrid-cluster apply -f ./config/datagrid`
+    >_**NOTE**_: The [`config/datagrid`](./config/datagrid) folder contains OpenShift _Cache Custom Resources_ to be created. For instance, the following command line would create the `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` replicated caches if the _Red Hat Data Grid_ cluster is deployed in the `datagrid-cluster` namespace: `oc -n datagrid-cluster apply -f ./config/datagrid`
+
+- The MinIO server 
 
 ### Instructions
 
-1. Login to the OpenShift cluster
+1. Login to the OpenShift cluster:
     ```shell
     oc login ...
     ```
 
-2. Create an OpenShift project to host the service
+2. Create an OpenShift project to host the service:
     ```shell
     oc new-project ceq-services-jvm --display-name="Red Hat build of Apache Camel for Quarkus Apps - JVM Mode"
     ```
 
-3. Create secret containing the camel-quarkus-datagrid-tester truststore
+3. Deploy the simple MinIO server if not already deployed:
+    ```shell
+    oc apply -f ./config/minio
+    ```
+
+4. Create secret containing the camel-quarkus-datagrid-tester truststore
 
     a. With custom certificates
 
@@ -121,7 +148,7 @@ If you want to learn more about building native executables, please consult http
     oc create secret generic camel-quarkus-datagrid-tester-truststore-secret --from-file=./tls-keys/truststore.p12
     ```
 
-4. Deploy the CEQ service
+5. Deploy the CEQ service
     ```shell
     ./mvnw clean package -Dquarkus.openshift.deploy=true -Dquarkus.container-image.group=ceq-services-jvm
     ```
