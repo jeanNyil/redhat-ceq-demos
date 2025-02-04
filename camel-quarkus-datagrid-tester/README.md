@@ -4,6 +4,23 @@ This project leverages **Red Hat build of Quarkus 3.15.x**, the Supersonic Subat
 
 The purpose is to demo the implementation of the _Infinispan Idempotent Repository_ to synchronize concurrent access as well as the use of the _Apache Camel Quarkus Infinispan_ extension.
 
+The following REST endpoints are exposed:
+- `/api/v1/fruits-and-legumes-api/fruits` : 
+    - `GET` returns a list of hard-coded and added fruits.
+    - `POST` adds a fruit in the list of fruits.
+- `/api/v1/fruits-and-legumes-api/legumes` :
+    - Only `GET` method is supported. Returns a list of hard-coded legumes
+- `/api/v1/fruits-and-legumes-api/openapi.json`: returns the OpenAPI 3.0 specification for the Fruits and Legumes API service.
+- `/api/v1/minio-file-uploader-service/csv` :
+    - Only `POST`method is supported. Uploads the fruits.csv file to MinIO server.
+- `/api/v1/minio-file-uploader-service/json` :
+    - Only `POST`method is supported. Uploads the fruits.json file to MinIO server.
+- `/api/v1/minio-file-uploader-service/xml` :
+    - Only `POST`method is supported. Uploads the fruits.xml file to MinIO server.
+- `/api/v1/minio-file-uploader-service/openapi.json`: returns the OpenAPI 3.0 specification for the MinIO File Uploader service.
+- `/q/health` : returns the _Camel Quarkus MicroProfile_ health checks
+- `/q/metrics` : the _Camel Quarkus Micrometer_ metrics in prometheus format
+
 ## Prerequisites
 
 - Maven 3.8.1+
