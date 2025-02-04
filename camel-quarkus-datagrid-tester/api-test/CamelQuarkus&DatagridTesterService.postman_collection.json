@@ -157,6 +157,56 @@
 			"response": []
 		},
 		{
+			"name": "getFruits&LegumesOAS",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/fruits-and-legumes-api/openapi.json",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"fruits-and-legumes-api",
+						"openapi.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getMinIOFileUploaderServiceOAS",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/minio-file-uploader-service/openapi.json",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"minio-file-uploader-service",
+						"openapi.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "health",
 			"request": {
 				"method": "GET",
