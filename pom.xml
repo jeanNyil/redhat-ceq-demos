@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.jeannyil</groupId>
   <artifactId>demo-ceq-dependencies</artifactId>
-  <version>3.15.2.redhat-00003</version>
+  <version>3.15.3.SP1-redhat-00002</version>
   <packaging>pom</packaging>
 
   <name>RHAF :: Red Hat Integration :: Camel Extensions for Quarkus dependencies parent POM</name>
@@ -18,7 +18,7 @@
     <!-- Red Hat build of Apache Camel for Quarkus -->
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>com.redhat.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.15.2.redhat-00003</quarkus.platform.version>
+    <quarkus.platform.version>3.15.3.SP1-redhat-00002</quarkus.platform.version>
 
     <!--  The current HawtIO Jolokia Version -->
     <jolokia.version>2.1.1</jolokia.version>
