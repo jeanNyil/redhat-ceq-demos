@@ -6,4 +6,13 @@ metadata:
 spec:
   clusterName: datagrid-cluster
   name: fruits-legumes-replicated-cache
-  template: <replicated-cache mode="SYNC" statistics="true"><encoding media-type="application/x-protostream"/><expiration lifespan="-1" max-idle="-1"/><memory max-count="2" when-full="REMOVE"/><persistence passivation="false"><file-store/></persistence></replicated-cache>
+  template: |
+    <replicated-cache name="fruits-legumes-replicated-cache" mode="SYNC" statistics="true">
+      <encoding media-type="application/x-protostream"/>
+      <expiration lifespan="-1" max-idle="-1"/>
+      <memory max-count="2" when-full="REMOVE"/>
+      <persistence passivation="false">
+        <file-store/>
+      </persistence>
+      <tracing enabled="true" categories="container cluster"/>
+    </replicated-cache>
