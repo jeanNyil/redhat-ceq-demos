@@ -35,87 +35,12 @@ public class SampleJsonValidationApiRoute extends RouteBuilder {
 			.to("direct:common-500").id("to-common-500")
 			.log(LoggingLevel.INFO, logName, ">>> ${routeId} - OUT: headers:[${headers}] - body:[${body}]").id("log-api-unexpected-response")
 		;
-		
-		
-		/**
-		 * REST configuration with Camel Quarkus Platform HTTP component
-		 */
-		restConfiguration()
-			.component("platform-http")
-			.enableCORS(true)
-			.bindingMode(RestBindingMode.off) // RESTful responses will be explicitly marshaled for logging purposes
-			.dataFormatProperty("prettyPrint", "true")
-			.scheme("http")
-			.host("0.0.0.0")
-			.port("8080")
-			.contextPath("/")
-			.clientRequestValidation(true)
-		;
 
 		/**
-		 * REST endpoint for the Service OpenAPI document 
-		  */
-        rest()
-            .produces(MediaType.APPLICATION_JSON)
-            .get("/openapi.json")
-                .id("openapi-route")
-                .description("Gets the OpenAPI specification for this service in JSON format")
-                .to("direct:getOAS")
-        ;
-
-        // Returns the OAS
-        from("direct:getOAS")
-			.routeId("get-oas-route")
-            .log(LoggingLevel.INFO, logName, ">>> IN: headers:[${headers}] - body:[${body}]")
-            .setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json"))
-            .setBody().constant("resource:classpath:openapi/openapi.json")
-            .log(LoggingLevel.INFO, logName, ">>> OUT: headers:[${headers}] - body:[${body}]")
-        ;
-		
-		/**
-		 * REST endpoint for the Sample JSON Validation RESTful API 
+		 * REST DSL with OpenAPI contract first approach 
+         * Reference: https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.14/html/developing_applications_with_red_hat_build_of_apache_camel_for_quarkus/rest-dsl-in-camel-quarkus#camel-quarkus-extensions-rest-dsl-contract-first
 		 */
-		rest().id("sample-json-validation-restapi")
-			.consumes(MediaType.APPLICATION_JSON)
-			.produces(MediaType.APPLICATION_JSON)
-				
-			// Validates a `Membership` JSON instance
-			.post("/validateMembershipJSON")
-				.id("json-validation-api-route")
-				.description("Validates a `Membership` JSON instance")
-				.param()
-					.name("body")
-					.type(RestParamType.body)
-					.description("A `Membership` JSON instance to be validated.")
-					.dataType("string")
-					.required(true)
-					.example(MediaType.APPLICATION_JSON,
-							 "{\n    \"requestType\": \"API\",\n    \"requestID\": 5948,\n    \"memberID\": 85623617,\n    \"status\": \"A\",\n    \"enrolmentDate\": \"2019-06-16\",\n    \"changedBy\": \"jeanNyil\",\n    \"forcedLevelCode\": \"69\",\n    \"vipOnInvitation\": \"Y\",\n    \"startDate\": \"2019-06-16\",\n    \"endDate\": \"2100-06-16\"\n}")
-				.endParam()
-				.responseMessage()
-					.code(Response.Status.OK.getStatusCode())
-					.message(Response.Status.OK.getReasonPhrase())
-					.responseModel(io.jeannyil.quarkus.camel.jsonvalidation.models.ValidationResult.class)
-					.example(MediaType.APPLICATION_JSON, 
-							 "{\n    \"validationResult\": {\n        \"status\": \"OK\"\n    }\n}")
-				.endResponseMessage()
-				.responseMessage()
-					.code(Response.Status.BAD_REQUEST.getStatusCode())
-					.message(Response.Status.BAD_REQUEST.getReasonPhrase())
-					.responseModel(io.jeannyil.quarkus.camel.jsonvalidation.models.ValidationResult.class)
-					.example(MediaType.APPLICATION_JSON, 
-							 "{\n    \"validationResult\": {\n        \"status\": \"KO\",\n        \"errorMessage\": \"6 errors found\"\n    }\n}")
-				.endResponseMessage()
-				.responseMessage()
-					.code(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())
-					.message(Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase())
-					.responseModel(ErrorResponse.class)
-					.example(MediaType.APPLICATION_JSON, 
-							 "{\n\t\"error\": {\n\t\t\"id\": \"500\",\n\t\t\"description\": \"Internal Server Error\",\n\t\t\"messages\": [\n\t\t\t\"java.lang.Exception: Mocked error message\"\n\t\t]\n\t}\n}")
-				.endResponseMessage()
-				// call the ValidateMembershipJSONRoute
-				.to("direct:validateMembershipJSON")
-		;
+		rest().openApi("classpath:META-INF/openapi.yaml");
 			
 	}
 

@@ -2,7 +2,8 @@
 	"info": {
 		"_postman_id": "4da66c85-0966-4c43-98d7-c7173693d326",
 		"name": "Camel-Quarkus-JsonValidation-Api",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2627305"
 	},
 	"item": [
 		{
@@ -12,9 +13,8 @@
 				"header": [
 					{
 						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
+						"value": "application/json",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -22,12 +22,10 @@
 					"raw": "{\n    \"requestType\": \"API\",\n    \"requestID\": 5948,\n    \"memberID\": 85623617,\n    \"status\": \"A\",\n    \"enrolmentDate\": \"2020-09-05\",\n    \"changedBy\": \"JaLiLa\",\n    \"forcedLevelCode\": \"69\",\n    \"vipOnInvitation\": \"Y\",\n    \"startDate\": \"2020-09-05\",\n    \"endDate\": \"2100-09-05\"\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/validateMembershipJSON",
-					"protocol": "http",
+					"raw": "{{service_base_url}}/validateMembershipJSON",
 					"host": [
-						"localhost"
+						"{{service_base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"validateMembershipJSON"
 					]
@@ -42,9 +40,8 @@
 				"header": [
 					{
 						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
+						"value": "application/json",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -52,12 +49,10 @@
 					"raw": "{\n    \"requestType\": \"API\",\n    \"requestID\": 5948,\n    \"memberID\": 85623617,\n    \"status\": \"BADSTATUS\",\n    \"enrolmentDate\": \"2020-09-05\",\n    \"changedBy\": \"jeanNyil\",\n    \"vipOnInvitation\": \"Y\",\n    \"startDate\": \"2020-09-05\",\n    \"endDate\": \"2100-09-05\"\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/validateMembershipJSON",
-					"protocol": "http",
+					"raw": "{{service_base_url}}/validateMembershipJSON",
 					"host": [
-						"localhost"
+						"{{service_base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"validateMembershipJSON"
 					]
@@ -66,7 +61,7 @@
 			"response": []
 		},
 		{
-			"name": "Get OpenAPI Specification",
+			"name": "Get OpenAPI Specification - JSON",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {
 					"accept": true
@@ -74,29 +69,28 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/openapi.json",
-					"protocol": "http",
+					"raw": "{{management_base_url}}/q/openapi?format=json",
 					"host": [
-						"localhost"
+						"{{management_base_url}}"
 					],
-					"port": "8080",
 					"path": [
-						"openapi.json"
+						"q",
+						"openapi"
+					],
+					"query": [
+						{
+							"key": "format",
+							"value": "json"
+						}
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "GET Microprofile Camel Metrics",
+			"name": "Get OpenAPI Specification - YAML",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {
 					"accept": true
@@ -104,22 +98,35 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/q/metrics",
-					"protocol": "http",
+					"raw": "{{management_base_url}}/q/openapi",
 					"host": [
-						"localhost"
+						"{{management_base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"q",
+						"openapi"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Micrometer Camel Metrics",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{management_base_url}}/observe/metrics",
+					"host": [
+						"{{management_base_url}}"
+					],
+					"path": [
+						"observe",
 						"metrics"
 					]
 				}
@@ -132,14 +139,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/q/health",
-					"protocol": "http",
+					"raw": "{{management_base_url}}/observe/health",
 					"host": [
-						"localhost"
+						"{{management_base_url}}"
 					],
-					"port": "8080",
 					"path": [
-						"q",
+						"observe",
 						"health"
 					]
 				}
@@ -152,14 +157,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/q/health/live",
-					"protocol": "http",
+					"raw": "{{management_base_url}}/observe/health/live",
 					"host": [
-						"localhost"
+						"{{management_base_url}}"
 					],
-					"port": "8080",
 					"path": [
-						"q",
+						"observe",
 						"health",
 						"live"
 					]
@@ -173,20 +176,90 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/q/health/ready",
-					"protocol": "http",
+					"raw": "{{management_base_url}}/observe/health/ready",
 					"host": [
-						"localhost"
+						"{{management_base_url}}"
 					],
-					"port": "8080",
 					"path": [
-						"q",
+						"observe",
 						"health",
 						"ready"
 					]
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GET Microprofile Camel Health Startup Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{management_base_url}}/observe/health/started",
+					"host": [
+						"{{management_base_url}}"
+					],
+					"path": [
+						"observe",
+						"health",
+						"started"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Microprofile Camel Health Wellness Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{management_base_url}}/observe/health/well",
+					"host": [
+						"{{management_base_url}}"
+					],
+					"path": [
+						"observe",
+						"health",
+						"well"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "management_base_url",
+			"value": ""
+		},
+		{
+			"key": "service_base_url",
+			"value": ""
 		}
 	]
 }
