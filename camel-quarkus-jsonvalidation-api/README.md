@@ -159,7 +159,7 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 ```shell
 ./mvnw clean package -Pnative \
 -Dquarkus.native.container-build=true \
--Dquarkus.native.native-image-xmx=6g
+-Dquarkus.native.native-image-xmx=7g
 ```
 
 You can then execute your native executable with: `./target/camel-quarkus-jsonvalidation-api-1.0.0-runner`
