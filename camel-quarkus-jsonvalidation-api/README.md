@@ -180,7 +180,13 @@ If you want to learn more about building native executables, please consult http
     camel-quarkus-jsonvalidation-api 
     ```
 
-## Start-up time comparison on the same OpenShift cluster
+## Start-up time comparison in the same environment
+
+Used environment:
+- **Laptop**: MacBook PRO
+- **CPU**: Apple M2 PRO
+- **RAM**: 32Gb
+- **Container runtime for native build**: podman v5.7.0
 
 ### JVM mode -> _started in **1.613s**_
 
