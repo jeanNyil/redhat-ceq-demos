@@ -2,7 +2,8 @@
 	"info": {
 		"_postman_id": "9b35390c-3e1b-4b3e-9f5e-2f89df251011",
 		"name": "Camel-Quarkus-XmlValidation-Api",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2627305"
 	},
 	"item": [
 		{
@@ -12,9 +13,8 @@
 				"header": [
 					{
 						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "text/xml"
+						"value": "text/xml",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -22,12 +22,10 @@
 					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<p:membership xmlns:p=\"http://www.github.com/jeanNyil/schemas/membership/v1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <p:requestType>API</p:requestType>\n  <p:requestID>5948</p:requestID>\n  <p:memberID>85623617</p:memberID>\n  <p:status>A</p:status>\n  <p:enrolmentDate>2020-09-05</p:enrolmentDate>\n  <p:changedBy>JaLiLa</p:changedBy>\n  <p:forcedLevelCode>69</p:forcedLevelCode>\n  <p:vipOnInvitation>Y</p:vipOnInvitation>\n  <p:startDate>2020-09-05</p:startDate>\n  <p:endDate>2100-09-05</p:endDate>\n</p:membership>"
 				},
 				"url": {
-					"raw": "http://localhost:8080/validateMembershipXML",
-					"protocol": "http",
+					"raw": "{{service_base_url}}/validateMembershipXML",
 					"host": [
-						"localhost"
+						"{{service_base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"validateMembershipXML"
 					]
@@ -42,9 +40,8 @@
 				"header": [
 					{
 						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "text/xml"
+						"value": "text/xml",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -52,12 +49,10 @@
 					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<p:membership xmlns:p=\"http://www.github.com/jeanNyil/schemas/membership/v1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <p:requestType>API</p:requestType>\n  <p:requestID>5948</p:requestID>\n  <p:memberID>85623617</p:memberID>\n  <p:status>A</p:status>\n  <p:enrolmentDate>20-09-05</p:enrolmentDate>\n  <p:changedBy>jeanNyil</p:changedBy>\n  <p:forcedLevelCode>69</p:forcedLevelCode>\n  <p:vipOnInvitation>Y</p:vipOnInvitation>\n  <p:startDate>2020-09-05</p:startDate>\n  <p:endDate>2100-09-05</p:endDate>\n</p:membership>"
 				},
 				"url": {
-					"raw": "http://localhost:8080/validateMembershipXML",
-					"protocol": "http",
+					"raw": "{{service_base_url}}/validateMembershipXML",
 					"host": [
-						"localhost"
+						"{{service_base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"validateMembershipXML"
 					]
@@ -66,7 +61,7 @@
 			"response": []
 		},
 		{
-			"name": "Get OpenAPI Specification",
+			"name": "Get OpenAPI Specification - JSON",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {
 					"accept": true
@@ -74,29 +69,51 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/openapi.json",
-					"protocol": "http",
+					"raw": "{{management_base_url}}/q/openapi?format=json",
 					"host": [
-						"localhost"
+						"{{management_base_url}}"
 					],
-					"port": "8080",
 					"path": [
-						"openapi.json"
+						"q",
+						"openapi"
+					],
+					"query": [
+						{
+							"key": "format",
+							"value": "json"
+						}
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "GET Microprofile Camel Metrics",
+			"name": "Get OpenAPI Specification - YAML",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{management_base_url}}/q/openapi",
+					"host": [
+						"{{management_base_url}}"
+					],
+					"path": [
+						"q",
+						"openapi"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Micrometer Camel Metrics",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {
 					"accept-encoding": true
@@ -104,22 +121,14 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/q/metrics",
-					"protocol": "http",
+					"raw": "{{management_base_url}}/observe/metrics",
 					"host": [
-						"localhost"
+						"{{management_base_url}}"
 					],
-					"port": "8080",
 					"path": [
-						"q",
+						"observe",
 						"metrics"
 					]
 				}
@@ -132,14 +141,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/q/health",
-					"protocol": "http",
+					"raw": "{{management_base_url}}/observe/health",
 					"host": [
-						"localhost"
+						"{{management_base_url}}"
 					],
-					"port": "8080",
 					"path": [
-						"q",
+						"observe",
 						"health"
 					]
 				}
@@ -152,14 +159,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/q/health/live",
-					"protocol": "http",
+					"raw": "{{management_base_url}}/observe/health/live",
 					"host": [
-						"localhost"
+						"{{management_base_url}}"
 					],
-					"port": "8080",
 					"path": [
-						"q",
+						"observe",
 						"health",
 						"live"
 					]
@@ -173,20 +178,90 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/q/health/ready",
-					"protocol": "http",
+					"raw": "{{management_base_url}}/observe/health/ready",
 					"host": [
-						"localhost"
+						"{{management_base_url}}"
 					],
-					"port": "8080",
 					"path": [
-						"q",
+						"observe",
 						"health",
 						"ready"
 					]
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GET Microprofile Camel Health Startup Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{management_base_url}}/observe/health/started",
+					"host": [
+						"{{management_base_url}}"
+					],
+					"path": [
+						"observe",
+						"health",
+						"started"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Microprofile Camel Health Wellness Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{management_base_url}}/observe/health/well",
+					"host": [
+						"{{management_base_url}}"
+					],
+					"path": [
+						"observe",
+						"health",
+						"well"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "management_base_url",
+			"value": ""
+		},
+		{
+			"key": "service_base_url",
+			"value": ""
 		}
 	]
 }

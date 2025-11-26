@@ -4,4 +4,21 @@ kind: ConfigMap
 metadata:
   name: camel-quarkus-xmlvalidation-api-config
 data:
-  quarkus.otel.exporter.otlp.traces.endpoint: http://jaeger-all-in-one-inmemory-collector.ceq-services-jvm.svc:4317
+  quarkus.otel.exporter.otlp.endpoint: http://otel-collector.observability.svc:4317
+---
+# Generate a ServiceMonitor resource for the camel-quarkus-xmlvalidation-api service
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: camel-quarkus-xmlvalidation-api
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: camel-quarkus-xmlvalidation-api
+      app.kubernetes.io/version: 1.0.0
+  endpoints:
+    - scheme: http
+      targetPort: 9876
+      path: /observe/metrics
+      interval: 10s
+      honorLabels: true
