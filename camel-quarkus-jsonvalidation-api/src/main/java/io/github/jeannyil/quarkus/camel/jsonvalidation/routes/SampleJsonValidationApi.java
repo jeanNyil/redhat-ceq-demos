@@ -1,33 +1,36 @@
 package io.jeannyil.quarkus.camel.jsonvalidation.routes;
 
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-import org.apache.camel.Exchange;
+import org.apache.camel.CamelContext;   
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.rest.RestBindingMode;
-import org.apache.camel.model.rest.RestParamType;
 
-import io.jeannyil.quarkus.camel.jsonvalidation.models.ErrorResponse;
-
-/* Exposes the Sample JSON Validation RESTful API
+/* Exposes the Sample JSON Validation RESTful API with a Contract/API-First approach
 
 /!\ The @ApplicationScoped annotation is required for @Inject and @ConfigProperty to work in a RouteBuilder. 
 	Note that the @ApplicationScoped beans are managed by the CDI container and their life cycle is thus a bit 
 	more complex than the one of the plain RouteBuilder. 
 	In other words, using @ApplicationScoped in RouteBuilder comes with some boot time penalty and you should 
 	therefore only annotate your RouteBuilder with @ApplicationScoped when you really need it. */
-public class SampleJsonValidationApiRoute extends RouteBuilder {
+@ApplicationScoped
+public class SampleJsonValidationApi extends RouteBuilder {
 
-	private static String logName = SampleJsonValidationApiRoute.class.getName();
+	private static String logName = SampleJsonValidationApi.class.getName();
 	
-	@Override
-	public void configure() throws Exception {
-		
-		/**
-		 * Catch unexpected exceptions
-		 */
+	@Inject
+	CamelContext camelctx;
+    
+    @Override
+    public void configure() throws Exception {
+
+        // Enable Stream caching
+        camelctx.setStreamCaching(true);
+        // Enable use of breadcrumbId
+        camelctx.setUseBreadcrumb(true);
+
+		// Catch unexpected exceptions
 		onException(Exception.class).id("handle-all-other-exceptions")
 			.handled(true)
 			.maximumRedeliveries(0)
