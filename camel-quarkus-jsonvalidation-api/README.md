@@ -2,7 +2,7 @@
 
 This project leverages [**Red Hat build of Quarkus 3.27.x**](https://docs.redhat.com/en/documentation/red_hat_build_of_quarkus/3.27), the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat build of Apache Camel v4.14.x for Quarkus**](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.14#Red%20Hat%20build%20of%20Apache%20Camel%20for%20Quarkus).
 
-It exposes the following RESTful service endpoints  using **Apache Camel REST DSL** and the **Apache Camel Quarkus Platform HTTP** extension:
+It exposes the following RESTful service endpoints  using **Apache Camel REST DSL**:
 - `/validateMembershipJSON` : validates a sample `Membership` JSON instance through the `POST` HTTP method.
 - `/q/openapi` _on a separate management interface (port **9876**)_ : returns the Open API Schema document of the service.
 - `/q/swagger-ui` _on a separate management interface (port **9876**)_ :  opens the Open API UI.
