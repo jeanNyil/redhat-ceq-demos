@@ -1,16 +1,18 @@
 # Camel-Quarkus-RHOAM-Webhook-Handler-Api project
 
-This project leverages **Red Hat build of Quarkus 3.15.x**, the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat build of Apache Camel v4.8.x for Quarkus**](https://access.redhat.com/documentation/en-us/red_hat_build_of_apache_camel).
+This project leverages [**Red Hat build of Quarkus 3.27.x**](https://docs.redhat.com/en/documentation/red_hat_build_of_quarkus/3.27), the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat build of Apache Camel v4.14.x for Quarkus**](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.14#Red%20Hat%20build%20of%20Apache%20Camel%20for%20Quarkus).
 
-It exposes the following RESTful service endpoints  using **Apache Camel REST DSL** and the **Apache Camel Quarkus Platform HTTP** extension:
-- `/webhook/amqpbridge` : 
+It exposes the following RESTful service endpoints  using **Apache Camel REST DSL**:
+- `/v1/webhook/amqpbridge` : 
     - Webhook ping endpoint through the `GET` HTTP method.
     - Sends RHOAM Admin/Developer Portal webhook XML event to an AMQP address (`RHOAM.WEBHOOK.EVENTS.QUEUE`) through the `POST` HTTP method.
-- `/openapi.json`: returns the OpenAPI 3.0 specification for the service.
-- `/q/health` : returns the _Camel Quarkus MicroProfile_ health checks
-- `/q/metrics` : the _Camel Quarkus MicroProfile_ metrics
+- `/q/openapi` _on a separate management interface (port **9876**)_ : returns the Open API Schema document of the service.
+- `/q/swagger-ui` _on a separate management interface (port **9876**)_ :  opens the Open API UI.
+- `/observe/health` _on a separate management interface (port **9876**)_ : returns the _Camel Quarkus MicroProfile_ health checks.
+- `/observe/metrics` _on a separate management interface (port **9876**)_ : the _Camel Quarkus Micrometer_ metrics in prometheus format.
 
-Moreover, this project leverages the [**Quarkus Kubernetes-Config** extenstion](https://quarkus.io/guides/kubernetes-config) in order to customize the run-time AMQP broker connection parameters according to your environment through the `quarkus-amqpbroker-connection-secret` secret. For instance:
+Moreover, this project leverages the [**Quarkus Kubernetes-Config** extenstion](https://quarkus.io/guides/kubernetes-config) to customize the run-time AMQP broker connection parameters according to your OpenShift environment using the `quarkus-amqpbroker-connection-secret` secret. Example of the secret content:
+
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -27,8 +29,8 @@ type: Opaque
 
 ## Prerequisites
 - JDK 21 installed with `JAVA_HOME` configured appropriately
-- Apache Maven 3.8.1+
-- An [**AMQP 1.0 protocol**](https://www.amqp.org/) compliant broker should already be installed and running. [**Red Hat AMQ 7.10 broker on OpenShift**](https://access.redhat.com/documentation/en-us/red_hat_amq_broker/7.10/html/deploying_amq_broker_on_openshift/index) with an SSL-enabled AMQP acceptor has been used for testing.
+- Apache Maven 3.9.9
+- An [**AMQP 1.0 protocol**](https://www.amqp.org/) compliant broker should be installed and running. [**Red Hat AMQ Broker v7.13.x on OpenShift**](https://docs.redhat.com/en/documentation/red_hat_amq_broker/7.13/html/deploying_amq_broker_on_openshift/index) with a TLS-secured AMQP acceptor has been used for testing.
 - **OPTIONAL**: [**Jaeger**](https://www.jaegertracing.io/), a distributed tracing system for observability ([_open tracing_](https://opentracing.io/)). :bulb: A simple way of starting a Jaeger tracing server is with `docker` or `podman`:
     1. Start the Jaeger tracing server:
         ```
@@ -46,13 +48,13 @@ You can run your application in dev mode that enables live coding using:
 ./mvnw clean compile quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev-ui.
 
 ## Packaging and running the application locally
 
 The application can be packaged using:
 ```shell
-./mvnw package
+./mvnw clean package
 ```
 It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
 Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
@@ -64,7 +66,7 @@ java -Dquarkus.kubernetes-config.enabled=false -jar target/quarkus-app/quarkus-r
 
 If you want to build an _über-jar_, execute the following command:
 ```shell
-./mvnw package -Dquarkus.package.type=uber-jar
+./mvnw clean package -Dquarkus.package.type=uber-jar
 ```
 
 The application, packaged as an _über-jar_, is now runnable using:
@@ -72,26 +74,25 @@ The application, packaged as an _über-jar_, is now runnable using:
 java -Dquarkus.kubernetes-config.enabled=false -jar target/*-runner.jar
 ```
 
-
 According to your environment, you may want to customize:
 - The **AMQP broker connection parameters** by adding the following run-time _system properties_:
-    - `integrations-broker.url`
-    - `integrations-broker.username`
-    - `integrations-broker.password`
+    - `quarkus.qpid-jms.url`
+    - `quarkus.qpid-jms.username`
+    - `quarkus.qpid-jms.password`
 - The Jaeger collector endpoint by adding the following run-time _system properties_:
-    - `quarkus.opentelemetry.tracer.exporter.otlp.endpoint`
+    - `quarkus.otel.exporter.otlp.endpoint`
 
 Example:
 ```
-java -Dintegrations-broker.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.ocp4.jnyilimb.eu:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000" -Dquarkus.opentelemetry.tracer.exporter.otlp.endpoint="http://localhost:4317" -jar target/quarkus-app/quarkus-run.jar
+java -Dquarkus.qpid-jms.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.ocp4.jnyilimb.eu:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000" -Dquarkus.otel.exporter.otlp.endpoint="http://localhost:4317" -jar target/quarkus-app/quarkus-run.jar
 ```
 
-## :bulb: Packaging and running the application on Red Hat OpenShift
+## Packaging and running the application on Red Hat OpenShift
 
 ### Pre-requisites
-- Access to a [Red Hat OpenShift](https://access.redhat.com/documentation/en-us/openshift_container_platform) cluster v3 or v4
+- Access to a [Red Hat OpenShift](https://access.redhat.com/documentation/en-us/openshift_container_platform) cluster
 - User has self-provisioner privilege or has access to a working OpenShift project
-- An [**AMQP 1.0 protocol**](https://www.amqp.org/) compliant broker should already be installed and running. [**Red Hat AMQ 7.10 broker on OpenShift**](https://access.redhat.com/documentation/en-us/red_hat_amq_broker/7.10/html/deploying_amq_broker_on_openshift/index) with an SSL-enabled AMQP acceptor has been used for testing.
+- An [**AMQP 1.0 protocol**](https://www.amqp.org/) compliant broker should be installed and running. [**Red Hat AMQ Broker v7.13.x on OpenShift**](https://docs.redhat.com/en/documentation/red_hat_amq_broker/7.13/html/deploying_amq_broker_on_openshift/index) with a TLS-secured AMQP acceptor has been used for testing.
 
 1. Login to the OpenShift cluster
     ```shell
@@ -140,96 +141,12 @@ java -Dintegrations-broker.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broke
         EOF
         ```
 
-4. Use either the _**S2I binary workflow**_ or _**S2I source workflow**_ to deploy the `camel-quarkus-rhoam-webhook-handler-api` app as described below.
-
-### OpenShift S2I binary workflow 
-
-This leverages the **Quarkus OpenShift** extension and is only recommended for development and testing purposes.
-
-```shell
-./mvnw clean package -Dquarkus.openshift.deploy=true -Dquarkus.container-image.group=ceq-services-jvm
-```
-
-### OpenShift S2I source workflow (recommended for PRODUCTION use)
-
-1. Make sure the latest supported OpenJDK 21 image is imported in OpenShift
+4. Deploy to OpenShift using the _**S2I binary workflow**_
     ```shell
-    oc import-image --confirm openjdk-17-ubi8 \
-    --from=registry.access.redhat.com/ubi8/openjdk-17:1.11 \
-    -n openshift
+    ./mvnw clean package -Dquarkus.openshift.deploy=true
     ```
 
-2. Create the `view-secrets` role and bind it, along with the `view` cluster role, to the `default` service account used to run the quarkus application. These permissions allow the `default` service account to access secrets.
-    ```shell
-    oc apply -f <(echo '
-    ---
-    apiVersion: rbac.authorization.k8s.io/v1
-    kind: Role
-    metadata:
-      name: view-secrets
-    rules:
-      - apiGroups:
-          - ""
-        resources:
-          - secrets
-        verbs:
-          - get
-    ---
-    apiVersion: rbac.authorization.k8s.io/v1
-    kind: RoleBinding
-    metadata:
-      name: default:view
-    roleRef:
-      kind: ClusterRole
-      apiGroup: rbac.authorization.k8s.io
-      name: view
-    subjects:
-      - kind: ServiceAccount
-        name: default
-    ---
-    apiVersion: rbac.authorization.k8s.io/v1
-    kind: RoleBinding
-    metadata:
-      name: default:view-secrets
-    roleRef:
-      kind: Role
-      apiGroup: rbac.authorization.k8s.io
-      name: view-secrets
-    subjects:
-      - kind: ServiceAccount
-        name: default
-    ')
-    ```
-
-3. Create the `camel-quarkus-rhoam-webhook-handler-api` OpenShift application from the git repository
-    ```shell
-    oc new-app https://github.com/jeannyil-apis-playground/apicurio-generated-projects.git \
-    --context-dir=camel-quarkus-rhoam-webhook-handler-api \
-    --name=camel-quarkus-rhoam-webhook-handler-api \
-    --image-stream="openshift/openjdk-17-ubi8" \
-    --labels=app.openshift.io/runtime=camel
-    ```
-
-4. Follow the log of the S2I build
-    ```shell
-    oc logs bc/camel-quarkus-rhoam-webhook-handler-api -f
-    ```
-    ```shell
-    Cloning "https://github.com/jeannyil-apis-playground/apicurio-generated-projects.git" ...
-            Commit: bcb6e69e2f0285ef1e9dcdb4abb47ede80fb43e1 (Adapted S2I Configuration to RH build of Quarkus v2.2.3.Final-redhat-00013)
-            Author: jeanNyil <jean.nyilimbibi@gmail.com>
-            Date:   Wed Nov 24 13:32:03 2021 +0100
-    [...]
-    Successfully pushed image-registry.openshift-image-registry.svc:5000/ceq-services-jvm/camel-quarkus-rhoam-webhook-handler-api@sha256:9932efcb67f775fcecef2055892c01ac337f64d7cc55f96197edda537536f424
-    Push successful
-    ```
-
-5. Create a non-secure route to expose the `camel-quarkus-rhoam-webhook-handler-api` service outside the OpenShift cluster
-    ```shell
-    oc expose svc/camel-quarkus-rhoam-webhook-handler-api
-    ```
-
-## :bulb: Testing the application on OpenShift
+## Testing the application on OpenShift
 
 ### Pre-requisites
 
@@ -243,28 +160,21 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
     URL="https://$(oc get route camel-quarkus-rhoam-webhook-handler-api -o jsonpath='{.spec.host}')"
     ```
     
-2. Test the `/webhook/amqpbridge` endpoint
+2. Test the `/v1/webhook/amqpbridge` endpoint
 
-    - `GET /webhook/amqpbridge` :
+    - `GET /v1/webhook/amqpbridge` :
 
         ```shell
-        http -v $URL/webhook/amqpbridge
+        http -v $URL/v1/webhook/amqpbridge
         ```
         ```shell
         [...]
-        HTTP/1.1 200 OK
-        [...]
-        Content-Type: application/json
-        [...]
-        breadcrumbId: 43EB8F0221CD24E-0000000000000001
-        transfer-encoding: chunked
-
         {
             "status": "OK"
         }
         ```
 
-    - `POST /webhook/amqpbridge` :
+    - `POST /v1/webhook/amqpbridge` :
 
         - `OK` response:
 
@@ -312,20 +222,17 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
                 </users>
                 </account>
             </object>
-            </event>' | http -v POST $URL/webhook/amqpbridge content-type:application/xml
+            </event>' | http -v POST $URL/v1/webhook/amqpbridge content-type:application/xml
             ```
             ```shell
             [...]
             HTTP/1.1 200 OK
-            Access-Control-Allow-Headers: Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers
-            Access-Control-Allow-Methods: GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT, PATCH
-            Access-Control-Allow-Origin: *
-            Access-Control-Max-Age: 3600
-            Content-Type: application/json
-            RHOAM_EVENT_ACTION: updated
-            RHOAM_EVENT_TYPE: account
-            Set-Cookie: 0d5acfcb0ca2b6f2520831b8d4bd4031=f3580c9af577adb49be04813506f5ec6; path=/; HttpOnly
-            breadcrumbId: 43EB8F0221CD24E-0000000000000002
+            breadcrumbid: 28C0FAE9139DB19-0000000000000002
+            content-type: application/json
+            rhoam_event_action: updated
+            rhoam_event_type: account
+            set-cookie: 78f292b385e73b7110f972d6e3122473=0a617d702b0000d596f0e3ca813821d5; path=/; HttpOnly; Secure; SameSite=None
+            traceparent: 00-1bb463bb3c61e6fe03f6c9896f989ec0-2e66f8ed07b76389-01
             transfer-encoding: chunked
 
             {
@@ -336,371 +243,108 @@ This leverages the **Quarkus OpenShift** extension and is only recommended for d
         - `KO` response:
 
             ```shell
-            echo 'PLAIN TEXT' | http -v POST $URL/webhook/amqpbridge content-type:application/xml
+            echo 'PLAIN TEXT' | http -v POST $URL/v1/webhook/amqpbridge content-type:application/xml
             ```
             ```shell
             [...]
             HTTP/1.1 400 Bad Request
-            Access-Control-Allow-Headers: Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers
-            Access-Control-Allow-Methods: GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT, PATCH
-            Access-Control-Allow-Origin: *
-            Access-Control-Max-Age: 3600
-            Content-Type: application/json
-            Set-Cookie: 0d5acfcb0ca2b6f2520831b8d4bd4031=f3580c9af577adb49be04813506f5ec6; path=/; HttpOnly
-            breadcrumbId: 43EB8F0221CD24E-0000000000000003
+            breadcrumbid: 28C0FAE9139DB19-0000000000000004
+            content-type: application/json
+            set-cookie: 78f292b385e73b7110f972d6e3122473=0a617d702b0000d596f0e3ca813821d5; path=/; HttpOnly; Secure; SameSite=None
+            traceparent: 00-ab4d7bf57041a49b76ecd4aa1c929c79-a37c26b52315ddf2-01
             transfer-encoding: chunked
 
             {
                 "error": {
                     "code": "400",
                     "description": "Bad Request",
-                    "message": "org.apache.camel.TypeConversionException: Error during type conversion from type: java.lang.String to the required type: org.w3c.dom.Document with value PLAIN TEXT\n due to org.xml.sax.SAXParseException: Content is not allowed in prolog."
+                    "message": "org.apache.camel.TypeConversionException: Error during type conversion from type: org.apache.camel.converter.stream.ByteArrayInputStreamCache to the required type: org.w3c.dom.Document with value org.apache.camel.converter.stream.ByteArrayInputStreamCache@63f0fcf6 due to org.xml.sax.SAXParseException: Content is not allowed in prolog."
                 },
                 "status": "KO"
             }
             ```
 
-3. Test the `/openapi.json` endpoint
-    ```shell
-    http -v $URL/openapi.json
-    ```
-    ```shell
-    [...]
-    HTTP/1.1 200 OK
-    Accept: */*
-    [...]
-    Content-Type: application/vnd.oai.openapi+json
-    [...]
-    breadcrumbId: DFB5B53061B9578-0000000000000002
-    transfer-encoding: chunked
+## Testing using [Postman](https://www.postman.com/)
 
-    {
-        "components": {
-            "schemas": {
-                "ErrorMessageType": {
-                    "description": "Error message type  ",
-    [...]
-        "info": {
-        "contact": {
-            "name": "Jean Nyilimbibi"
-        },
-        "description": "API that handles RHOAM Admin/Developer Portals webhook events",
-        "license": {
-            "name": "MIT License",
-            "url": "https://opensource.org/licenses/MIT"
-        },
-        "title": "RHOAM Webhook Events Handler API",
-        "version": "1.0.0"
-    },
-    "openapi": "3.0.2",
-    [...]
-    },
-        "servers": [
-            {
-                "description": "API Backend URL",
-                "url": "http://rhoam-webhook-events-handler-api.apps.ocp4.jnyilimb.eu"
-            }
-        ]
-    }
-    ```
-
-4. Test the `/q/health` endpoint
-    ```shell
-    http -v $URL/q/health
-    ```
-    ```shell
-    HTTP/1.1 200 OK
-    Set-Cookie: 0d5acfcb0ca2b6f2520831b8d4bd4031=2cd3ddf89a39206056fcce59b93f59aa; path=/; HttpOnly
-    cache-control: private
-    content-length: 647
-    content-type: application/json; charset=UTF-8
-    set-cookie: 0d5acfcb0ca2b6f2520831b8d4bd4031=2cd3ddf89a39206056fcce59b93f59aa; path=/; HttpOnly
-
-    {
-        "checks": [
-            {
-                "name": "camel-liveness-checks",
-                "status": "UP"
-            },
-            {
-                "data": {
-                    "context": "UP",
-                    "route:generate-error-response-route": "UP",
-                    "route:get-openapi-spec-route": "UP",
-                    "route:ping-webhook-route": "UP",
-                    "route:send-to-amqp-queue-route": "UP",
-                    "route:webhook-amqpbridge-handler-route": "UP",
-                    "route:webhook-amqpbridge-ping-route": "UP"
-                },
-                "name": "camel-readiness-checks",
-                "status": "UP"
-            }
-        ],
-        "status": "UP"
-    }
-    ```
-
-5. Test the `/q/health/live` endpoint
-    ```shell
-    http -v $URL/q/health/live
-    ```
-    ```shell
-    HTTP/1.1 200 OK
-    Set-Cookie: 0d5acfcb0ca2b6f2520831b8d4bd4031=a9c4acc377212f7232380c78ddbbf21f; path=/; HttpOnly
-    cache-control: private
-    content-length: 138
-    content-type: application/json; charset=UTF-8
-    set-cookie: 0d5acfcb0ca2b6f2520831b8d4bd4031=a9c4acc377212f7232380c78ddbbf21f; path=/; HttpOnly
-
-    {
-        "checks": [
-            {
-                "name": "camel-liveness-checks",
-                "status": "UP"
-            }
-        ],
-        "status": "UP"
-    }
-    ```
-
-6. Test the `/q/health/ready` endpoint
-    ```shell
-    http -v $URL/q/health/ready
-    ```
-    ```shell
-    HTTP/1.1 200 OK
-    Set-Cookie: 0d5acfcb0ca2b6f2520831b8d4bd4031=a9c4acc377212f7232380c78ddbbf21f; path=/; HttpOnly
-    cache-control: private
-    content-length: 554
-    content-type: application/json; charset=UTF-8
-    set-cookie: 0d5acfcb0ca2b6f2520831b8d4bd4031=a9c4acc377212f7232380c78ddbbf21f; path=/; HttpOnly
-
-    {
-        "checks": [
-            {
-                "data": {
-                    "context": "UP",
-                    "route:generate-error-response-route": "UP",
-                    "route:get-openapi-spec-route": "UP",
-                    "route:ping-webhook-route": "UP",
-                    "route:send-to-amqp-queue-route": "UP",
-                    "route:webhook-amqpbridge-handler-route": "UP",
-                    "route:webhook-amqpbridge-ping-route": "UP"
-                },
-                "name": "camel-readiness-checks",
-                "status": "UP"
-            }
-        ],
-        "status": "UP"
-    }
-    ```
-
-7. Test the `/q/metrics` endpoint
-    ```shell
-    http -v $URL/q/metrics
-    ```
-    ```shell
-    [...]
-    HTTP/1.1 200 OK
-    Access-Control-Allow-Credentials: true
-    Access-Control-Allow-Headers: origin, content-type, accept, authorization
-    Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS, HEAD
-    Access-Control-Allow-Origin: *
-    Access-Control-Max-Age: 1209600
-    Cache-control: private
-    Content-Type: text/plain
-    Set-Cookie: 0d5acfcb0ca2b6f2520831b8d4bd4031=c1552cc3572cec4462da37f30dd5423d; path=/; HttpOnly
-    content-length: 38276
-    [...]
-    # HELP application_camel_context_exchanges_total The total number of exchanges for a route or Camel Context
-    # TYPE application_camel_context_exchanges_total counter
-    application_camel_context_exchanges_total{camelContext="camel-1"} 5.0
-    [...]
-    # HELP application_camel_route_count The count of routes.
-    # TYPE application_camel_route_count gauge
-    application_camel_route_count{camelContext="camel-1"} 6.0
-    # HELP application_camel_route_exchanges_completed_total The total number of completed exchanges for a route or Camel Context
-    # TYPE application_camel_route_exchanges_completed_total counter
-    application_camel_route_exchanges_completed_total{camelContext="camel-1",routeId="generate-error-response-route"} 0.0
-    application_camel_route_exchanges_completed_total{camelContext="camel-1",routeId="get-openapi-spec-route"} 1.0
-    application_camel_route_exchanges_completed_total{camelContext="camel-1",routeId="ping-webhook-route"} 0.0
-    application_camel_route_exchanges_completed_total{camelContext="camel-1",routeId="send-to-amqp-queue-route"} 1.0
-    application_camel_route_exchanges_completed_total{camelContext="camel-1",routeId="webhook-amqpbridge-handler-route"} 1.0
-    application_camel_route_exchanges_completed_total{camelContext="camel-1",routeId="webhook-amqpbridge-ping-route"} 0.0
-    [...]
-    # HELP application_camel_route_exchanges_total The total number of exchanges for a route or Camel Context
-    # TYPE application_camel_route_exchanges_total counter
-    application_camel_route_exchanges_total{camelContext="camel-1",routeId="generate-error-response-route"} 2.0
-    application_camel_route_exchanges_total{camelContext="camel-1",routeId="get-openapi-spec-route"} 1.0
-    application_camel_route_exchanges_total{camelContext="camel-1",routeId="ping-webhook-route"} 1.0
-    application_camel_route_exchanges_total{camelContext="camel-1",routeId="send-to-amqp-queue-route"} 3.0
-    application_camel_route_exchanges_total{camelContext="camel-1",routeId="webhook-amqpbridge-handler-route"} 3.0
-    application_camel_route_exchanges_total{camelContext="camel-1",routeId="webhook-amqpbridge-ping-route"} 1.0
-    [...]
-    ```
+Import the provided Postman Collection for testing: [tests/Camel-Quarkus-RHOAM-Webhook-Handler-Api.postman_collection.json](./tests/Camel-Quarkus-RHOAM-Webhook-Handler-Api.postman_collection.json)
+ 
+![Camel-Quarkus-RHOAM-Webhook-Handler-Api.postman_collection.png](../_images/Camel-Quarkus-RHOAM-Webhook-Handler-Api.postman_collection.png)
 
 ## Creating a native executable
 
-### :bulb: Running locally
+You can create a native executable using the following command:
 
-You can create a native executable using: `./mvnw package -Pnative`.
+```shell
+./mvnw clean package -Pnative -Dquarkus.native.native-image-xmx=7g
+```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: `./mvnw package -Pnative -Dquarkus.native.container-build=true`.
+>**NOTE** : The project is configured to use a container runtime for native builds. See `quarkus.native.container-build=true` in the [`application.yml`](./src/main/resources/application.yml). Also, adjust the `quarkus.native.native-image-xmx` value according to your container runtime available memory resources.
 
 You can then execute your native executable with: `./target/camel-quarkus-rhoam-webhook-handler-api-1.0.0-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image.
 
-### :bulb: Deploying the native executable as an _OpenShift Serverless_ service
+>**NOTE** : If your are on Apple Silicon and built the native image inside a Linux container (-Dquarkus.native.container-build=true), the result is a Linux ELF binary. macOS can’t execute Linux binaries, so launching it on macOS yields “exec format error”. Follow the steps below to run your Linux native binary.
 
-#### Prerequisites
-
-- OpenShift Serverless operator is installed. See [Installing the OpenShift Serverless Operator](https://access.redhat.com/documentation/en-us/openshift_container_platform/4.11/html/serverless/install#serverless-install-web-console_install-serverless-operator).
-- OpenShift Knative Serving is installed and verified. See [Installing Knative Serving](https://access.redhat.com/documentation/en-us/openshift_container_platform/4.11/html/serverless/install#installing-knative-serving).
-- For native compilation, a Linux X86_64 operating system or an OCI (Open Container Initiative) compatible container runtime, such as _[Podman](https://podman.io/)_ or _[Docker](https://www.docker.com/)_ is required.
-- User has self-provisioner privilege or has access to a working OpenShift project
-- An [**AMQP 1.0 protocol**](https://www.amqp.org/) compliant broker should already be installed and running. [**Red Hat AMQ 7.10 broker on OpenShift**](https://access.redhat.com/documentation/en-us/red_hat_amq_broker/7.10/html/deploying_amq_broker_on_openshift/index) with an SSL-enabled AMQP acceptor has been used for testing.
-
-#### Instructions
-
-1. Login to the OpenShift cluster
+1. Build the container image of your Linux native binary:
     ```shell
-    oc login ...
+    podman build -f src/main/docker/Dockerfile.native -t camel-quarkus-rhoam-webhook-handler-api .
+    ```
+2. Run the container:
+    ```shell
+    podman run --rm --name camel-quarkus-rhoam-webhook-handler-api \
+    -p 8080:8080,9876:9876 \
+    -e QUARKUS_KUBERNETES-CONFIG_ENABLED=false \
+    -e QUARKUS_OTEL_EXPORTER_OTLP_ENDPOINT=http://host.containers.internal:4317 \
+    camel-quarkus-rhoam-webhook-handler-api 
     ```
 
-2. Create an OpenShift project or use your existing OpenShift project. For instance, to create `ceq-services-serverless`
-    ```shell
-    oc new-project ceq-services-serverless --display-name="Red Hat build of Apache Camel for Quarkus Apps - Native Mode and Serverless"
-    ```
-        
-3. Create an `allInOne` Jaeger instance.
-    1. **IF NOT ALREADY INSTALLED**:
-        1. Install, via OLM, the `Red Hat OpenShift distributed tracing platform` (Jaeger) operator with an `AllNamespaces` scope. :warning: Needs `cluster-admin` privileges
-            ```shell
-            oc apply -f - <<EOF
-            apiVersion: operators.coreos.com/v1alpha1
-            kind: Subscription
-            metadata:
-                name: jaeger-product
-                namespace: openshift-operators
-            spec:
-                channel: stable
-                installPlanApproval: Automatic
-                name: jaeger-product
-                source: redhat-operators
-                sourceNamespace: openshift-marketplace
-            EOF
-            ```
-        2. Verify the successful installation of the `Red Hat OpenShift distributed tracing platform` operator
-            ```shell
-            watch oc get sub,csv
-            ```
-    2. Create the `allInOne` Jaeger instance.
-        ```shell
-        oc apply -f - <<EOF
-        apiVersion: jaegertracing.io/v1
-        kind: Jaeger
-        metadata:
-            name: jaeger-all-in-one-inmemory
-        spec:
-            allInOne:
-                options:
-                log-level: info
-            strategy: allInOne
-        EOF
-        ```
+## Start-up time comparison in the same environment
 
-4. Package and deploy to OpenShift
-    -  Using podman to build the native binary:
-        ```shell
-        ./mvnw clean package -Pnative -Dquarkus.native.container-runtime=podman \
-        -Dquarkus.openshift.deploy=true \
-        -Dquarkus.kubernetes.deployment-target=knative \
-        -Dquarkus.container-image.group=ceq-services-serverless
-        ```
-    -  Using docker to build the native binary:
-        ```shell
-	    ./mvnw clean package -Pnative -Dquarkus.native.container-runtime=docker \
-        -Dquarkus.openshift.deploy=true \
-        -Dquarkus.kubernetes.deployment-target=knative \
-        -Dquarkus.container-image.group=ceq-services-serverless
-        ```
+Used environment:
+- **Laptop**: MacBook PRO
+- **CPU**: Apple M2 PRO
+- **RAM**: 32Gb
+- **Container runtime for native builds**: podman v5.7.0
 
-## :bulb: Start-up time comparison on the same OpenShift cluster
-
-- OpenShift Container Platform 4.11.16 running on AWS
-- Compute nodes types: [m5a.4xlarge](https://aws.amazon.com/ec2/instance-types/m5/) (16 vCPU / 64 GiB Memory)
-
-### JVM mode - **2.594s**
+### JVM mode -> _started in **1.706s**_
 
 ```shell
-2022-11-27 20:50:48,033 INFO  [org.apa.cam.qua.cor.CamelBootstrapRecorder] (main) Bootstrap runtime: org.apache.camel.quarkus.main.CamelMainRuntime
-2022-11-27 20:50:48,076 INFO  [org.apa.cam.mai.BaseMainSupport] (main) Auto-configuration summary
-2022-11-27 20:50:48,077 INFO  [org.apa.cam.mai.BaseMainSupport] (main)     camel.context.name=camel-quarkus-rhoam-webhook-handler-api
-2022-11-27 20:50:48,278 INFO  [org.apa.cam.lan.xpa.XPathBuilder] (main) Created default XPathFactory com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl@6d6bff89
-2022-11-27 20:50:48,301 INFO  [org.mes.poo.jms.JmsPoolConnectionFactory] (main) Provided ConnectionFactory implementation is JMS 2.0+ capable.
-2022-11-27 20:50:48,420 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) StreamCaching is enabled on CamelContext: camel-quarkus-rhoam-webhook-handler-api
-2022-11-27 20:50:48,433 INFO  [org.apa.cam.imp.eng.DefaultStreamCachingStrategy] (main) StreamCaching in use with spool directory: /tmp/camel/camel-tmp-7D1C7036D3CC53E-0000000000000000 and rules: [Spool > 128K body size]
-2022-11-27 20:50:48,444 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Routes startup (total:6 started:6)
-2022-11-27 20:50:48,444 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started generate-error-response-route (direct://generateErrorResponse)
-2022-11-27 20:50:48,444 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started send-to-amqp-queue-route (direct://sendToAMQPQueue)
-2022-11-27 20:50:48,444 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started ping-webhook-route (direct://pingWebhook)
-2022-11-27 20:50:48,444 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started get-openapi-spec-route (rest://get:/openapi.json)
-2022-11-27 20:50:48,445 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started webhook-amqpbridge-ping-route (rest://get:/webhook/amqpbridge)
-2022-11-27 20:50:48,445 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started webhook-amqpbridge-handler-route (rest://post:/webhook/amqpbridge)
-2022-11-27 20:50:48,445 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.14.2.redhat-00047 (camel-quarkus-rhoam-webhook-handler-api) started in 292ms (build:0ms init:267ms start:25ms)
-2022-11-27 20:50:48,541 INFO  [io.quarkus] (main) camel-quarkus-rhoam-webhook-handler-api 1.0.0 on JVM (powered by Quarkus 2.13.7.SP1-redhat-00001) started in 2.594s. Listening on: http://0.0.0.0:8080
-2022-11-27 20:50:48,541 INFO  [io.quarkus] (main) Profile prod activated.
-2022-11-27 20:50:48,541 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jms, camel-microprofile-health, camel-microprofile-metrics, camel-openapi-java, camel-opentracing, camel-platform-http, camel-rest, camel-xpath, cdi, config-yaml, jaeger, kubernetes, kubernetes-client, qpid-jms, smallrye-context-propagation, smallrye-health, smallrye-metrics, smallrye-opentracing, vertx]
+# java -Dquarkus.kubernetes-config.enabled=false -jar target/quarkus-app/quarkus-run.jar
+[...]
+2025-11-27 18:55:48,253 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.MainSupport] (main) Apache Camel (Main) 4.14.0.redhat-00009 is starting
+2025-11-27 18:55:48,279 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main) Auto-configuration summary
+2025-11-27 18:55:48,280 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main)     [MicroProfilePropertiesSource] camel.context.name = camel-quarkus-rhoam-webhook-handler-api
+2025-11-27 18:55:48,372 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.la.xp.XPathBuilder] (main) Created default XPathFactory com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl@175745fc
+2025-11-27 18:55:48,439 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-rhoam-webhook-handler-api) is starting
+2025-11-27 18:55:48,492 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.op.OpenTelemetryTracer] (main) OpenTelemetryTracer enabled using instrumentation-name: camel
+2025-11-27 18:55:48,492 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Using ThreadPoolFactory: org.apache.camel.opentelemetry.OpenTelemetryInstrumentedThreadPoolFactory@5e2f3be5
+2025-11-27 18:55:48,545 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:4 rest-dsl:1)
+2025-11-27 18:55:48,546 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started generate-error-response-route (direct://generateErrorResponse)
+2025-11-27 18:55:48,546 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started send-to-amqp-queue-route (direct://sendToAMQPQueue)
+2025-11-27 18:55:48,546 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started ping-webhook-route (direct://pingWebhook)
+2025-11-27 18:55:48,546 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started route1 (rest-openapi://classpath:META-INF/openapi.yaml)
+2025-11-27 18:55:48,546 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-rhoam-webhook-handler-api) started in 106ms (build:0ms init:0ms start:106ms boot:1s213ms)
+2025-11-27 18:55:48,580 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) camel-quarkus-rhoam-webhook-handler-api 1.0.0 on JVM (powered by Quarkus 3.27.0.redhat-00001) started in 1.706s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
+2025-11-27 18:55:48,581 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Profile prod activated. 
+2025-11-27 18:55:48,581 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Installed features: [camel-amqp, camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jms, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-observability-services, camel-opentelemetry, camel-platform-http, camel-rest, camel-rest-openapi, camel-xml-io-dsl, camel-xpath, cdi, config-yaml, kubernetes, kubernetes-client, messaginghub-pooled-jms, micrometer, opentelemetry, qpid-jms, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
 ```
 
-### Native mode - **0.162s**
+### Native mode -> _started in **0.139s**_
 
 ```shell
-2022-11-27 21:44:27,061 INFO  [org.apa.cam.qua.cor.CamelBootstrapRecorder] (main) Bootstrap runtime: org.apache.camel.quarkus.main.CamelMainRuntime
-2022-11-27 21:44:27,064 INFO  [org.apa.cam.mai.BaseMainSupport] (main) Auto-configuration summary
-2022-11-27 21:44:27,064 INFO  [org.apa.cam.mai.BaseMainSupport] (main)     camel.context.name=camel-quarkus-rhoam-webhook-handler-api
-2022-11-27 21:44:27,067 INFO  [org.apa.cam.lan.xpa.XPathBuilder] (main) Created default XPathFactory com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl@6e1cf917
-2022-11-27 21:44:27,068 INFO  [org.mes.poo.jms.JmsPoolConnectionFactory] (main) Provided ConnectionFactory implementation is JMS 2.0+ capable.
-2022-11-27 21:44:27,074 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) StreamCaching is enabled on CamelContext: camel-quarkus-rhoam-webhook-handler-api
-2022-11-27 21:44:27,075 INFO  [org.apa.cam.imp.eng.DefaultStreamCachingStrategy] (main) StreamCaching in use with spool directory: /tmp/camel/camel-tmp-DBA2E4F75088EE3-0000000000000000 and rules: [Spool > 128K body size]
-2022-11-27 21:44:27,076 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Routes startup (total:6 started:6)
-2022-11-27 21:44:27,076 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started send-to-amqp-queue-route (direct://sendToAMQPQueue)
-2022-11-27 21:44:27,076 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started ping-webhook-route (direct://pingWebhook)
-2022-11-27 21:44:27,076 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started generate-error-response-route (direct://generateErrorResponse)
-2022-11-27 21:44:27,076 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started get-openapi-spec-route (rest://get:/openapi.json)
-2022-11-27 21:44:27,076 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started webhook-amqpbridge-ping-route (rest://get:/webhook/amqpbridge)
-2022-11-27 21:44:27,076 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main)     Started webhook-amqpbridge-handler-route (rest://post:/webhook/amqpbridge)
-2022-11-27 21:44:27,076 INFO  [org.apa.cam.imp.eng.AbstractCamelContext] (main) Apache Camel 3.14.2.redhat-00047 (camel-quarkus-rhoam-webhook-handler-api) started in 11ms (build:0ms init:9ms start:2ms)
-2022-11-27 21:44:27,078 INFO  [io.quarkus] (main) camel-quarkus-rhoam-webhook-handler-api 1.0.0 native (powered by Quarkus 2.13.7.SP1-redhat-00001) started in 0.162s. Listening on: http://0.0.0.0:8080
-2022-11-27 21:44:27,078 INFO  [io.quarkus] (main) Profile prod activated.
-2022-11-27 21:44:27,078 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jms, camel-microprofile-health, camel-microprofile-metrics, camel-openapi-java, camel-opentracing, camel-platform-http, camel-rest, camel-xpath, cdi, config-yaml, jaeger, kubernetes, kubernetes-client, qpid-jms, smallrye-context-propagation, smallrye-health, smallrye-metrics, smallrye-opentracing, vertx]
+# podman run --rm --name camel-quarkus-rhoam-webhook-handler-api -p 8080:8080,9876:9876 -e QUARKUS_KUBERNETES-CONFIG_ENABLED=false -e QUARKUS_OTEL_EXPORTER_OTLP_ENDPOINT=http://host.containers.internal:4317 camel-quarkus-rhoam-webhook-handler-api
+[...]
+2025-11-27 17:56:12,116 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-rhoam-webhook-handler-api) is starting
+2025-11-27 17:56:12,159 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.op.OpenTelemetryTracer] (main) OpenTelemetryTracer enabled using instrumentation-name: camel
+2025-11-27 17:56:12,159 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Using ThreadPoolFactory: org.apache.camel.opentelemetry.OpenTelemetryInstrumentedThreadPoolFactory@2a8e30e3
+2025-11-27 17:56:12,187 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:4 rest-dsl:1)
+2025-11-27 17:56:12,188 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started generate-error-response-route (direct://generateErrorResponse)
+2025-11-27 17:56:12,188 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started send-to-amqp-queue-route (direct://sendToAMQPQueue)
+2025-11-27 17:56:12,188 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started ping-webhook-route (direct://pingWebhook)
+2025-11-27 17:56:12,188 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started route1 (rest-openapi://classpath:META-INF/openapi.yaml)
+2025-11-27 17:56:12,188 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-rhoam-webhook-handler-api) started in 72ms (build:0ms init:0ms start:72ms)
+2025-11-27 17:56:12,190 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) camel-quarkus-rhoam-webhook-handler-api 1.0.0 native (powered by Quarkus 3.27.0.redhat-00001) started in 0.139s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
+2025-11-27 17:56:12,190 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Profile prod activated. 
+2025-11-27 17:56:12,190 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Installed features: [camel-amqp, camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jms, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-observability-services, camel-opentelemetry, camel-platform-http, camel-rest, camel-rest-openapi, camel-xml-io-dsl, camel-xpath, cdi, config-yaml, kubernetes, kubernetes-client, messaginghub-pooled-jms, micrometer, opentelemetry, qpid-jms, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
 ```
-
-## Related Guides
-
-- AMQP 1.0 JMS client - Apache Qpid JMS ([guide](https://quarkus.io/guides/jms)): Use JMS APIs with AMQP 1.0 servers such as ActiveMQ Artemis, ActiveMQ 5, Qpid Broker-J, Qpid Dispatch router, Azure Service Bus, and more
-- OpenShift ([guide](https://quarkus.io/guides/deploying-to-openshift)): Generate OpenShift resources from annotations
-- Camel Platform HTTP ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-platform-http)): Expose HTTP endpoints using the HTTP server available in the current platform
-- Camel Direct ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-direct)): Call another endpoint from the same Camel Context synchronously
-- Camel Jackson ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-jackson)): Marshal POJOs to JSON and back using Jackson
-- YAML Configuration ([guide](https://quarkus.io/guides/config#yaml)): Use YAML to configure your Quarkus application
-- Camel Bean ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-bean)): Invoke methods of Java beans
-- Camel OpenTelemetry ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-opentelemetry)): Distributed tracing using OpenTelemetry
-- Camel XPath ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-xpath)): Evaluates an XPath expression against an XML payload
-- Camel OpenAPI Java ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-openapi-java)): Expose OpenAPI resources defined in Camel REST DSL
-- Camel MicroProfile Health ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-microprofile-health)): Expose Camel health checks via MicroProfile Health
-- Camel MicroProfile Metrics ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-microprofile-metrics)): Expose metrics from Camel routes
-- Kubernetes Config ([guide](https://quarkus.io/guides/kubernetes-config)): Read runtime configuration from Kubernetes ConfigMaps and Secrets
-- Camel JMS ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-jms)): Sent and receive messages to/from a JMS Queue or Topic
-- Camel Rest ([guide](https://access.redhat.com/documentation/en-us/red_hat_integration/2.latest/html/camel_extensions_for_quarkus_reference/extensions-rest)): Expose REST services and their OpenAPI Specification or call external REST services
-
-## Provided Code
-
-### YAML Config
-
-Configure your application with YAML
-
-[Related guide section...](https://quarkus.io/guides/config-reference#configuration-examples)
-
-The Quarkus application configuration is located in `src/main/resources/application.yml`.

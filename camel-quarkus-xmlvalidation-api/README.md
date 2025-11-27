@@ -168,6 +168,7 @@ If you want to learn more about building native executables, please consult http
     podman run --rm --name camel-quarkus-xmlvalidation-api \
     -p 8080:8080,9876:9876 \
     -e QUARKUS_KUBERNETES-CONFIG_ENABLED=false \
+    -e QUARKUS_OTEL_EXPORTER_OTLP_ENDPOINT=http://host.containers.internal:4317 \
     camel-quarkus-xmlvalidation-api 
     ```
 
@@ -201,7 +202,7 @@ Used environment:
 ### Native mode -> _started in **0.088s**_
 
 ```shell
-# podman run --rm --name camel-quarkus-xmlvalidation-api -p 8080:8080,9876:9876 -e QUARKUS_KUBERNETES-CONFIG_ENABLED=false camel-quarkus-xmlvalidation-api
+# podman run --rm --name camel-quarkus-xmlvalidation-api -p 8080:8080,9876:9876 -e QUARKUS_KUBERNETES-CONFIG_ENABLED=false -e QUARKUS_OTEL_EXPORTER_OTLP_ENDPOINT=http://host.containers.internal:4317 camel-quarkus-xmlvalidation-api
 [...]
 2025-11-27 11:15:44,192 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.MainSupport] (main) Apache Camel (Main) 4.14.0.redhat-00009 is starting
 2025-11-27 11:15:44,195 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main) Auto-configuration summary

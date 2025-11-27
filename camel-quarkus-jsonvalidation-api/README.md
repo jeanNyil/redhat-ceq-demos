@@ -170,6 +170,7 @@ If you want to learn more about building native executables, please consult http
     podman run --rm --name camel-quarkus-jsonvalidation-api \
     -p 8080:8080,9876:9876 \
     -e QUARKUS_KUBERNETES-CONFIG_ENABLED=false \
+    -e QUARKUS_OTEL_EXPORTER_OTLP_ENDPOINT=http://host.containers.internal:4317 \
     camel-quarkus-jsonvalidation-api 
     ```
 
@@ -206,7 +207,7 @@ Used environment:
 ### Native mode -> _started in **0.085s**_
 
 ```shell
-# podman run --rm --name camel-quarkus-jsonvalidation-api -p 8080:8080,9876:9876 -e QUARKUS_KUBERNETES-CONFIG_ENABLED=false camel-quarkus-jsonvalidation-api
+# podman run --rm --name camel-quarkus-jsonvalidation-api -p 8080:8080,9876:9876 -e QUARKUS_KUBERNETES-CONFIG_ENABLED=false -e QUARKUS_OTEL_EXPORTER_OTLP_ENDPOINT=http://host.containers.internal:4317 camel-quarkus-jsonvalidation-api
 [...]
 2025-11-27 10:18:37,707 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-jsonvalidation-api) is starting
 2025-11-27 10:18:37,722 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.op.OpenTelemetryTracer] (main) OpenTelemetryTracer enabled using instrumentation-name: camel
