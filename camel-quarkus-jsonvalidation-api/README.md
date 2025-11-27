@@ -149,11 +149,11 @@ Import the provided Postman Collection for testing: [tests/Camel-Quarkus-JsonVal
 
 You can create a native executable using the following command:
 
->**NOTE** : The project is configured to use a container runtime for native builds. See `quarkus.native.container-build=true` in the [`application.yml`](./src/main/resources/application.yml). Also, adjust the `quarkus.native.native-image-xmx` value according to your container runtime available memory resources.
-
 ```shell
 ./mvnw clean package -Pnative -Dquarkus.native.native-image-xmx=7g
 ```
+
+>**NOTE** : The project is configured to use a container runtime for native builds. See `quarkus.native.container-build=true` in the [`application.yml`](./src/main/resources/application.yml). Also, adjust the `quarkus.native.native-image-xmx` value according to your container runtime available memory resources.
 
 You can then execute your native executable with: `./target/camel-quarkus-jsonvalidation-api-1.0.0-runner`
 
