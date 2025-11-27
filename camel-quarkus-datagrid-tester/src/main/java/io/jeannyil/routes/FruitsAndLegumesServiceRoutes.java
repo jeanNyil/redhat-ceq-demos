@@ -1,7 +1,6 @@
 package io.jeannyil.routes;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -10,33 +9,23 @@ import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
-import org.apache.camel.model.rest.RestBindingMode;
 
 import io.jeannyil.constants.DirectEndpointConstants;
 import io.jeannyil.models.Fruit;
 
-/* FruitsAndLegumesService route definition
+/* FruitsAndLegumesService endpoints definition
 
 /!\ The @ApplicationScoped annotation is required for @Inject and @ConfigProperty to work in a RouteBuilder. 
 	Note that the @ApplicationScoped beans are managed by the CDI container and their life cycle is thus a bit 
 	more complex than the one of the plain RouteBuilder. 
 	In other words, using @ApplicationScoped in RouteBuilder comes with some boot time penalty and you should 
 	therefore only annotate your RouteBuilder with @ApplicationScoped when you really need it. */
-@ApplicationScoped
-public class FruitsAndLegumesServiceRoute extends RouteBuilder {
+public class FruitsAndLegumesServiceRoutes extends RouteBuilder {
 
-    private static String logName = FruitsAndLegumesServiceRoute.class.getName();
-
-    @Inject
-	CamelContext camelctx;
+    private static String logName = FruitsAndLegumesServiceRoutes.class.getName();
     
     @Override
     public void configure() throws Exception {
-
-        // Enable Stream caching
-        camelctx.setStreamCaching(true);
-        // Enable use of breadcrumbId
-        camelctx.setUseBreadcrumb(true);
 
         // Catch unexpected exceptions
 		onException(Exception.class)
@@ -44,62 +33,6 @@ public class FruitsAndLegumesServiceRoute extends RouteBuilder {
             .maximumRedeliveries(0)
             .log(LoggingLevel.ERROR, logName, ">>> Caught exception: ${exception.stacktrace}")
             .to(DirectEndpointConstants.DIRECT_GENERATE_ERROR_MESSAGE)
-        ;
-        
-        //REST configuration with Camel Quarkus Platform HTTP component
-        restConfiguration()
-            .component("platform-http")
-            .enableCORS(true)
-            .bindingMode(RestBindingMode.off) // RESTful responses will be explicitly marshaled for logging purposes
-            .dataFormatProperty("prettyPrint", "true")
-            .contextPath("/api/v1")
-        ;
-
-        // REST endpoint for the FruitsAndLegumesService OpenAPI specification
-        rest("/fruits-and-legumes-api")
-            .produces(MediaType.APPLICATION_JSON)
-            .get("/openapi.json")
-                .id("get-fruits-and-legumes-api-oas-rest")
-                .description("Gets the OpenAPI specification for this service in JSON format")
-                .to("direct:get-fruits-and-legumes-api-oas")
-        ;
-
-        // Returns the FruitsAndLegumesService OAS
-        from("direct:get-fruits-and-legumes-api-oas")
-            .routeId("get-fruits-and-legumes-api-oas-route")
-            .log(LoggingLevel.INFO, logName, ">>> IN: headers:[${headers}] - body:[${body}]")
-            .setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json"))
-            .setBody().constant("resource:classpath:openapi/fruits-and-legumes-api.json")
-            .log(LoggingLevel.INFO, logName, ">>> OUT: headers:[${headers}] - body:[${body}]")
-        ;
-
-        // REST endpoint for the fruits API
-        rest("/fruits-and-legumes-api/fruits")
-            .get()
-                .id("get-fruits-rest")
-                .produces(MediaType.APPLICATION_JSON)
-                .description("Returns a list of hard-coded and added fruits")
-                // Call the getFruits route
-                .to("direct:getFruits")
-            
-            // Adds a fruit
-            .post()
-                .id("add-fruit-rest")
-                .consumes(MediaType.APPLICATION_JSON)
-                .produces(MediaType.APPLICATION_JSON)
-                .description("Adds a fruit")
-                // Call the getFruits route
-                .to("direct:addFruit")
-        ;
-
-        // REST endpoint for the legumes API
-        rest("/fruits-and-legumes-api/legumes")
-            .get()
-                .id("get-legumes-rest")
-                .produces(MediaType.APPLICATION_JSON)
-                .description("Returns a list of hard-coded legumes")
-                // Call the getFruits route
-                .to("direct:getLegumes")
         ;
         
         // Implements the getFruits operation

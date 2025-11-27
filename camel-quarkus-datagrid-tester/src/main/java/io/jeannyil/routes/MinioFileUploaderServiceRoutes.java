@@ -15,16 +15,16 @@ import org.apache.camel.component.minio.MinioConstants;
 
 import io.jeannyil.constants.DirectEndpointConstants;
 
-/* MinioFileUploaderServiceRoute route definition
+/* MinioFileUploaderService endpoints definition
 
 /!\ The @ApplicationScoped annotation is required for @Inject and @ConfigProperty to work in a RouteBuilder. 
 	Note that the @ApplicationScoped beans are managed by the CDI container and their life cycle is thus a bit 
 	more complex than the one of the plain RouteBuilder. 
 	In other words, using @ApplicationScoped in RouteBuilder comes with some boot time penalty and you should 
 	therefore only annotate your RouteBuilder with @ApplicationScoped when you really need it. */
-public class MinioFileUploaderServiceRoute extends RouteBuilder {
+public class MinioFileUploaderServiceRoutes extends RouteBuilder {
     
-    private static String logName = MinioFileUploaderServiceRoute.class.getName();
+    private static String logName = MinioFileUploaderServiceRoutes.class.getName();
     
     @Override
     public void configure() throws Exception {
@@ -35,42 +35,6 @@ public class MinioFileUploaderServiceRoute extends RouteBuilder {
             .maximumRedeliveries(0)
             .log(LoggingLevel.ERROR, logName, ">>> Caught exception: ${exception.stacktrace}")
             .to(DirectEndpointConstants.DIRECT_GENERATE_ERROR_MESSAGE)
-        ;
-
-        // REST endpoint for the MinioFileUploaderService
-        rest("/minio-file-uploader-service")
-            .produces(MediaType.APPLICATION_JSON)
-            // Get the MinioFileUploaderService OAS
-            .get("/openapi.json")
-                .id("get-minio-file-uploader-service-oas-rest")
-                .description("Gets the OpenAPI specification for this service in JSON format")
-                .to("direct:get-minio-file-uploader-service-oas") // Call the get-minio-file-uploader-service-oas-route
-            // Upload the fruits.csv file to MinIO server
-            .post("/csv")
-                .id("upload-fruits-csv-rest")
-                .description("Upload the fruits.csv file to MinIO server")
-                .to("direct:uploadCsvFile") // Call the uploadCsvFile route
-            // Upload the fruits.json file to MinIO server
-            .post("/json")
-                .id("upload-fruits-json-rest")
-                .description("Upload the fruits.json file to MinIO server")
-                .to("direct:uploadJsonFile") // Call the uploadCsvFile route
-            // Upload the fruits.xml file to MinIO server
-            .post("/xml")
-                .id("upload-fruits-xml-rest")
-                .description("Upload the fruits.xml file to MinIO server")
-                .to("direct:uploadXmlFile") // Call the uploadCsvFile route
-        ;
-
-        // Returns the MinioFileUploaderService OAS
-        from("direct:get-minio-file-uploader-service-oas")
-            .routeId("get-minio-file-uploader-service-oas-route")
-            .log(LoggingLevel.INFO, logName, ">>> IN: headers:[${headers}] - body:[${body}]")
-            .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.OK.getStatusCode()))
-			.setHeader(Exchange.HTTP_RESPONSE_TEXT, constant(Response.Status.OK.getReasonPhrase()))
-            .setHeader(Exchange.CONTENT_TYPE, constant("application/vnd.oai.openapi+json"))
-            .setBody().constant("resource:classpath:openapi/minio-file-uploader-service.json")
-            .log(LoggingLevel.INFO, logName, ">>> OUT: headers:[${headers}] - body:[${body}]")
         ;
 
         // Implements the uploadCsvFile operation

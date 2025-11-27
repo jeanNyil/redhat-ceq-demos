@@ -1,0 +1,362 @@
+openapi: 3.0.3
+info:
+    title: Camel Quarkus & Datagrid Tester Service
+    version: 1.0.0
+    description: >-
+        This API product tests the integration of Red Hat's build of Apache Camel for Quarkus with Red Hat
+        Data Grid. It exposes two backend services: fruits-and-legumes-api, which demonstrates some CRUD
+        operations on Red Hat Data Grid using Camel; and minio-file-uploader-service, which tests the
+        Idempotent Consumer EIP with Red Hat Data Grid as a remote idempotent repository. The API validates
+        integration patterns between Camel, Quarkus, and Red Hat Data Grid.
+    contact:
+        name: Jean Nyilimbibi
+    license:
+        name: MIT License
+        url: 'https://opensource.org/licenses/MIT'
+servers:
+    -
+        url: 'http://localhost:8080/api/v1'
+        description: API Backend URL
+paths:
+    /fruits-and-legumes-api/fruits:
+        get:
+            tags:
+                - fruits
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Fruit'
+                            examples:
+                                fruits:
+                                    value:
+                                        -
+                                            name: Apple
+                                            description: Winter fruit
+                                        -
+                                            name: Pineapple
+                                            description: Tropical fruit
+                                        -
+                                            name: Mango
+                                            description: Tropical fruit
+                                        -
+                                            name: Banana
+                                            description: Tropical fruit
+                    description: Fruits found
+                '500':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/errorMessage'
+                            examples:
+                                internalServerError:
+                                    value:
+                                        code: '500'
+                                        description: Internal server error
+                                        message: 'java.lang.Exception: mocked error'
+                    description: Internal server error
+            operationId: getFruits
+            summary: Returns a list of hard-coded and added fruits
+            description: Returns a list of hard-coded and added fruits
+        post:
+            requestBody:
+                description: Fruit to add
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Fruit'
+                        examples:
+                            fruitToAdd:
+                                value:
+                                    name: Maracuja
+                                    description: 'Tropical fruit :-)'
+                required: true
+            tags:
+                - fruits
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Fruit'
+                            examples:
+                                newFruitsList:
+                                    value:
+                                        -
+                                            name: Apple
+                                            description: Winter fruit
+                                        -
+                                            name: Pineapple
+                                            description: Tropical fruit
+                                        -
+                                            name: Mango
+                                            description: Tropical fruit
+                                        -
+                                            name: Banana
+                                            description: Tropical fruit
+                                        -
+                                            name: Maracuja
+                                            description: 'Tropical fruit :-)'
+                    description: Fruit added
+                '500':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/errorMessage'
+                            examples:
+                                internalServerError:
+                                    value:
+                                        code: '500'
+                                        description: Internal server error
+                                        message: 'java.lang.Exception: mocked error'
+                    description: Internal server error
+            operationId: addFruit
+            summary: Adds a fruit
+            description: Adds a fruit in the hard-coded list
+    /fruits-and-legumes-api/legumes:
+        get:
+            tags:
+                - legumes
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Legume'
+                            examples:
+                                legumesList:
+                                    value:
+                                        -
+                                            name: Carrot
+                                            description: 'Root vegetable, usually orange'
+                                        -
+                                            name: Zucchini
+                                            description: Summer squash
+                    description: Legumes found
+                '500':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/errorMessage'
+                            examples:
+                                internalServerError:
+                                    value:
+                                        code: '500'
+                                        description: Internal server error
+                                        message: 'java.lang.Exception: mocked error'
+                    description: Internal server error
+            operationId: getLegumes
+            summary: Returns a list of hard-coded legumes
+            description: Returns a list of hard-coded legumes
+    /minio-file-uploader-service/json:
+        post:
+            tags:
+                - MinIO Upload
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseMessage'
+                                properties:
+                                    message:
+                                        type: string
+                                        example: fruits.json uploaded to MinIO server successfully
+                            examples:
+                                fruits.json:
+                                    value:
+                                        fileName: fruits.json
+                                        content: >-
+                                            [{"description": "Winter fruit", "name": "Apple"}, {"description":
+                                            "Tropical fruit", "name": "Pineapple"}, {"description": "Tropical
+                                            fruit", "name": "Mango"}, {"description": "Tropical fruit",
+                                            "name": "Banana"}]
+                    description: JSON file uploaded successfully
+                '500':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/errorMessage'
+                                properties:
+                                    error:
+                                        type: string
+                                        example: Error while uploading fruits.json to MinIO server
+                            examples:
+                                internalServerError:
+                                    value:
+                                        code: '500'
+                                        description: Internal server error
+                                        message: 'java.lang.Exception: mocked error'
+                    description: Error during the JSON file upload process
+            operationId: uploadJsonFile
+            summary: Upload the fruits.json file to MinIO server
+    /minio-file-uploader-service/xml:
+        post:
+            tags:
+                - MinIO Upload
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseMessage'
+                                properties:
+                                    message:
+                                        type: string
+                                        example: fruits.xml uploaded to MinIO server successfully
+                            examples:
+                                fruits.xml:
+                                    value:
+                                        fileName: fruits.xml
+                                        content: >-
+                                            <fruits><fruit><name>Apple</name><description>Winter
+                                            fruit</description></fruit><fruit><name>Pineapple</name><description>Tropical
+                                            fruit</description></fruit><fruit><name>Mango</name><description>Tropical
+                                            fruit</description></fruit><fruit><name>Banana</name><description>Tropical
+                                            fruit</description></fruit></fruits>
+                    description: XML file uploaded successfully
+                '500':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/errorMessage'
+                                properties:
+                                    error:
+                                        type: string
+                                        example: Error while uploading fruits.xml to MinIO server
+                            examples:
+                                internalServerError:
+                                    value:
+                                        code: '500'
+                                        description: Internal server error
+                                        message: 'java.lang.Exception: mocked error'
+                    description: Error during the XML file upload process
+            operationId: uploadXmlFile
+            summary: Upload the fruits.xml file to MinIO server
+    /minio-file-uploader-service/csv:
+        post:
+            tags:
+                - MinIO Upload
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseMessage'
+                            examples:
+                                fruits.csv:
+                                    value:
+                                        fileName: fruits.csv
+                                        content: |-
+                                            name,description
+                                            Apple,Winter fruit
+                                            Pineapple,Tropical fruit
+                                            Mango,Tropical fruit
+                                            Banana,Tropical fruit
+                    description: CSV file uploaded successfully
+                '500':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/errorMessage'
+                                properties:
+                                    error:
+                                        type: string
+                                        example: Error while uploading fruits.csv to MinIO server
+                            examples:
+                                internalServerError:
+                                    value:
+                                        code: '500'
+                                        description: Internal server error
+                                        message: 'java.lang.Exception: mocked error'
+                    description: Error during the CSV file upload process
+            operationId: uploadCsvFile
+            summary: Upload the fruits.csv file to MinIO server
+components:
+    schemas:
+        Fruit:
+            title: Root Type for Fruit
+            description: Name and description for a fruit
+            required:
+                - description
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                description:
+                    type: string
+            example:
+                name: Maracuja
+                description: 'Tropical fruit :-)'
+        Legume:
+            title: Root Type for Legume
+            description: Name and description for a legume
+            required:
+                - description
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                description:
+                    type: string
+            example:
+                name: Carrot
+                description: 'Root vegetable, usually orange'
+        responseMessage:
+            title: Root Type for responseMessage
+            description: ''
+            type: object
+            properties:
+                fileName:
+                    type: string
+                content:
+                    type: string
+            example:
+                fileName: fruits.json
+                content: >-
+                    [{"description": "Winter fruit", "name": "Apple"}, {"description": "Tropical fruit",
+                    "name": "Pineapple"}, {"description": "Tropical fruit", "name": "Mango"}, {"description":
+                    "Tropical fruit", "name": "Banana"}]
+        errorMessage:
+            title: Root Type for errorMessage
+            description: ''
+            required:
+                - code
+                - description
+                - message
+            type: object
+            properties:
+                code:
+                    type: string
+                description:
+                    type: string
+                message:
+                    type: string
+            example:
+                code: '500'
+                description: Internal server error
+                message: 'java.lang.Exception: mocked error'
+    securitySchemes:
+        oidc:
+            openIdConnectUrl: 'https://sso.apps.ocp4.jnyilimb.eu/realms/openshift-cluster/.well-known/openid-configuration'
+            type: openIdConnect
+            description: OpenID Connect
+security:
+    -
+        oidc: []
+tags:
+    -
+        name: fruits
+        description: ''
+    -
+        name: legumes
+        description: ''
