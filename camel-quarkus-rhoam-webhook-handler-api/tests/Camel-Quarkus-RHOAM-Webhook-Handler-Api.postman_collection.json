@@ -1,0 +1,305 @@
+{
+	"info": {
+		"_postman_id": "b0ed5281-e380-4a6a-b040-3b65694d4239",
+		"name": "Camel-Quarkus-RHOAM-Webhook-Handler-Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2627305"
+	},
+	"item": [
+		{
+			"name": "pingWebhook",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"requestType\": \"API\",\n    \"requestID\": 5948,\n    \"memberID\": 85623617,\n    \"status\": \"A\",\n    \"enrolmentDate\": \"2020-09-05\",\n    \"changedBy\": \"JaLiLa\",\n    \"forcedLevelCode\": \"69\",\n    \"vipOnInvitation\": \"Y\",\n    \"startDate\": \"2020-09-05\",\n    \"endDate\": \"2100-09-05\"\n}"
+				},
+				"url": {
+					"raw": "{{service_base_url}}/v1/webhook/amqpbridge",
+					"host": [
+						"{{service_base_url}}"
+					],
+					"path": [
+						"v1",
+						"webhook",
+						"amqpbridge"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sendToAMQPQueue - OK",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<event>\n    <action>created</action>\n    <type>application</type>\n    <object>\n        <application>\n            <id>6992</id>\n            <created_at>2023-06-14T15:37:32+02:00</created_at>\n            <updated_at>2023-06-14T15:37:32+02:00</updated_at>\n            <state>pending</state>\n            <user_account_id>1791</user_account_id>\n            <first_traffic_at />\n            <first_daily_traffic_at />\n            <service_id>1319</service_id>\n            <user_key>ae61cf0a5e082f3cd0b54dc53cfba280</user_key>\n            <provider_verification_key>191222d51a5bceabd47a2084acea90f1</provider_verification_key>\n            <plan custom=\"false\" default=\"false\">\n                <id>4296</id>\n                <name>RHOAM Open API Plan</name>\n                <type>application_plan</type>\n                <state>published</state>\n                <approval_required>true</approval_required>\n                <setup_fee>5.0</setup_fee>\n                <cost_per_month>2.99</cost_per_month>\n                <trial_period_days />\n                <cancellation_period>0</cancellation_period>\n                <service_id>1319</service_id>\n            </plan>\n            <name>Red Hat's App</name>\n            <description>Red Hat application to the RHOAM Quarkus API</description>\n            <extra_fields>\n                <webhook-url>https://webhook.site/c24da183-1a6c-454f-82a5-ed9f188d2f5b</webhook-url>\n            </extra_fields>\n        </application>\n    </object>\n</event>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{service_base_url}}/v1/webhook/amqpbridge",
+					"host": [
+						"{{service_base_url}}"
+					],
+					"path": [
+						"v1",
+						"webhook",
+						"amqpbridge"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sendToAMQPQueue - KO - Bad Content-Type",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "PLAIN TEXT",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{service_base_url}}/v1/webhook/amqpbridge",
+					"host": [
+						"{{service_base_url}}"
+					],
+					"path": [
+						"v1",
+						"webhook",
+						"amqpbridge"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sendToAMQPQueue - KO - Not well formatted",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<event>\n    <action>created</action\n    <type>application</type>\n    <object>\n        <application>\n            <id>6992</id>\n            <created_at>2023-06-14T15:37:32+02:00</created_at>\n            <updated_at>2023-06-14T15:37:32+02:00</updated_at>\n            <state>pending</state>\n            <user_account_id>1791</user_account_id>\n            <first_traffic_at />\n            <first_daily_traffic_at />\n            <service_id>1319</service_id>\n            <user_key>ae61cf0a5e082f3cd0b54dc53cfba280</user_key>\n            <provider_verification_key>191222d51a5bceabd47a2084acea90f1</provider_verification_key>\n            <plan custom=\"false\" default=\"false\">\n                <id>4296</id>\n                <name>RHOAM Open API Plan</name>\n                <type>application_plan</type>\n                <state>published</state>\n                <approval_required>true</approval_required>\n                <setup_fee>5.0</setup_fee>\n                <cost_per_month>2.99</cost_per_month>\n                <trial_period_days />\n                <cancellation_period>0</cancellation_period>\n                <service_id>1319</service_id>\n            </plan>\n            <name>Red Hat's App</name>\n            <description>Red Hat application to the RHOAM Quarkus API</description>\n            <extra_fields>\n                <webhook-url>https://webhook.site/c24da183-1a6c-454f-82a5-ed9f188d2f5b</webhook-url>\n            </extra_fields>\n        </application>\n    </object>\n</event>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{service_base_url}}/v1/webhook/amqpbridge",
+					"host": [
+						"{{service_base_url}}"
+					],
+					"path": [
+						"v1",
+						"webhook",
+						"amqpbridge"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get OpenAPI Specification - JSON",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{management_base_url}}/q/openapi?format=json",
+					"host": [
+						"{{management_base_url}}"
+					],
+					"path": [
+						"q",
+						"openapi"
+					],
+					"query": [
+						{
+							"key": "format",
+							"value": "json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get OpenAPI Specification - YAML",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{management_base_url}}/q/openapi",
+					"host": [
+						"{{management_base_url}}"
+					],
+					"path": [
+						"q",
+						"openapi"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Microprofile Camel Health Checks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{management_base_url}}/observe/health",
+					"host": [
+						"{{management_base_url}}"
+					],
+					"path": [
+						"observe",
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Microprofile Camel Health Liveness Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{management_base_url}}/observe/health/live",
+					"host": [
+						"{{management_base_url}}"
+					],
+					"path": [
+						"observe",
+						"health",
+						"live"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Microprofile Camel Health Startup Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{management_base_url}}/observe/health/started",
+					"host": [
+						"{{management_base_url}}"
+					],
+					"path": [
+						"observe",
+						"health",
+						"started"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Microprofile Camel Health Wellness Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{management_base_url}}/observe/health/well",
+					"host": [
+						"{{management_base_url}}"
+					],
+					"path": [
+						"observe",
+						"health",
+						"well"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "management_base_url",
+			"value": ""
+		},
+		{
+			"key": "service_base_url",
+			"value": ""
+		}
+	]
+}

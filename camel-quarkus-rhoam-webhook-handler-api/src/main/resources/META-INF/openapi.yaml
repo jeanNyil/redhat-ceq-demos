@@ -1,0 +1,265 @@
+openapi: 3.0.2
+info:
+    title: RHOAM Webhook Events Handler API
+    version: 1.0.0
+    description: API that handles RHOAM Admin/Developer Portals webhook events
+    contact:
+        name: Jean Nyilimbibi
+    license:
+        name: MIT License
+        url: 'https://opensource.org/licenses/MIT'
+servers:
+    -
+        url: 'http://localhost:8080/v1/webhook'
+        description: API Backend URL
+paths:
+    /amqpbridge:
+        summary: Bridges RHOAM Admin/Developer Portals webhook events to an AMQP broker
+        description: >-
+            Callback endpoint that receives RHOAM Admin/Developer Portals webhook events and sends them to an
+            AMQP queue
+        get:
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ResponseMessage'
+                            examples:
+                                responseMessageOK:
+                                    value:
+                                        status: OK
+                    description: Pong
+            operationId: pingWebhook
+            summary: Handles RHOAM webhook ping
+            description: Handles RHOAM webhook ping
+        post:
+            requestBody:
+                description: RHOAM Admin/Developer Portal webhook event in XML format
+                content:
+                    application/xml:
+                        schema:
+                            type: string
+                        examples:
+                            accountCreated:
+                                value: |-
+                                    <?xml version="1.0" encoding="UTF-8"?>
+                                    <event>
+                                      <action>created</action>
+                                      <type>account</type>
+                                      <object>
+                                        <account>
+                                          <id>6</id>
+                                          <created_at>2021-05-14T20:22:53Z</created_at>
+                                          <updated_at>2021-05-14T20:22:53Z</updated_at>
+                                          <state>created</state>
+                                          <org_name>TestAccount</org_name>
+                                          <extra_fields/>
+                                          <monthly_billing_enabled>true</monthly_billing_enabled>
+                                          <monthly_charging_enabled>true</monthly_charging_enabled>
+                                          <credit_card_stored>false</credit_card_stored>
+                                          <plans>
+                                            <plan default="true">
+                                              <id>6</id>
+                                              <name>Default</name>
+                                              <type>account_plan</type>
+                                              <state>hidden</state>
+                                              <approval_required>false</approval_required>
+                                              <setup_fee>0.0</setup_fee>
+                                              <cost_per_month>0.0</cost_per_month>
+                                              <trial_period_days/>
+                                              <cancellation_period>0</cancellation_period>
+                                            </plan>
+                                          </plans>
+                                          <users>
+                                            <user>
+                                              <id>9</id>
+                                              <created_at>2021-05-14T20:22:53Z</created_at>
+                                              <updated_at>2021-05-14T20:22:53Z</updated_at>
+                                              <account_id>6</account_id>
+                                              <state>pending</state>
+                                              <role>admin</role>
+                                              <username>admin</username>
+                                              <email>admin@acme.org</email>
+                                              <extra_fields/>
+                                            </user>
+                                          </users>
+                                        </account>
+                                      </object>
+                                    </event>
+                            accountUpdated:
+                                value: |-
+                                    <?xml version="1.0" encoding="UTF-8"?>
+                                    <event>
+                                      <action>updated</action>
+                                      <type>account</type>
+                                      <object>
+                                        <account>
+                                          <id>6</id>
+                                          <created_at>2021-05-14T20:22:53Z</created_at>
+                                          <updated_at>2021-05-14T20:22:53Z</updated_at>
+                                          <state>approved</state>
+                                          <org_name>TestAccount</org_name>
+                                          <extra_fields/>
+                                          <monthly_billing_enabled>true</monthly_billing_enabled>
+                                          <monthly_charging_enabled>true</monthly_charging_enabled>
+                                          <credit_card_stored>false</credit_card_stored>
+                                          <plans>
+                                            <plan default="true">
+                                              <id>6</id>
+                                              <name>Default</name>
+                                              <type>account_plan</type>
+                                              <state>hidden</state>
+                                              <approval_required>false</approval_required>
+                                              <setup_fee>0.0</setup_fee>
+                                              <cost_per_month>0.0</cost_per_month>
+                                              <trial_period_days/>
+                                              <cancellation_period>0</cancellation_period>
+                                            </plan>
+                                          </plans>
+                                          <users>
+                                            <user>
+                                              <id>9</id>
+                                              <created_at>2021-05-14T20:22:53Z</created_at>
+                                              <updated_at>2021-05-14T20:22:53Z</updated_at>
+                                              <account_id>6</account_id>
+                                              <state>pending</state>
+                                              <role>admin</role>
+                                              <username>admin</username>
+                                              <email>admin@acme.org</email>
+                                              <extra_fields/>
+                                            </user>
+                                          </users>
+                                        </account>
+                                      </object>
+                                    </event>
+                    text/xml:
+                        schema:
+                            type: string
+                        examples:
+                            applicationPlanChanged:
+                                value: |-
+                                    <?xml version="1.0" encoding="UTF-8"?>
+                                    <event>
+                                        <action>plan_changed</action>
+                                        <type>application</type>
+                                        <object>
+                                            <application>
+                                                <id>11</id>
+                                                <created_at>2021-05-14T21:08:26Z</created_at>
+                                                <updated_at>2021-05-15T01:37:53Z</updated_at>
+                                                <state>live</state>
+                                                <user_account_id>7</user_account_id>
+                                                <first_traffic_at />
+                                                <first_daily_traffic_at />
+                                                <service_id>2</service_id>
+                                                <user_key>24dfa552d2b54907db559a47362bc9a8</user_key>
+                                                <provider_verification_key>3758600979422b1b697583de17d4e8a7</provider_verification_key>
+                                                <plan custom="false" default="false">
+                                                    <id>8</id>
+                                                    <name>Unlimited</name>
+                                                    <type>application_plan</type>
+                                                    <state>published</state>
+                                                    <approval_required>false</approval_required>
+                                                    <setup_fee>0.0</setup_fee>
+                                                    <cost_per_month>0.0</cost_per_month>
+                                                    <trial_period_days />
+                                                    <cancellation_period>0</cancellation_period>
+                                                    <service_id>2</service_id>
+                                                </plan>
+                                                <name>TestAccount's App</name>
+                                                <description>TestAccount's Application to the Echo API Product</description>
+                                                <extra_fields></extra_fields>
+                                            </application>
+                                        </object>
+                                    </event>
+                required: true
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ResponseMessage'
+                            examples:
+                                responseMessageOK:
+                                    value:
+                                        status: OK
+                    description: RHOAM XML event handled.
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ResponseMessage'
+                            examples:
+                                responseMessageKO400:
+                                    value:
+                                        status: KO
+                                        error:
+                                            code: '400'
+                                            description: Bad Request
+                                            message: >-
+                                                org.apache.camel.TypeConversionException: Error during type
+                                                conversion from type: java.lang.String to the required type:
+                                                org.w3c.dom.Document with value PLAIN TEXT DATA
+                                                 due to org.xml.sax.SAXParseException: Content is not allowed in prolog.
+                    description: Bad Request
+                '500':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ResponseMessage'
+                            examples:
+                                responseMessageKO500:
+                                    value:
+                                        status: KO
+                                        error:
+                                            code: '500'
+                                            description: Internal Server Error
+                                            message: 'java.lang.Exception: Mocked error message'
+                    description: Internal server error
+            operationId: sendToAMQPQueue
+            summary: Sends RHOAM Admin/Developer Portal webhook event to an AMQP queue
+            description: Sends RHOAM Admin/Developer Portal webhook event to an AMQP queue
+components:
+    schemas:
+        ResponseMessage:
+            title: Root Type for ResponseMessage
+            description: Response message
+            required:
+                - status
+            type: object
+            properties:
+                status:
+                    description: Status
+                    enum:
+                        - OK
+                        - KO
+                    type: string
+                error:
+                    $ref: '#/components/schemas/ErrorMessageType'
+                    description: Status message
+            example:
+                status: KO
+                error:
+                    code: '500'
+                    description: Internal server error
+                    message: 'java.lang.Exception: mocked error'
+        ErrorMessageType:
+            title: Root Type for StatusMessageType
+            description: 'Error message type  '
+            required:
+                - code
+                - description
+                - message
+            type: object
+            properties:
+                code:
+                    type: string
+                description:
+                    type: string
+                message:
+                    type: string
+            example:
+                code: '500'
+                description: Internal server error
+                message: 'java.lang.Exception: mocked error'

@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.jeannyil</groupId>
     <artifactId>demo-ceq-dependencies</artifactId>
-    <version>3.15.3.SP1-redhat-00002</version>
+    <version>3.27.0.redhat-00002</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -28,6 +28,13 @@
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
       <artifactId>camel-quarkus-xpath</artifactId>
+    </dependency>
+
+    <!-- For Dev Mode  -->
+    <dependency><!-- Enables the AMQP Dev Service -->
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-messaging-amqp</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
     
