@@ -147,8 +147,6 @@ Import the provided Postman Collection for testing: [tests/Camel-Quarkus-JsonVal
 
 ## Creating a native executable
 
-### Running locally
-
 You can create a native executable using the following command:
 
 >**NOTE** : The project is configured to use a container runtime for native builds. See `quarkus.native.container-build=true` in the [`application.yml`](./src/main/resources/application.yml). Also, adjust the `quarkus.native.native-image-xmx` value according to your container runtime available memory resources.
