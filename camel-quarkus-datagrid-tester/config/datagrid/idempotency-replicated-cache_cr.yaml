@@ -1,4 +1,4 @@
-# Reference: https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.3/html/configuring_data_grid_caches/cache-configuration
+# Reference: https://docs.redhat.com/en/documentation/red_hat_data_grid/8.5/html/configuring_data_grid_caches/cache-configuration
 apiVersion: infinispan.org/v2alpha1
 kind: Cache
 metadata:
