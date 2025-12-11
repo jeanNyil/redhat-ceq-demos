@@ -126,18 +126,33 @@ java -Dquarkus.kubernetes-config.enabled=false -Dquarkus.otel.exporter.otlp.endp
     URL="https://$(oc get route camel-quarkus-jsonvalidation-api -o jsonpath='{.spec.host}')"
     ```
 2. Test the `/validateMembershipJSON` endpoint
-    ```shell
-    curl -w '\n' -X POST -H 'Content-Type: application/json' \
-    -d '{"requestType": "API","requestID": 5948,"memberID": 85623617,"status": "A","enrolmentDate": "2020-09-05","changedBy": "JaLiLa","forcedLevelCode": "69","vipOnInvitation": "Y","startDate": "2020-09-05","endDate": "2100-09-05"}' \
-    $URL/validateMembershipJSON
-    ```
-    ```json
-    {
-        "validationResult" : {
-            "status" : "OK"
+    - _Valid content_:
+        ```shell
+        curl -w '\n' -X POST -H 'Content-Type: application/json' \
+        -d '{"requestType": "API","requestID": 5948,"memberID": 85623617,"status": "A","enrolmentDate": "2020-09-05","changedBy": "JaLiLa","forcedLevelCode": "69","vipOnInvitation": "Y","startDate": "2020-09-05","endDate": "2100-09-05"}' \
+        $URL/validateMembershipJSON
+        ```
+        ```json
+        {
+            "validationResult" : {
+                "status" : "OK"
+            }
         }
-    }
-    ```
+        ```
+    - _Invalid content_:
+        ```shell
+        curl -w '\n' -X POST -H 'Content-Type: application/json' \
+        -d '{"requestType": "API","requestID": 5948,"memberID": 85623617,"status": "BADSTATUS","enrolmentDate": "2020-09-05","changedBy": "jeanNyil","vipOnInvitation": "Y","startDate": "2020-09-05","endDate": "2100-09-05"}' \
+        $URL/validateMembershipJSON
+        ```
+        ```json
+        {
+            "validationResult": {
+                "status": "KO",
+                "errorMessage": "JSON validation error with 2 errors:\n$.status: must be at most 1 characters long\n$.status: does not have a value in the enumeration [\"A\", \"B\", \"C\"]. Exchange[CF15FE719094210-0000000000000015]"
+            }
+        }
+        ```
 
 ## Testing using [Postman](https://www.postman.com/)
 

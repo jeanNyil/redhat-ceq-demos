@@ -124,18 +124,33 @@ java -Dquarkus.kubernetes-config.enabled=false -Dquarkus.otel.exporter.otlp.endp
     URL="https://$(oc get route camel-quarkus-xmlvalidation-api -o jsonpath='{.spec.host}')"
     ```
 2. Test the `/validateMembershipJSON` endpoint
-    ```shell
-    curl -w '\n' -X POST -H 'Content-Type: text/xml' \
-    -d '<?xml version="1.0" encoding="UTF-8"?><p:membership xmlns:p="http://www.github.com/jeanNyil/schemas/membership/v1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><p:requestType>API</p:requestType><p:requestID>5948</p:requestID><p:memberID>85623617</p:memberID><p:status>A</p:status><p:enrolmentDate>2020-09-05</p:enrolmentDate><p:changedBy>JaLiLa</p:changedBy><p:forcedLevelCode>69</p:forcedLevelCode><p:vipOnInvitation>Y</p:vipOnInvitation><p:startDate>2020-09-05</p:startDate><p:endDate>2100-09-05</p:endDate></p:membership>' \
-    $URL/validateMembershipXML
-    ```
-    ```json
-    {
-        "validationResult" : {
-            "status" : "OK"
+    - _Valid content_:
+        ```shell
+        curl -w '\n' -X POST -H 'Content-Type: text/xml' \
+        -d '<?xml version="1.0" encoding="UTF-8"?><p:membership xmlns:p="http://www.github.com/jeanNyil/schemas/membership/v1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><p:requestType>API</p:requestType><p:requestID>5948</p:requestID><p:memberID>85623617</p:memberID><p:status>A</p:status><p:enrolmentDate>2020-09-05</p:enrolmentDate><p:changedBy>JaLiLa</p:changedBy><p:forcedLevelCode>69</p:forcedLevelCode><p:vipOnInvitation>Y</p:vipOnInvitation><p:startDate>2020-09-05</p:startDate><p:endDate>2100-09-05</p:endDate></p:membership>' \
+        $URL/validateMembershipXML
+        ```
+        ```json
+        {
+            "validationResult" : {
+                "status" : "OK"
+            }
         }
-    }
-    ```
+        ```
+    - _Invalid content_:
+        ```shell
+        curl -w '\n' -X POST -H 'Content-Type: text/xml' \
+        -d '<?xml version="1.0" encoding="UTF-8"?><p:membership xmlns:p="http://www.github.com/jeanNyil/schemas/membership/v1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><p:requestType>API</p:requestType><p:requestID>5948</p:requestID><p:memberID>85623617</p:memberID><p:status>A</p:status><p:enrolmentDate>20-09-05</p:enrolmentDate><p:changedBy>jeanNyil</p:changedBy><p:forcedLevelCode>69</p:forcedLevelCode><p:vipOnInvitation>Y</p:vipOnInvitation><p:startDate>2020-09-05</p:startDate><p:endDate>2100-09-05</p:endDate></p:membership>' \
+        $URL/validateMembershipXML
+        ```
+        ```json
+        {
+            "validationResult" : {
+                "status" : "KO",
+                "errorMessage" : "Validation failed for: com.sun.org.apache.xerces.internal.jaxp.validation.SimpleXMLSchema@6b9d9aca\nerrors: [\norg.xml.sax.SAXParseException: cvc-datatype-valid.1.2.1: '20-09-05' is not a valid value for 'date'., Line : 1, Column : 335\norg.xml.sax.SAXParseException: cvc-type.3.1.3: The value '20-09-05' of element 'p:enrolmentDate' is not valid., Line : 1, Column : 335\n]. Exchange[9F6148ECA74A285-0000000000000005]"
+            }
+        }
+        ```
 
 ## Testing using [Postman](https://www.postman.com/)
 
