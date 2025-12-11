@@ -20,8 +20,8 @@ stringData:
   minio.secret-key: d-XT,YJ.XF3c_WT[
   quarkus.infinispan-client.hosts: datagrid.apps.ocp4.jnyilimb.eu:443
   quarkus.infinispan-client.auth-server-name: datagrid-cluster
-  quarkus.infinispan-client.username: cameluser
-  quarkus.infinispan-client.password: P@ssw0rd
+  quarkus.infinispan-client.username: <CHANGEME_USER>
+  quarkus.infinispan-client.password: <CHANGEME_PWD>
   quarkus.infinispan-client.client-intelligence: HASH_DISTRIBUTION_AWARE
   quarkus.infinispan-client.sasl-mechanism: PLAIN
   quarkus.infinispan-client.sni-host-name: datagrid.apps.ocp4.jnyilimb.eu
