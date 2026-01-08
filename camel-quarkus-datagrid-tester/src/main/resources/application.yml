@@ -34,7 +34,7 @@ quarkus:
   # Red Hat Data Grid (Infinispan)
   infinispan-client:
     # Sets the host name/port to connect to. Each one is separated by a semicolon
-    hosts: datagrid.apps.ocp4.jnyilimb.eu:443
+    hosts: datagrid-cluster.apps.ocp4.jnyilimb.eu:443
     # Server name used by authentication
     auth-server-name: datagrid-cluster
     # Realm used by authentication
@@ -44,7 +44,7 @@ quarkus:
     password: P@ssw0rd
     client-intelligence: BASIC
     sasl-mechanism: PLAIN
-    sni-host-name: datagrid.apps.ocp4.jnyilimb.eu
+    sni-host-name: datagrid-cluster.apps.ocp4.jnyilimb.eu
     trust-store: ./tls-keys/truststore.p12
     trust-store-password: P@ssw0rd
   

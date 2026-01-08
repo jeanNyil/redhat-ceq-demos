@@ -18,13 +18,13 @@ stringData:
   minio.endpoint: http://minio-service:9000
   minio.access-key: minioadmin
   minio.secret-key: d-XT,YJ.XF3c_WT[
-  quarkus.infinispan-client.hosts: datagrid.apps.ocp4.jnyilimb.eu:443
+  quarkus.infinispan-client.hosts: datagrid-cluster.apps.ocp4.jnyilimb.eu:443
   quarkus.infinispan-client.auth-server-name: datagrid-cluster
   quarkus.infinispan-client.username: <CHANGEME_USER>
   quarkus.infinispan-client.password: <CHANGEME_PWD>
   quarkus.infinispan-client.client-intelligence: HASH_DISTRIBUTION_AWARE
   quarkus.infinispan-client.sasl-mechanism: PLAIN
-  quarkus.infinispan-client.sni-host-name: datagrid.apps.ocp4.jnyilimb.eu
+  quarkus.infinispan-client.sni-host-name: datagrid-cluster.apps.ocp4.jnyilimb.eu
   quarkus.infinispan-client.trust-store: /mnt/ssl/truststore.p12
   quarkus.infinispan-client.trust-store-password: P@ssw0rd
 type: Opaque
