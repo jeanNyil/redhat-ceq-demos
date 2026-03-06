@@ -2,7 +2,7 @@
 
 This project leverages [**Red Hat build of Quarkus 3.27.x**](https://docs.redhat.com/en/documentation/red_hat_build_of_quarkus/3.27), the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat build of Apache Camel v4.14.x for Quarkus**](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.14#Red%20Hat%20build%20of%20Apache%20Camel%20for%20Quarkus).
 
-It exposes the following RESTful service endpoints  using **Apache Camel REST DSL**:
+It exposes the following RESTful service endpoints using **Apache Camel REST DSL**:
 - `/validateMembershipXML` : validates a sample `Membership` XML instance through the `POST` HTTP method.
 - `/q/openapi` _on a separate management interface (port **9876**)_ : returns the Open API Schema document of the service.
 - `/q/swagger-ui` _on a separate management interface (port **9876**)_ :  opens the Open API UI.
@@ -14,7 +14,7 @@ It exposes the following RESTful service endpoints  using **Apache Camel REST DS
 - Apache Maven 3.9.9
 - **OPTIONAL**: [**Jaeger**](https://www.jaegertracing.io/), a distributed tracing system for observability ([_open tracing_](https://opentracing.io/)).  :bulb: A simple way of starting a Jaeger tracing server is with `docker` or `podman`:
     1. Start the Jaeger tracing server:
-        ```
+        ```shell
         podman run --rm -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -e COLLECTOR_OTLP_ENABLED=true \
         -p 6831:6831/udp -p 6832:6832/udp \
         -p 5778:5778 -p 16686:16686 -p 4317:4317 -p 4318:4318 -p 14250:14250  -p 14268:14268 -p 14269:14269 -p 9411:9411 \
@@ -25,7 +25,7 @@ It exposes the following RESTful service endpoints  using **Apache Camel REST DS
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
-```
+```shell
 ./mvnw clean compile quarkus:dev
 ```
 
@@ -57,7 +57,7 @@ According to your environment, you may want to customize the Jaeger collector en
 - `quarkus.otel.exporter.otlp.endpoint`
 
 Example:
-```
+```shell
 java -Dquarkus.kubernetes-config.enabled=false -Dquarkus.otel.exporter.otlp.endpoint="http://localhost:4317" -jar target/quarkus-app/quarkus-run.jar
 ```
 
@@ -123,7 +123,7 @@ java -Dquarkus.kubernetes-config.enabled=false -Dquarkus.otel.exporter.otlp.endp
     ```shell
     URL="https://$(oc get route camel-quarkus-xmlvalidation-api -o jsonpath='{.spec.host}')"
     ```
-2. Test the `/validateMembershipJSON` endpoint
+2. Test the `/validateMembershipXML` endpoint
     - _Valid content_:
         ```shell
         curl -w '\n' -X POST -H 'Content-Type: text/xml' \
@@ -200,18 +200,13 @@ Used environment:
 ```shell
 # java -Dquarkus.kubernetes-config.enabled=false -jar target/quarkus-app/quarkus-run.jar
 [...]
-2025-11-27 12:15:23,187 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-xmlvalidation-api) is starting
-2025-11-27 12:15:23,244 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.op.OpenTelemetryTracer] (main) OpenTelemetryTracer enabled using instrumentation-name: camel
-2025-11-27 12:15:23,244 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Using ThreadPoolFactory: org.apache.camel.opentelemetry.OpenTelemetryInstrumentedThreadPoolFactory@36dfbdaf
-2025-11-27 12:15:23,333 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:4 rest-dsl:1)
-2025-11-27 12:15:23,333 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started common-500-http-code-route (direct://common-500)
-2025-11-27 12:15:23,333 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started custom-http-error-route (direct://custom-http-error)
-2025-11-27 12:15:23,333 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started validate-membership-xml-route (direct://validateMembershipXML)
-2025-11-27 12:15:23,333 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started route1 (rest-openapi://classpath:META-INF/openapi.yaml)
-2025-11-27 12:15:23,334 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-xmlvalidation-api) started in 146ms (build:0ms init:0ms start:146ms boot:1s112ms)
-2025-11-27 12:15:23,373 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) camel-quarkus-xmlvalidation-api 1.0.0 on JVM (powered by Quarkus 3.27.0.redhat-00001) started in 1.661s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
-2025-11-27 12:15:23,374 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Profile prod activated. 
-2025-11-27 12:15:23,374 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-observability-services, camel-opentelemetry, camel-platform-http, camel-rest, camel-rest-openapi, camel-validator, camel-xml-io-dsl, cdi, config-yaml, kubernetes, kubernetes-client, micrometer, opentelemetry, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
+2025-11-27 12:15:23,187 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-xmlvalidation-api) is starting
+2025-11-27 12:15:23,333 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:4 rest-dsl:1)
+[... 4 routes started ...]
+2025-11-27 12:15:23,334 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-xmlvalidation-api) started in 146ms (build:0ms init:0ms start:146ms boot:1s112ms)
+2025-11-27 12:15:23,373 INFO  [io.quarkus] (main) camel-quarkus-xmlvalidation-api 1.0.0 on JVM (powered by Quarkus 3.27.0.redhat-00001) started in 1.661s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
+2025-11-27 12:15:23,374 INFO  [io.quarkus] (main) Profile prod activated. 
+2025-11-27 12:15:23,374 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-observability-services, camel-opentelemetry, camel-platform-http, camel-rest, camel-rest-openapi, camel-validator, camel-xml-io-dsl, cdi, config-yaml, kubernetes, kubernetes-client, micrometer, opentelemetry, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
 ```
 
 ### Native mode -> _started in **0.088s**_
@@ -219,19 +214,11 @@ Used environment:
 ```shell
 # podman run --rm --name camel-quarkus-xmlvalidation-api -p 8080:8080,9876:9876 -e QUARKUS_KUBERNETES-CONFIG_ENABLED=false -e QUARKUS_OTEL_EXPORTER_OTLP_ENDPOINT=http://host.containers.internal:4317 camel-quarkus-xmlvalidation-api
 [...]
-2025-11-27 11:15:44,192 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.MainSupport] (main) Apache Camel (Main) 4.14.0.redhat-00009 is starting
-2025-11-27 11:15:44,195 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main) Auto-configuration summary
-2025-11-27 11:15:44,195 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main)     [MicroProfilePropertiesSource] camel.context.name = camel-quarkus-xmlvalidation-api
-2025-11-27 11:15:44,202 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-xmlvalidation-api) is starting
-2025-11-27 11:15:44,215 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.op.OpenTelemetryTracer] (main) OpenTelemetryTracer enabled using instrumentation-name: camel
-2025-11-27 11:15:44,215 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Using ThreadPoolFactory: org.apache.camel.opentelemetry.OpenTelemetryInstrumentedThreadPoolFactory@7f94541b
-2025-11-27 11:15:44,250 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:4 rest-dsl:1)
-2025-11-27 11:15:44,251 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started common-500-http-code-route (direct://common-500)
-2025-11-27 11:15:44,251 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started custom-http-error-route (direct://custom-http-error)
-2025-11-27 11:15:44,251 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started validate-membership-xml-route (direct://validateMembershipXML)
-2025-11-27 11:15:44,251 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started route1 (rest-openapi://classpath:META-INF/openapi.yaml)
-2025-11-27 11:15:44,251 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-xmlvalidation-api) started in 48ms (build:0ms init:0ms start:48ms)
-2025-11-27 11:15:44,251 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) camel-quarkus-xmlvalidation-api 1.0.0 native (powered by Quarkus 3.27.0.redhat-00001) started in 0.088s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
-2025-11-27 11:15:44,251 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Profile prod activated. 
-2025-11-27 11:15:44,251 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-observability-services, camel-opentelemetry, camel-platform-http, camel-rest, camel-rest-openapi, camel-validator, camel-xml-io-dsl, cdi, config-yaml, kubernetes, kubernetes-client, micrometer, opentelemetry, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
+2025-11-27 11:15:44,202 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-xmlvalidation-api) is starting
+2025-11-27 11:15:44,250 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:4 rest-dsl:1)
+[... 4 routes started ...]
+2025-11-27 11:15:44,251 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-xmlvalidation-api) started in 48ms (build:0ms init:0ms start:48ms)
+2025-11-27 11:15:44,251 INFO  [io.quarkus] (main) camel-quarkus-xmlvalidation-api 1.0.0 native (powered by Quarkus 3.27.0.redhat-00001) started in 0.088s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
+2025-11-27 11:15:44,251 INFO  [io.quarkus] (main) Profile prod activated. 
+2025-11-27 11:15:44,251 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-observability-services, camel-opentelemetry, camel-platform-http, camel-rest, camel-rest-openapi, camel-validator, camel-xml-io-dsl, cdi, config-yaml, kubernetes, kubernetes-client, micrometer, opentelemetry, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
 ```

@@ -1,16 +1,16 @@
-## Red Hat build of Apache Camel for Quarkus Examples
+# Red Hat build of Apache Camel for Quarkus Demos
 
-This repository contains examples of _Red Hat build of Apache Camel for Quarkus_ projects to demonstrate various features.
+This repository contains demos of _Red Hat build of Apache Camel for Quarkus_ projects to demonstrate various features.
 
 All projects leverage [**Red Hat build of Quarkus 3.27.x**](https://docs.redhat.com/en/documentation/red_hat_build_of_quarkus/3.27), the Supersonic Subatomic Java Framework. More specifically, the projects are implemented using [**Red Hat build of Apache Camel v4.14.x for Quarkus**](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.14#Red%20Hat%20build%20of%20Apache%20Camel%20for%20Quarkus).
 
-Their purpose is to provide small, specific and working examples that can be used for reference in your own projects.
+Their purpose is to provide small, specific and working demos that can be used for reference in your own projects.
 
 If you want to learn more:
-- about **Red Hat build of Quarkus**, please visit: https://access.redhat.com/documentation/en-us/red_hat_build_of_quarkus .
-- about **Red Hat build of Apache Camel for Quarkus**, please visit: https://access.redhat.com/documentation/en-us/red_hat_build_of_apache_camel .
+- about **Red Hat build of Quarkus**, please visit: https://access.redhat.com/documentation/en-us/red_hat_build_of_quarkus.
+- about **Red Hat build of Apache Camel for Quarkus**, please visit: https://access.redhat.com/documentation/en-us/red_hat_build_of_apache_camel.
 
-### _Red Hat build of Apache Camel for Quarkus_ examples:
+### _Red Hat build of Apache Camel for Quarkus_ demos:
 
 * [camel-quarkus-datagrid-tester](./camel-quarkus-datagrid-tester): shows the implementation of the _Infinispan Idempotent Repository_ to synchronize concurrent access as well as the use of the _Apache Camel Quarkus Infinispan_ extension.
 * [camel-quarkus-rhoam-webhook-handler-api](./camel-quarkus-rhoam-webhook-handler-api): exposes a RESTful service using the _Apache Camel REST DSL_ with a _Contract/API-First approach_, and integrates with a _Red Hat AMQ 7 Broker_ using the AMQP 1.0 JMS client - Apache Qpid JMS.
