@@ -347,7 +347,7 @@ components:
                 message: 'java.lang.Exception: mocked error'
     securitySchemes:
         oidc:
-            openIdConnectUrl: 'https://sso.apps.ocp4.jnyilimb.eu/realms/openshift-cluster/.well-known/openid-configuration'
+            openIdConnectUrl: 'https://sso.apps.sno.jnyilimb.eu/realms/openshift-cluster/.well-known/openid-configuration'
             type: openIdConnect
             description: OpenID Connect
 security:
