@@ -20,8 +20,8 @@ metadata:
   name: quarkus-amqpbroker-connection-secret
 stringData:
   integrations-broker.url: amqps://amq-ssl-broker-amqp-0-svc.amq7-broker-cluster.svc:5672?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000
-  integrations-broker.username: camel-quarkus-rhoam-webhook-handler-api
-  integrations-broker.password: P@ssw0rd
+  integrations-broker.username: <CHANGEME_USER>
+  integrations-broker.password: <CHANGEME_PWD>
   integrations-broker.pool-max-connections: "1"
   integrations-broker.max-sessions-per-connection: "500"
 type: Opaque
