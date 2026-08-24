@@ -1,6 +1,6 @@
 # Camel-Quarkus-Datagrid-Tester Project
 
-This project leverages [**Red Hat build of Quarkus 3.27.x**](https://docs.redhat.com/en/documentation/red_hat_build_of_quarkus/3.27), the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat build of Apache Camel v4.14.x for Quarkus**](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.14#Red%20Hat%20build%20of%20Apache%20Camel%20for%20Quarkus).
+This project leverages [**Red Hat build of Quarkus 3.33.x**](https://docs.redhat.com/en/documentation/red_hat_build_of_quarkus/3.33), the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat build of Apache Camel v4.18.x for Quarkus**](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.18#Red%20Hat%20build%20of%20Apache%20Camel%20for%20Quarkus).
 
 The purpose is to demo the implementation of the _Infinispan Idempotent Repository_ to synchronize concurrent access as well as the use of the _Apache Camel Quarkus Infinispan_ extension.
 
@@ -64,6 +64,17 @@ The following REST endpoints are exposed:
     ```
     with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid-cluster.apps.sno.jnyilimb.eu`
 
+## Replace anonymized Data Grid settings (local / dev)
+
+Before running locally (dev mode, `java -jar`, or a native executable), replace the `<CHANGEME_*>` placeholders in [`src/main/resources/application.yml`](./src/main/resources/application.yml) under `quarkus.infinispan-client`:
+
+- `hosts`: Data Grid OpenShift **route** hostname and port. E.g.: `datagrid-cluster.apps.sno.jnyilimb.eu:443`
+- `sni-host-name`: same hostname as `hosts` **without** the port. E.g.: `datagrid-cluster.apps.sno.jnyilimb.eu`
+- `auth-server-name` (`<CHANGEME_CLUSTERNAME>`): the **Infinispan CR name**, **not** the route hostname. E.g.: `datagrid-cluster` (see `spec.clusterName` in the cache CRs under [`config/datagrid`](./config/datagrid))
+- `username` / `password`: Data Grid user credentials from the cluster
+
+Leave `client-intelligence: BASIC` as-is for access via the OpenShift route from a laptop. The truststore path and password are already documented in [Prerequisites](#prerequisites).
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
@@ -96,6 +107,8 @@ The application, packaged as an _über-jar_, is now runnable using:
 ```shell
 java -Dquarkus.kubernetes-config.enabled=false -jar target/*-runner.jar
 ```
+
+Replace the anonymized Data Grid settings in [`src/main/resources/application.yml`](./src/main/resources/application.yml) first. See [Replace anonymized Data Grid settings (local / dev)](#replace-anonymized-data-grid-settings-local--dev).
 
 ## Packaging and running the application on Red Hat OpenShift
 
@@ -184,7 +197,22 @@ java -Dquarkus.kubernetes-config.enabled=false -jar target/*-runner.jar
     oc create secret generic camel-quarkus-datagrid-tester-truststore-secret --from-file=./tls-keys/truststore.p12
     ```
 
-6. Deploy to OpenShift using the _**S2I binary workflow**_
+6. Replace anonymized Data Grid settings in [`src/main/kubernetes/openshift.yml`](./src/main/kubernetes/openshift.yml)
+
+    In the **prod** profile, the [Quarkus Kubernetes Config](https://quarkus.io/guides/kubernetes-config) extension loads the `camel-quarkus-datagrid-tester-config` ConfigMap and `camel-quarkus-datagrid-tester-secret` Secret defined in that file. The Secret overrides Infinispan (and MinIO) settings at runtime.
+
+    Replace the `<CHANGEME_*>` keys in the Secret `stringData` **before** deploying so the generated Secret is correct on first apply:
+
+    - `quarkus.infinispan-client.hosts`: in-cluster Hot Rod service hostname and port. E.g.: `datagrid-cluster.datagrid-cluster.svc:11222` (namespace `datagrid-cluster` as in [Prerequisites](#prerequisites))
+    - `quarkus.infinispan-client.sni-host-name`: in-cluster service hostname **without** the port. E.g.: `datagrid-cluster.datagrid-cluster.svc`
+    - `quarkus.infinispan-client.auth-server-name` (`<CHANGEME_CLUSTERNAME>`): the **Infinispan CR name**, **not** the service or route hostname. E.g.: `datagrid-cluster`
+    - `quarkus.infinispan-client.username` / `quarkus.infinispan-client.password`: Data Grid user credentials from the cluster
+
+    Leave `quarkus.infinispan-client.client-intelligence: HASH_DISTRIBUTION_AWARE` as-is for in-cluster use.
+
+    > **_NOTE:_**  Adjust `quarkus.otel.exporter.otlp.endpoint` in the ConfigMap if your collector is not `otel-collector.observability.svc:4317`.
+
+7. Deploy to OpenShift using the _**S2I binary workflow**_
     ```shell
     ./mvnw clean package -Dquarkus.openshift.deploy=true
     ```
@@ -315,32 +343,80 @@ Used environment:
 - **Laptop**: MacBook PRO
 - **CPU**: Apple M2 PRO
 - **RAM**: 32Gb
-- **Container runtime for native builds**: podman v5.7.0
+- **Container runtime for native builds**: podman v5.8.2
 
-### JVM mode -> _started in **2.119s**_
+### JVM mode -> _started in **3.398s**_
 
 ```shell
 # java -Dquarkus.kubernetes-config.enabled=false -jar target/quarkus-app/quarkus-run.jar
 [...]
-2025-11-27 15:12:21,586 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-datagrid-tester) is starting
-2025-11-27 15:12:21,917 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:17 rest-dsl:1)
-[... 17 routes started ...]
-2025-11-27 15:12:21,919 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-datagrid-tester) started in 332ms (build:0ms init:0ms start:332ms boot:1s368ms)
-2025-11-27 15:12:21,946 INFO  [io.quarkus] (main) camel-quarkus-datagrid-tester 1.0.0 on JVM (powered by Quarkus 3.27.0.redhat-00001) started in 2.119s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
-2025-11-27 15:12:21,946 INFO  [io.quarkus] (main) Profile prod activated. 
-2025-11-27 15:12:21,947 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-infinispan, camel-jackson, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-minio, camel-observability-services, camel-opentelemetry, camel-platform-http, camel-rest, camel-rest-openapi, camel-timer, camel-xml-io-dsl, cdi, config-yaml, infinispan-client, kubernetes, kubernetes-client, micrometer, opentelemetry, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
+2026-08-24 15:04:24,430 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.18.3.redhat-00001 (camel-quarkus-datagrid-tester) is starting
+2026-08-24 15:04:24,496 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.op.OpenTelemetryTracer] (main) Opentelemetry2 enabled
+2026-08-24 15:04:24,817 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main) Property-placeholders summary
+2026-08-24 15:04:24,818 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main)     [MicroProfilePropertiesSource] datagrid.caches.fruits-legumes = fruits-legumes-replicated-cache
+2026-08-24 15:04:24,818 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main)     [MicroProfilePropertiesSource] minio.endpoint = http://localhost:9000
+2026-08-24 15:04:24,818 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main)     [MicroProfilePropertiesSource] minio.access-key = xxxxxx
+2026-08-24 15:04:24,819 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main)     [MicroProfilePropertiesSource] minio.secret-key = xxxxxx
+2026-08-24 15:04:24,819 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main)     [MicroProfilePropertiesSource] minio.bucket-name = camel-quarkus-datagrid-tester
+2026-08-24 15:04:24,820 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:17 rest-dsl:1)
+2026-08-24 15:04:24,820 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started put-fruits-in-cache-route (direct://put-fruits-in-cache)
+2026-08-24 15:04:24,821 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started putifabsent-fruits-in-cache-route (direct://putifabsent-fruits-in-cache)
+2026-08-24 15:04:24,821 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started get-fruits-from-cache-route (direct://get-fruits-from-cache)
+2026-08-24 15:04:24,821 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started put-legumes-in-cache-route (direct://put-legumes-in-cache)
+2026-08-24 15:04:24,821 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started putifabsent-legumes-in-cache-route (direct://putifabsent-legumes-in-cache)
+2026-08-24 15:04:24,822 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started get-legumes-from-cache-route (direct://get-legumes-from-cache)
+2026-08-24 15:04:24,822 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started fruits-legumes-cache-init-route (timer://once)
+2026-08-24 15:04:24,823 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started getFruits (direct://getFruits)
+2026-08-24 15:04:24,823 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started addFruit (direct://addFruit)
+2026-08-24 15:04:24,823 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started getLegumes (direct://getLegumes)
+2026-08-24 15:04:24,824 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started generate-error-response-route (direct://generateErrorResponse)
+2026-08-24 15:04:24,824 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started generate-ok-response-route (direct://generateOKResponse)
+2026-08-24 15:04:24,824 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started uploadCsvFile (direct://uploadCsvFile)
+2026-08-24 15:04:24,824 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started uploadJsonFile (direct://uploadJsonFile)
+2026-08-24 15:04:24,825 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started uploadXmlFile (direct://uploadXmlFile)
+2026-08-24 15:04:24,825 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started minio-consumer-route (minio://camel-quarkus-datagrid-tester)
+2026-08-24 15:04:24,825 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started route1 (rest-openapi://classpath:META-INF/openapi.yaml)
+2026-08-24 15:04:24,826 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.18.3.redhat-00001 (camel-quarkus-datagrid-tester) started in 394ms (build:0ms init:0ms start:394ms boot:2s300ms)
+2026-08-24 15:04:24,858 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) camel-quarkus-datagrid-tester 1.0.0 on JVM (powered by Quarkus 3.33.3.redhat-00002) started in 3.398s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
+2026-08-24 15:04:24,859 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Profile prod activated. 
+2026-08-24 15:04:24,859 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-infinispan, camel-jackson, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-minio, camel-observability-services, camel-opentelemetry2, camel-platform-http, camel-rest, camel-rest-openapi, camel-timer, camel-xml-io-dsl, cdi, config-yaml, infinispan-client, kubernetes, kubernetes-client, micrometer, opentelemetry, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
+[...]
 ```
 
-### Native mode -> _started in **0.348s**_
+### Native mode -> _started in **0.609s**_
 
 ```shell
 # podman run --rm --name camel-quarkus-datagrid-tester -p 8080:8080,9876:9876 -e QUARKUS_KUBERNETES-CONFIG_ENABLED=false -e QUARKUS_OTEL_EXPORTER_OTLP_ENDPOINT=http://host.containers.internal:4317 -e QUARKUS_INFINISPAN_CLIENT_TRUST-STORE=/mnt/ssl/truststore.p12 -e MINIO_ENDPOINT=http://host.containers.internal:9000 -v ./tls-keys/truststore.p12:/mnt/ssl/truststore.p12:ro camel-quarkus-datagrid-tester
 [...]
-2025-11-27 14:13:02,846 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-datagrid-tester) is starting
-2025-11-27 14:13:03,018 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:17 rest-dsl:1)
-[... 17 routes started ...]
-2025-11-27 14:13:03,018 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-datagrid-tester) started in 172ms (build:0ms init:0ms start:172ms)
-2025-11-27 14:13:03,019 INFO  [io.quarkus] (main) camel-quarkus-datagrid-tester 1.0.0 native (powered by Quarkus 3.27.0.redhat-00001) started in 0.348s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
-2025-11-27 14:13:03,019 INFO  [io.quarkus] (main) Profile prod activated. 
-2025-11-27 14:13:03,019 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-infinispan, camel-jackson, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-minio, camel-observability-services, camel-opentelemetry, camel-platform-http, camel-rest, camel-rest-openapi, camel-timer, camel-xml-io-dsl, cdi, config-yaml, infinispan-client, kubernetes, kubernetes-client, micrometer, opentelemetry, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
+2026-08-24 13:07:49,185 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.18.3.redhat-00001 (camel-quarkus-datagrid-tester) is starting
+2026-08-24 13:07:49,200 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.op.OpenTelemetryTracer] (main) Opentelemetry2 enabled
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main) Property-placeholders summary
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main)     [MicroProfilePropertiesSource] datagrid.caches.fruits-legumes = fruits-legumes-replicated-cache
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main)     [OS Environment Variable]      minio.endpoint = http://host.containers.internal:9000
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main)     [MicroProfilePropertiesSource] minio.access-key = xxxxxx
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main)     [MicroProfilePropertiesSource] minio.secret-key = xxxxxx
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.ma.BaseMainSupport] (main)     [MicroProfilePropertiesSource] minio.bucket-name = camel-quarkus-datagrid-tester
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:17 rest-dsl:1)
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started put-fruits-in-cache-route (direct://put-fruits-in-cache)
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started putifabsent-fruits-in-cache-route (direct://putifabsent-fruits-in-cache)
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started get-fruits-from-cache-route (direct://get-fruits-from-cache)
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started put-legumes-in-cache-route (direct://put-legumes-in-cache)
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started putifabsent-legumes-in-cache-route (direct://putifabsent-legumes-in-cache)
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started get-legumes-from-cache-route (direct://get-legumes-from-cache)
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started fruits-legumes-cache-init-route (timer://once)
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started getFruits (direct://getFruits)
+2026-08-24 13:07:49,368 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started addFruit (direct://addFruit)
+2026-08-24 13:07:49,369 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started getLegumes (direct://getLegumes)
+2026-08-24 13:07:49,369 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started generate-error-response-route (direct://generateErrorResponse)
+2026-08-24 13:07:49,369 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started generate-ok-response-route (direct://generateOKResponse)
+2026-08-24 13:07:49,369 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started uploadCsvFile (direct://uploadCsvFile)
+2026-08-24 13:07:49,369 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started uploadJsonFile (direct://uploadJsonFile)
+2026-08-24 13:07:49,369 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started uploadXmlFile (direct://uploadXmlFile)
+2026-08-24 13:07:49,369 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started route1 (rest-openapi://classpath:META-INF/openapi.yaml)
+2026-08-24 13:07:49,369 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started minio-consumer-route (minio://camel-quarkus-datagrid-tester)
+2026-08-24 13:07:49,369 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.18.3.redhat-00001 (camel-quarkus-datagrid-tester) started in 183ms (build:0ms init:0ms start:183ms)
+2026-08-24 13:07:49,370 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) camel-quarkus-datagrid-tester 1.0.0 native (powered by Quarkus 3.33.3.redhat-00002) started in 0.609s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
+2026-08-24 13:07:49,370 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Profile prod activated. 
+2026-08-24 13:07:49,370 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-infinispan, camel-jackson, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-minio, camel-observability-services, camel-opentelemetry2, camel-platform-http, camel-rest, camel-rest-openapi, camel-timer, camel-xml-io-dsl, cdi, config-yaml, infinispan-client, kubernetes, kubernetes-client, micrometer, opentelemetry, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
+[...]
 ```

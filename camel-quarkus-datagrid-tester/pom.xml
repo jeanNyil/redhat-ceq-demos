@@ -6,12 +6,13 @@
   <parent>
     <groupId>io.jeannyil</groupId>
     <artifactId>demo-ceq-dependencies</artifactId>
-    <version>3.27.0.redhat-00002</version>
+    <version>3.33.3.redhat-00001</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>camel-quarkus-datagrid-tester</artifactId>
   <version>1.0.0</version>
+  <packaging>quarkus</packaging>
 
   <dependencies>
     <!-- Camel Quarkus extensions -->

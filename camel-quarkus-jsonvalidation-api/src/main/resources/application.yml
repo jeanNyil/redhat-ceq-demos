@@ -45,6 +45,11 @@ quarkus:
             camel.apache.org/app: ${camel.context.name} # For Camel Dashboard on OpenShift discoverability
         # The build config strategy to use
         build-strategy: DOCKER
+        # The default Dockerfile to use for jvm builds
+        # jvm-dockerfile: src/main/docker/Dockerfile.jvm
+        jvm-dockerfile: src/main/docker/Containerfile.jvm-hummingbird
+        # The default Dockerfile to use for native builds
+        native-dockerfile: src/main/docker/Dockerfile.native-micro
         # The number of desired pods
         replicas: 1
         # Expose OpenShift route
@@ -60,7 +65,6 @@ quarkus:
                 cpu: 30m
                 memory: 512Mi
             limits:
-                cpu: 500m
                 memory: 512Mi
         # Generation of ServiceMonitor resource
         ## By default, a ServiceMonitor resource is generated.

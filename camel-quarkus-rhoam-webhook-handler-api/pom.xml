@@ -6,12 +6,13 @@
   <parent>
     <groupId>io.jeannyil</groupId>
     <artifactId>demo-ceq-dependencies</artifactId>
-    <version>3.27.0.redhat-00002</version>
+    <version>3.33.3.redhat-00001</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>camel-quarkus-rhoam-webhook-handler-api</artifactId>
   <version>1.0.0</version>
+  <packaging>quarkus</packaging>
   
   <dependencies>
     <!-- Quarkus Messaginghub Pooled JMS - See https://docs.quarkiverse.io/quarkus-pooled-jms/dev/index.html -->
@@ -35,6 +36,13 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-messaging-amqp</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <!-- Native-image workaround for https://github.com/apache/camel-quarkus/issues/8783
+         (AMQP/JMS + OpenAPI; camel-quarkus 3.33.0.redhat-00010 still uses getDependencies()). -->
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-reflect</artifactId>
     </dependency>
   </dependencies>
     

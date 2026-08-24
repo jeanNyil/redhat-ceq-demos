@@ -19,11 +19,11 @@ quarkus:
     # Camel Quarkus AMQP extension configuration (leverages the Quarkus Qpid JMS extension)
     qpid-jms:
         # Connection URL for the injected factory
-        url: amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.sno.jnyilimb.eu:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000
+        url: amqps://<CHANGEME_HOSTNAME>:<CHANGEME_PORT>?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000
         # Username to set on the factory
-        username: ${camel.context.name}
+        username: <CHANGEME_USERNAME>
         # Password to set on the factory
-        password: <CHANGEME_PWD>
+        password: <CHANGEME_PASSWORD>
         # Enable pooling support on the Camel Quarkus AMQP extension
         wrap: true
     # JMS Connection Pooling 
@@ -66,6 +66,11 @@ quarkus:
             camel.apache.org/app: ${camel.context.name} # For Camel Dashboard on OpenShift discoverability
         # The build config strategy to use
         build-strategy: DOCKER
+        # The default Dockerfile to use for jvm builds
+        # jvm-dockerfile: src/main/docker/Dockerfile.jvm
+        jvm-dockerfile: src/main/docker/Containerfile.jvm-hummingbird
+        # The default Dockerfile to use for native builds
+        native-dockerfile: src/main/docker/Dockerfile.native-micro
         # The number of desired pods
         replicas: 1
         # Expose OpenShift route
@@ -81,7 +86,6 @@ quarkus:
                 cpu: 30m
                 memory: 512Mi
             limits:
-                cpu: 500m
                 memory: 512Mi
         # Generation of ServiceMonitor resource
         ## By default, a ServiceMonitor resource is generated.
@@ -119,11 +123,11 @@ quarkus:
 
         # native mode configuration
         native:
-        # A comma separated list of Ant-path style patterns to match class names
-        # that should be registered for reflection.
-        # Reference: https://camel.apache.org/camel-quarkus/latest/user-guide/native-mode.html#reflection
-        reflection:
-            include-patterns: java.lang.Exception,org.apache.camel.TypeConversionException,org.apache.commons.pool2.impl.*
+            # A comma separated list of Ant-path style patterns to match class names
+            # that should be registered for reflection.
+            # Reference: https://camel.apache.org/camel-quarkus/latest/user-guide/native-mode.html#reflection
+            reflection:
+                include-patterns: java.lang.Exception,org.apache.camel.TypeConversionException,org.apache.commons.pool2.impl.*
 
     ## Quarkus native build 
     native:

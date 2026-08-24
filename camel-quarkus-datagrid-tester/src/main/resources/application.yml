@@ -34,17 +34,17 @@ quarkus:
   # Red Hat Data Grid (Infinispan)
   infinispan-client:
     # Sets the host name/port to connect to. Each one is separated by a semicolon
-    hosts: datagrid-cluster.apps.ocp4.jnyilimb.eu:443
+    hosts: <CHANGEME_HOSTNAME>:<CHANGEME_PORT>
     # Server name used by authentication
-    auth-server-name: datagrid-cluster
+    auth-server-name: <CHANGEME_CLUSTERNAME>
     # Realm used by authentication
     auth-realm: default
     # Authentication
-    username: cameluser
-    password: P@ssw0rd
+    username: <CHANGEME_USERNAME>
+    password: <CHANGEME_PASSWORD>
     client-intelligence: BASIC
     sasl-mechanism: PLAIN
-    sni-host-name: datagrid-cluster.apps.ocp4.jnyilimb.eu
+    sni-host-name: <CHANGEME_HOSTNAME>
     trust-store: ./tls-keys/truststore.p12
     trust-store-password: P@ssw0rd
   
@@ -82,6 +82,11 @@ quarkus:
       camel.apache.org/app: ${camel.context.name} # For Camel Dashboard on OpenShift discoverability
     # The build config strategy to use
     build-strategy: DOCKER
+    # The default Dockerfile to use for jvm builds
+    # jvm-dockerfile: src/main/docker/Dockerfile.jvm
+    jvm-dockerfile: src/main/docker/Containerfile.jvm-hummingbird
+    # The default Dockerfile to use for native builds
+    native-dockerfile: src/main/docker/Dockerfile.native-micro
     # The number of desired pods
     replicas: 2
     # Expose OpenShift route
@@ -97,7 +102,6 @@ quarkus:
         cpu: 30m
         memory: 512Mi
       limits:
-        cpu: 500m
         memory: 512Mi
     # Generation of ServiceMonitor resource
     ## By default, a ServiceMonitor resource is generated.

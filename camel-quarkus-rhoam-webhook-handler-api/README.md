@@ -1,6 +1,6 @@
 # Camel-Quarkus-RHOAM-Webhook-Handler-Api project
 
-This project leverages [**Red Hat build of Quarkus 3.27.x**](https://docs.redhat.com/en/documentation/red_hat_build_of_quarkus/3.27), the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat build of Apache Camel v4.14.x for Quarkus**](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.14#Red%20Hat%20build%20of%20Apache%20Camel%20for%20Quarkus).
+This project leverages [**Red Hat build of Quarkus 3.33.x**](https://docs.redhat.com/en/documentation/red_hat_build_of_quarkus/3.33), the Supersonic Subatomic Java Framework. More specifically, the project is implemented using [**Red Hat build of Apache Camel v4.18.x for Quarkus**](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.18#Red%20Hat%20build%20of%20Apache%20Camel%20for%20Quarkus).
 
 It exposes the following RESTful service endpoints using **Apache Camel REST DSL**:
 - `/v1/webhook/amqpbridge` : 
@@ -11,21 +11,7 @@ It exposes the following RESTful service endpoints using **Apache Camel REST DSL
 - `/observe/health` _on a separate management interface (port **9876**)_ : returns the _Camel Quarkus MicroProfile_ health checks.
 - `/observe/metrics` _on a separate management interface (port **9876**)_ : the _Camel Quarkus Micrometer_ metrics in prometheus format.
 
-Moreover, this project leverages the [**Quarkus Kubernetes-Config** extension](https://quarkus.io/guides/kubernetes-config) to customize the run-time AMQP broker connection parameters according to your OpenShift environment using the `quarkus-amqpbroker-connection-secret` secret. Example of the secret content:
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: quarkus-amqpbroker-connection-secret
-stringData:
-  integrations-broker.url: amqps://amq-ssl-broker-amqp-0-svc.amq7-broker-cluster.svc:5672?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000
-  integrations-broker.username: <CHANGEME_USER>
-  integrations-broker.password: <CHANGEME_PWD>
-  integrations-broker.pool-max-connections: "1"
-  integrations-broker.max-sessions-per-connection: "500"
-type: Opaque
-```
+Moreover, this project leverages the [**Quarkus Kubernetes-Config** extension](https://quarkus.io/guides/kubernetes-config) to customize the run-time AMQP broker connection parameters according to your OpenShift environment. In the **prod** profile, the extension loads the `camel-quarkus-rhoam-webhook-handler-api-config` ConfigMap and `camel-quarkus-rhoam-webhook-handler-api-secret` Secret defined in [`src/main/kubernetes/openshift.yml`](./src/main/kubernetes/openshift.yml). Replace the Secret’s `quarkus.qpid-jms.*` `<CHANGEME_*>` placeholders before deploying. See [Packaging and running the application on Red Hat OpenShift](#packaging-and-running-the-application-on-red-hat-openshift).
 
 ## Prerequisites
 - JDK 21 installed with `JAVA_HOME` configured appropriately
@@ -49,6 +35,15 @@ You can run your application in dev mode that enables live coding using:
 ```
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev-ui.
+
+## Replace anonymized AMQP settings (local packaged / native)
+
+Before running locally with `java -jar` or a native executable, replace the `<CHANGEME_*>` placeholders in [`src/main/resources/application.yml`](./src/main/resources/application.yml) under `quarkus.qpid-jms`:
+
+- `url`: AMQ broker OpenShift **route** hostname and port, keeping the existing query string. E.g.: `amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-cluster.apps.sno.jnyilimb.eu:443?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000`
+- `username` / `password`: AMQ broker user credentials
+
+> **_NOTE:_**  Skip this step for `./mvnw quarkus:dev`. The `%dev` profile already uses [AMQP Dev Services](https://quarkus.io/guides/amqp-dev-services) (`amqp://localhost:5672`, `admin`/`admin`).
 
 ## Packaging and running the application locally
 
@@ -74,12 +69,14 @@ The application, packaged as an _über-jar_, is now runnable using:
 java -Dquarkus.kubernetes-config.enabled=false -jar target/*-runner.jar
 ```
 
-According to your environment, you may want to customize:
-- The **AMQP broker connection parameters** by adding the following run-time _system properties_:
+Replace the anonymized AMQP settings in [`src/main/resources/application.yml`](./src/main/resources/application.yml) first. See [Replace anonymized AMQP settings (local packaged / native)](#replace-anonymized-amqp-settings-local-packaged--native).
+
+As an **alternative** to editing the YAML, you may customize at run time:
+- The **AMQP broker connection parameters** by adding the following _system properties_:
     - `quarkus.qpid-jms.url`
     - `quarkus.qpid-jms.username`
     - `quarkus.qpid-jms.password`
-- The Jaeger collector endpoint by adding the following run-time _system properties_:
+- The Jaeger collector endpoint by adding the following _system properties_:
     - `quarkus.otel.exporter.otlp.endpoint`
 
 Example:
@@ -141,7 +138,18 @@ java -Dquarkus.qpid-jms.url="amqps://amq-ssl-broker-amqp-0-svc-rte-amq7-broker-c
         EOF
         ```
 
-4. Deploy to OpenShift using the _**S2I binary workflow**_
+4. Replace anonymized AMQP settings in [`src/main/kubernetes/openshift.yml`](./src/main/kubernetes/openshift.yml)
+
+    In the **prod** profile, the [Quarkus Kubernetes Config](https://quarkus.io/guides/kubernetes-config) extension loads the `camel-quarkus-rhoam-webhook-handler-api-config` ConfigMap and `camel-quarkus-rhoam-webhook-handler-api-secret` Secret defined in that file. The Secret overrides AMQP broker settings at runtime.
+
+    Replace the `<CHANGEME_*>` keys in the Secret `stringData` **before** deploying so the generated Secret is correct on first apply:
+
+    - `quarkus.qpid-jms.url`: in-cluster AMQP service hostname and port, keeping the existing query string. E.g.: `amqps://amq-ssl-broker-amqp-0-svc.amq7-broker-cluster.svc:5672?transport.trustAll=true&transport.verifyHost=false&amqp.idleTimeout=120000`
+    - `quarkus.qpid-jms.username` / `quarkus.qpid-jms.password`: AMQ broker user credentials
+
+    > **_NOTE:_**  Adjust `quarkus.otel.exporter.otlp.endpoint` in the ConfigMap if your collector is not `otel-collector.observability.svc:4317`.
+
+5. Deploy to OpenShift using the _**S2I binary workflow**_
     ```shell
     ./mvnw clean package -Dquarkus.openshift.deploy=true
     ```
@@ -305,32 +313,40 @@ Used environment:
 - **Laptop**: MacBook PRO
 - **CPU**: Apple M2 PRO
 - **RAM**: 32Gb
-- **Container runtime for native builds**: podman v5.7.0
+- **Container runtime for native builds**: podman v5.8.2
 
-### JVM mode -> _started in **1.706s**_
+### JVM mode -> _started in **2.213s**_
 
 ```shell
 # java -Dquarkus.kubernetes-config.enabled=false -jar target/quarkus-app/quarkus-run.jar
 [...]
-2025-11-27 18:55:48,439 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-rhoam-webhook-handler-api) is starting
-2025-11-27 18:55:48,545 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:4 rest-dsl:1)
-[... 4 routes started ...]
-2025-11-27 18:55:48,546 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-rhoam-webhook-handler-api) started in 106ms (build:0ms init:0ms start:106ms boot:1s213ms)
-2025-11-27 18:55:48,580 INFO  [io.quarkus] (main) camel-quarkus-rhoam-webhook-handler-api 1.0.0 on JVM (powered by Quarkus 3.27.0.redhat-00001) started in 1.706s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
-2025-11-27 18:55:48,581 INFO  [io.quarkus] (main) Profile prod activated. 
-2025-11-27 18:55:48,581 INFO  [io.quarkus] (main) Installed features: [camel-amqp, camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jms, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-observability-services, camel-opentelemetry, camel-platform-http, camel-rest, camel-rest-openapi, camel-xml-io-dsl, camel-xpath, cdi, config-yaml, kubernetes, kubernetes-client, messaginghub-pooled-jms, micrometer, opentelemetry, qpid-jms, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
+2026-08-24 18:35:26,401 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.18.3.redhat-00001 (camel-quarkus-rhoam-webhook-handler-api) is starting
+2026-08-24 18:35:26,473 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.op.OpenTelemetryTracer] (main) Opentelemetry2 enabled
+2026-08-24 18:35:26,543 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:4 rest-dsl:1)
+2026-08-24 18:35:26,543 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started generate-error-response-route (direct://generateErrorResponse)
+2026-08-24 18:35:26,544 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started send-to-amqp-queue-route (direct://sendToAMQPQueue)
+2026-08-24 18:35:26,544 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started ping-webhook-route (direct://pingWebhook)
+2026-08-24 18:35:26,544 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started route1 (rest-openapi://classpath:META-INF/openapi.yaml)
+2026-08-24 18:35:26,545 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.18.3.redhat-00001 (camel-quarkus-rhoam-webhook-handler-api) started in 143ms (build:0ms init:0ms start:143ms boot:1s473ms)
+2026-08-24 18:35:26,594 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) camel-quarkus-rhoam-webhook-handler-api 1.0.0 on JVM (powered by Quarkus 3.33.3.redhat-00002) started in 2.213s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
+2026-08-24 18:35:26,595 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Profile prod activated. 
+2026-08-24 18:35:26,595 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Installed features: [camel-amqp, camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jms, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-observability-services, camel-opentelemetry2, camel-platform-http, camel-rest, camel-rest-openapi, camel-xml-io-dsl, camel-xpath, cdi, config-yaml, kubernetes, kubernetes-client, messaginghub-pooled-jms, micrometer, opentelemetry, qpid-jms, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
 ```
 
-### Native mode -> _started in **0.139s**_
+### Native mode -> _started in **0.128s**_
 
 ```shell
 # podman run --rm --name camel-quarkus-rhoam-webhook-handler-api -p 8080:8080,9876:9876 -e QUARKUS_KUBERNETES-CONFIG_ENABLED=false -e QUARKUS_OTEL_EXPORTER_OTLP_ENDPOINT=http://host.containers.internal:4317 camel-quarkus-rhoam-webhook-handler-api
 [...]
-2025-11-27 17:56:12,116 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-rhoam-webhook-handler-api) is starting
-2025-11-27 17:56:12,187 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:4 rest-dsl:1)
-[... 4 routes started ...]
-2025-11-27 17:56:12,188 INFO  [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.14.0.redhat-00009 (camel-quarkus-rhoam-webhook-handler-api) started in 72ms (build:0ms init:0ms start:72ms)
-2025-11-27 17:56:12,190 INFO  [io.quarkus] (main) camel-quarkus-rhoam-webhook-handler-api 1.0.0 native (powered by Quarkus 3.27.0.redhat-00001) started in 0.139s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
-2025-11-27 17:56:12,190 INFO  [io.quarkus] (main) Profile prod activated. 
-2025-11-27 17:56:12,190 INFO  [io.quarkus] (main) Installed features: [camel-amqp, camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jms, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-observability-services, camel-opentelemetry, camel-platform-http, camel-rest, camel-rest-openapi, camel-xml-io-dsl, camel-xpath, cdi, config-yaml, kubernetes, kubernetes-client, messaginghub-pooled-jms, micrometer, opentelemetry, qpid-jms, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
+2026-08-24 16:45:38,919 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.18.3.redhat-00001 (camel-quarkus-rhoam-webhook-handler-api) is starting
+2026-08-24 16:45:38,937 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.op.OpenTelemetryTracer] (main) Opentelemetry2 enabled
+2026-08-24 16:45:38,991 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Routes startup (total:4 rest-dsl:1)
+2026-08-24 16:45:38,991 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started generate-error-response-route (direct://generateErrorResponse)
+2026-08-24 16:45:38,991 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started send-to-amqp-queue-route (direct://sendToAMQPQueue)
+2026-08-24 16:45:38,991 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started ping-webhook-route (direct://pingWebhook)
+2026-08-24 16:45:38,991 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main)     Started route1 (rest-openapi://classpath:META-INF/openapi.yaml)
+2026-08-24 16:45:38,991 INFO  traceId=, parentId=, spanId=, sampled= [or.ap.ca.im.en.AbstractCamelContext] (main) Apache Camel 4.18.3.redhat-00001 (camel-quarkus-rhoam-webhook-handler-api) started in 71ms (build:0ms init:0ms start:71ms)
+2026-08-24 16:45:38,992 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) camel-quarkus-rhoam-webhook-handler-api 1.0.0 native (powered by Quarkus 3.33.3.redhat-00002) started in 0.128s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9876.
+2026-08-24 16:45:38,992 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Profile prod activated. 
+2026-08-24 16:45:38,992 INFO  traceId=, parentId=, spanId=, sampled= [io.quarkus] (main) Installed features: [camel-amqp, camel-attachments, camel-bean, camel-core, camel-direct, camel-jackson, camel-jms, camel-jolokia, camel-log, camel-management, camel-micrometer, camel-microprofile-health, camel-observability-services, camel-opentelemetry2, camel-platform-http, camel-rest, camel-rest-openapi, camel-xml-io-dsl, camel-xpath, cdi, config-yaml, kubernetes, kubernetes-client, messaginghub-pooled-jms, micrometer, opentelemetry, qpid-jms, rest, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
 ```

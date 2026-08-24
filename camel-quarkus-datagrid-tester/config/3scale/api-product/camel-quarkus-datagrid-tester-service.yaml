@@ -90,7 +90,7 @@ spec:
       - GET
       - POST
       - OPTIONS
-      allow_origin: "(apim-demo|apim-demo-admin).apps.ocp4.jnyilimb.eu"
+      allow_origin: "(apim-demo|apim-demo-admin).apps.sno.jnyilimb.eu"
     enabled: true
   - name: caching
     version: builtin
@@ -230,7 +230,7 @@ spec:
       authentication:
         oidc:
           issuerType: keycloak
-          issuerEndpoint: https://threescale-apim-demo-zync:idaiFvGJviFDxYzwlz4wjW4BZV550JRS@sso.apps.ocp4.jnyilimb.eu/realms/openshift-cluster
+          issuerEndpoint: https://threescale-apim-demo-zync:idaiFvGJviFDxYzwlz4wjW4BZV550JRS@sso.apps.sno.jnyilimb.eu/realms/openshift-cluster
           jwtClaimWithClientID: azp
           jwtClaimWithClientIDType: plain
           authenticationFlow:
@@ -239,8 +239,8 @@ spec:
             serviceAccountsEnabled: true
             directAccessGrantsEnabled: false
           credentials: headers
-      stagingPublicBaseURL: https://camel-quarkus-datagrid-tester-service-staging.apps.ocp4.jnyilimb.eu:443
-      productionPublicBaseURL: https://camel-quarkus-datagrid-tester-service.apps.ocp4.jnyilimb.eu:443
+      stagingPublicBaseURL: https://camel-quarkus-datagrid-tester-service-staging.apps.sno.jnyilimb.eu:443
+      productionPublicBaseURL: https://camel-quarkus-datagrid-tester-service.apps.sno.jnyilimb.eu:443
 ---
 apiVersion: capabilities.3scale.net/v1beta1
 kind: Backend
