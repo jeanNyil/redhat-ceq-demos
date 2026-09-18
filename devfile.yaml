@@ -1,0 +1,112 @@
+schemaVersion: 2.3.0
+metadata:
+  name: redhat-ceq-demos
+  displayName: Red Hat build of Apache Camel for Quarkus Demos
+  description: OpenShift DevSpaces workspace for Red Hat build of Apache Camel for Quarkus demos (Java 21, Quarkus 3.33.x, Camel 4.18.x).
+  tags:
+    - Java
+    - Quarkus
+    - Camel
+    - Java21
+components:
+  - name: tools
+    container:
+      image: quay.io/jnyilimbibi/devspaces-extended-udi:3.30
+      env:
+        # Proxy + user.home for all JVMs (JBang/Camel/Maven). Nested-container
+        # workspaces run as userns uid 0, so the JVM default user.home=/root
+        # while HOME=/home/user; /root is not writable.
+        # Reference: https://www.jbang.dev/documentation/guide/latest/configuration.html#proxy-configuration
+        - name: JAVA_TOOL_OPTIONS
+          value: "-Djava.net.useSystemProxies=true -Duser.home=/home/user"
+        # UDI entrypoint selects the default JDK via env vars (first match wins):
+        #   USE_JAVA8=true  -> Java 8
+        #   USE_JAVA11=true -> Java 11
+        #   USE_JAVA21=true -> Java 21
+        #   (none set)      -> Java 17 (default)
+        - name: USE_JAVA21
+          value: "true"
+        # Bind Quarkus HTTP and management interfaces so DevSpaces routes can reach them
+        - name: QUARKUS_HTTP_HOST
+          value: "0.0.0.0"
+        - name: QUARKUS_MANAGEMENT_HOST
+          value: "0.0.0.0"
+      memoryRequest: 8Gi
+      memoryLimit: 8Gi
+      cpuLimit: 4000m
+      cpuRequest: 100m
+      mountSources: true
+      volumeMounts:
+        - name: m2
+          path: /home/user/.m2
+      endpoints:
+        - name: http-quarkus
+          exposure: public
+          targetPort: 8080
+          protocol: https
+        - name: management
+          exposure: public
+          targetPort: 9876
+          protocol: https
+          path: /q/swagger-ui
+        - name: debug
+          exposure: none
+          targetPort: 5005
+  - name: m2
+    volume:
+      size: 3Gi
+commands:
+  - id: install-camel-cli-and-k8s-plugin
+    exec:
+      label: "Install Apache Camel JBang and Kubernetes plugin"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: |
+        /usr/local/bin/jbang trust add -o https://github.com/apache
+        /usr/local/bin/jbang app install --verbose --name=camel /home/tooling/CamelJBang.java
+        mkdir -p "${HOME}/.local/bin"
+        ln -sfn "${HOME}/.jbang/bin/camel" "${HOME}/.local/bin/camel"
+        "${HOME}/.jbang/bin/camel" plugin add kubernetes
+  - id: quarkus-dev-xmlvalidation
+    exec:
+      label: "quarkus:dev — xmlvalidation-api"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}/camel-quarkus-xmlvalidation-api
+      commandLine: ./mvnw quarkus:dev
+      hotReloadCapable: true
+      group:
+        kind: run
+        isDefault: true
+  - id: quarkus-dev-jsonvalidation
+    exec:
+      label: "quarkus:dev — jsonvalidation-api"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}/camel-quarkus-jsonvalidation-api
+      commandLine: ./mvnw quarkus:dev
+      hotReloadCapable: true
+      group:
+        kind: run
+        isDefault: false
+  - id: quarkus-dev-rhoam-webhook
+    exec:
+      label: "quarkus:dev — rhoam-webhook-handler-api"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}/camel-quarkus-rhoam-webhook-handler-api
+      commandLine: ./mvnw quarkus:dev
+      hotReloadCapable: true
+      group:
+        kind: run
+        isDefault: false
+  - id: quarkus-dev-datagrid-tester
+    exec:
+      label: "quarkus:dev — datagrid-tester"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}/camel-quarkus-datagrid-tester
+      commandLine: ./mvnw quarkus:dev
+      hotReloadCapable: true
+      group:
+        kind: run
+        isDefault: false
+events:
+  postStart:
+    - install-camel-cli-and-k8s-plugin
