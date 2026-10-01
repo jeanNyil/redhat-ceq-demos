@@ -22,16 +22,11 @@ public class S3FileUploaderServiceRoutes extends RouteBuilder {
 
     private static String logName = S3FileUploaderServiceRoutes.class.getName();
 
+    // amazonS3Client=#s3Client: shared client with chunked encoding disabled (see S3ClientProducer)
     private static final String S3_PRODUCER_URI =
             "aws2-s3://{{s3.bucket-name}}" +
-            "?overrideEndpoint=true" +
-            "&uriEndpointOverride={{s3.endpoint}}" +
-            "&forcePathStyle=true" +
-            "&region={{s3.region}}" +
-            "&accessKey={{s3.access-key}}" +
-            "&secretKey={{s3.secret-key}}" +
-            "&autoCreateBucket=false" +
-            "&trustAllCertificates=true";
+            "?amazonS3Client=#s3Client" +
+            "&autoCreateBucket=false";
 
     @Override
     public void configure() throws Exception {

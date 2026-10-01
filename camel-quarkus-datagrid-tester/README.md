@@ -28,8 +28,8 @@ The following REST endpoints are exposed:
 - A running [_Red Hat OpenShift 4_](https://access.redhat.com/documentation/en-us/openshift_container_platform) cluster
 - A running [_Red Hat Data Grid v8.5_](https://docs.redhat.com/en/documentation/red_hat_data_grid/8.5) cluster. 
     >_**NOTE**_: The [`config/datagrid`](./config/datagrid) folder contains OpenShift _Cache Custom Resources_ to be created. For instance, the following command line would create the `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` replicated caches if the _Red Hat Data Grid_ cluster is deployed in the `datagrid-cluster` namespace: `oc -n datagrid-cluster apply -f ./config/datagrid`
-    - [`fruits-legumes-replicated-cache-definition`](./config/datagrid/fruits-legumes-replicated-cache_cr.yaml) : `fruits-legumes-replicated-cache` used by the [`FruitsAndLegumesAPI`](./src/main/java/io/jeannyil/routes/FruitsAndLegumesApiRoute.java).
-    - [`idempotency-replicated-cache-definition`](./config/datagrid/idempotency-replicated-cache_cr.yaml) : `idempotency-replicated-cache` used for idempotency purposes by the [`FilePollerRoute`](./src/main/java/io/jeannyil/routes/FilePollerRoute.java).
+    - [`fruits-legumes-replicated-cache-definition`](./config/datagrid/fruits-legumes-replicated-cache_cr.yaml) : `fruits-legumes-replicated-cache` used by the [`FruitsAndLegumesServiceRoutes`](./src/main/java/io/jeannyil/routes/FruitsAndLegumesServiceRoutes.java).
+    - [`idempotency-replicated-cache-definition`](./config/datagrid/idempotency-replicated-cache_cr.yaml) : `idempotency-replicated-cache` used for idempotency purposes by the [`S3IdempotentConsumerRoute`](./src/main/java/io/jeannyil/routes/S3IdempotentConsumerRoute.java).
 - S3-compatible object storage for the idempotent consumer route, provided on OpenShift by **[Multicloud Object Gateway](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.22/html/managing_hybrid_and_multicloud_resources/about-the-multicloud-object-gateway)** (NooBaa). The app uses the supported [`camel-quarkus-aws2-s3`](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.18/html-single/red_hat_build_of_apache_camel_for_quarkus_reference/camel-quarkus-extensions-reference#extensions-aws2-s3) extension.
     >_**NOTE**_: For laptop / `quarkus:dev`, see [Local S3 for dev mode](#local-s3-for-dev-mode). Do not use the old MinIO Podman snippet.
 
@@ -71,9 +71,9 @@ The following REST endpoints are exposed:
 
     Wait until the claim is `Bound`. The claim creates a Secret and ConfigMap named `camel-quarkus-datagrid-tester-s3bucket` (from `metadata.name`) with S3 credentials for that bucket. Do not commit those keys.
 
-    **Browse buckets (no MinIO console on this install)**
+    **4. Browse buckets (no MinIO console on this install)**
 
-    Use the AWS CLI against the external S3 route. Replace `<apps-domain>` (for example `apps.sno.jnyilimb.eu`):
+    Use the AWS CLI against the external S3 route. Replace `<apps-domain>` (for example `apps.demo.example.com`):
 
     ```shell
     export AWS_ACCESS_KEY_ID="$(oc get secret camel-quarkus-datagrid-tester-s3bucket -n ceq-services-jvm -o jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 -d)"
@@ -84,6 +84,7 @@ The following REST endpoints are exposed:
     ```
 
     In-cluster S3 endpoint used by the app: `https://s3.openshift-storage.svc:443`.
+    [`openshift.yml`](./src/main/kubernetes/openshift.yml) sets `s3.trust-certificate-pem` to `/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt`, the service CA already mounted in every pod. `s3.trust-all-certificates` stays `false` there too. No separate S3 truststore Secret is required. Setting `s3.trust-all-certificates: true` skips that check.
 - A truststore containing the [_Red Hat Data Grid v8.5_](https://docs.redhat.com/en/documentation/red_hat_data_grid/8.5) server public certificate. Below are sample command lines to generate one:
     ```shell
     # Use the Java cacerts as the basis for the truststore
@@ -97,14 +98,14 @@ The following REST endpoints are exposed:
     ```shell
     openssl s_client -showcerts -servername <Red Hat Data Grid cluster OpenShift route> -connect <Red Hat Data Grid cluster OpenShift route>:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p'
     ```
-    with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid-cluster.apps.sno.jnyilimb.eu`
+    with `<Red Hat Data Grid cluster OpenShift route>`: OpenShift route hostname for the Red Hat Data Grid cluster. E.g.: `datagrid-cluster.apps.demo.example.com`
 
 ## Replace anonymized Data Grid settings (local / dev)
 
 Before running locally (dev mode, `java -jar`, or a native executable), replace the `<CHANGEME_*>` placeholders in [`src/main/resources/application.yml`](./src/main/resources/application.yml) under `quarkus.infinispan-client`:
 
-- `hosts`: Data Grid OpenShift **route** hostname and port. E.g.: `datagrid-cluster.apps.sno.jnyilimb.eu:443`
-- `sni-host-name`: same hostname as `hosts` **without** the port. E.g.: `datagrid-cluster.apps.sno.jnyilimb.eu`
+- `hosts`: Data Grid OpenShift **route** hostname and port. E.g.: `datagrid-cluster.apps.demo.example.com:443`
+- `sni-host-name`: same hostname as `hosts` **without** the port. E.g.: `datagrid-cluster.apps.demo.example.com`
 - `auth-server-name` (`<CHANGEME_CLUSTERNAME>`): the **Infinispan CR name**, **not** the route hostname. E.g.: `datagrid-cluster` (see `spec.clusterName` in the cache CRs under [`config/datagrid`](./config/datagrid))
 - `username` / `password`: Data Grid user credentials from the cluster
 
@@ -361,6 +362,18 @@ Replace the anonymized Data Grid settings in [`src/main/resources/application.ym
         ]
         ```
 
+4. Test the `/api/v1/s3-file-uploader-service` endpoints
+
+    Upload each sample fruits file. The `S3IdempotentConsumerRoute` polls the bucket and logs the object body on first sight of each key. A second upload of a new key is processed again; a redelivery of the same key is ignored.
+
+    ```shell
+    curl -X POST $URL/api/v1/s3-file-uploader-service/csv
+    curl -X POST $URL/api/v1/s3-file-uploader-service/json
+    curl -X POST $URL/api/v1/s3-file-uploader-service/xml
+    ```
+
+    Check the application pod logs for lines such as `Processed fruits-...json` with the file contents, then for `Ignored ... because it was already processed!` if the same object key is consumed again.
+
 ## Testing using [Postman](https://www.postman.com/)
 
 Import the provided Postman Collection for testing: [tests/Camel-Quarkus-Datagrid-Tester.postman_collection.json](./tests/Camel-Quarkus-Datagrid-Tester.postman_collection.json)
@@ -394,7 +407,7 @@ If you want to learn more about building native executables, please consult http
     -e QUARKUS_KUBERNETES-CONFIG_ENABLED=false \
     -e QUARKUS_OTEL_EXPORTER_OTLP_ENDPOINT=http://host.containers.internal:4317 \
     -e QUARKUS_INFINISPAN_CLIENT_TRUST-STORE=/mnt/ssl/truststore.p12 \
-    -e MINIO_ENDPOINT=http://host.containers.internal:9000 \
+    -e S3_ENDPOINT=http://host.containers.internal:9000 \
     -v ./tls-keys/truststore.p12:/mnt/ssl/truststore.p12:ro \
     camel-quarkus-datagrid-tester
     ```

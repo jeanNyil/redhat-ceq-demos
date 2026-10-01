@@ -11,6 +11,14 @@ data:
   s3.bucket-name: camel-quarkus-datagrid-tester-s3bucket
   s3.delete-after-read: "false"
   s3.next-poll-delay-in-ms: "30000"
+  # Service CA already mounted in every pod; verifies NooBaa's s3.openshift-storage.svc cert.
+  s3.trust-certificate-pem: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
+  # Keep false so the PEM above is used; true would skip TLS verification entirely.
+  s3.trust-all-certificates: "false"
+  s3.path-style-access: "true"
+  s3.chunked-encoding-enabled: "false"
+  s3.request-checksum-calculation: WHEN_REQUIRED
+  s3.response-checksum-validation: WHEN_REQUIRED
   quarkus.otel.exporter.otlp.endpoint: http://otel-collector.observability.svc:4317
 ---
 apiVersion: v1

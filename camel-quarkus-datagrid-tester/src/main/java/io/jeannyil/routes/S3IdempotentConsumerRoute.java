@@ -35,14 +35,8 @@ public class S3IdempotentConsumerRoute extends RouteBuilder {
         ;
 
         from("aws2-s3://{{s3.bucket-name}}" +
-             "?overrideEndpoint=true" +
-             "&uriEndpointOverride={{s3.endpoint}}" +
-             "&forcePathStyle=true" +
-             "&region={{s3.region}}" +
-             "&accessKey={{s3.access-key}}" +
-             "&secretKey={{s3.secret-key}}" +
+             "?amazonS3Client=#s3Client" +
              "&autoCreateBucket=false" +
-             "&trustAllCertificates=true" +
              "&deleteAfterRead={{s3.delete-after-read:false}}" + // deactivated for the Idempotent Consumer EIP using RHDG demo purposes. Default is usually `true`.
              "&delay={{s3.next-poll-delay-in-ms:30000}}") // Milliseconds before the next poll. Demo default 30000ms; component default is usually `500`.
             .routeId("s3-idempotent-consumer-route")

@@ -17,6 +17,13 @@ s3:
   bucket-name: camel-quarkus-datagrid-tester-s3bucket
   delete-after-read: false # deactivated for the Idempotent Consumer EIP using RHDG demo purposes. Default is usually `true`.
   next-poll-delay-in-ms: 30000 # Milliseconds before the next poll. Demo default 30000ms; component default is usually `500`.
+  # Laptop HTTP does not use TLS; the OpenShift ConfigMap sets the service CA path and leaves trust-all false.
+  trust-all-certificates: false
+  # trust-certificate-pem: left unset for local HTTP (no TLS)
+  path-style-access: true
+  chunked-encoding-enabled: false
+  request-checksum-calculation: WHEN_REQUIRED
+  response-checksum-validation: WHEN_REQUIRED
 
 # Camel
 camel:
