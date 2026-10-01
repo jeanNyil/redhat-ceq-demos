@@ -54,7 +54,7 @@ quarkus:
     password: <CHANGEME_PASSWORD>
     client-intelligence: BASIC
     sasl-mechanism: PLAIN
-    sni-host-name: <CHANGEME_HOSTNAME>
+    sni-host-name: <CHANGEME_SNI_HOSTNAME>
     trust-store: ./tls-keys/truststore.p12
     trust-store-password: P@ssw0rd
   
