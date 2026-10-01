@@ -51,20 +51,20 @@ public class GenerateServiceResponseRoutes extends RouteBuilder {
 		/**
 		 * Route that returns the successful response response message in JSON format
 		 * The following properties are expected and required on the incoming Camel Exchange Message:
-		 * <br>- CamelMinioObjectName ({@link org.apache.camel.component.minio.MinioConstants#OBJECT_NAME})
+		 * <br>- CamelAwsS3Key ({@link org.apache.camel.component.aws2.s3.AWS2S3Constants#KEY})
 		 * The following properties are expected to be set on the incoming Camel Exchange Message if customization is needed:
 		 * <br>- CamelHttpResponseCode ({@link org.apache.camel.Exchange#HTTP_RESPONSE_CODE})
 		 * <br>- CamelHttpResponseText ({@link org.apache.camel.Exchange#HTTP_RESPONSE_TEXT})
 		 */
 		from(DirectEndpointConstants.DIRECT_GENERATE_OK_MESSAGE)
 			.routeId("generate-ok-response-route")
-			.filter(simple("${in.header.CamelMinioObjectName} == null"))
-				.throwException(new IllegalArgumentException("CamelMinioObjectName (org.apache.camel.component.minio.MinioConstants#OBJECT_NAME}) header is missing on the Camel Exchange!"))
+			.filter(simple("${in.header.CamelAwsS3Key} == null"))
+				.throwException(new IllegalArgumentException("CamelAwsS3Key (org.apache.camel.component.aws2.s3.AWS2S3Constants#KEY) header is missing on the Camel Exchange!"))
 			.end() // end filter
 			.setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
 			.setBody()
-				.method("serviceResponseHelper", 
-						"generateResponseMessage(${headers.CamelMinioObjectName}, ${body})")
+				.method("serviceResponseHelper",
+						"generateResponseMessage(${headers.CamelAwsS3Key}, ${body})")
 			.end()
 			.marshal().json(JsonLibrary.Jackson, true)
 			.convertBodyTo(String.class)

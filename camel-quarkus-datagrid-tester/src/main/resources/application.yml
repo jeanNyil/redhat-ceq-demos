@@ -6,14 +6,17 @@ datagrid:
     fruits-legumes: fruits-legumes-replicated-cache
     idempotency: idempotency-replicated-cache
 
-# MinIO
-minio:
+# S3-compatible object storage (local placeholder; OpenShift uses NooBaa via kubernetes-config + OBC Secret)
+# On OpenShift, access-key / secret-key resolve from AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
+# injected from the ObjectBucketClaim Secret named camel-quarkus-datagrid-tester-s3bucket.
+s3:
   endpoint: http://localhost:9000
-  access-key: minioadmin
-  secret-key: d-XT,YJ.XF3c_WT[
-  bucket-name: ${camel.context.name}
-  delete-after-read: false # I deactivated the delete after object retrieval for the Idempotent Consumer EIP using RHDG demo purposes. Default is usually `true`.
-  next-poll-delay-in-ms: 30000 # Milliseconds before the next poll. I set it to 30000ms for demo purposes. Default is usually `500`.
+  region: us-east-1
+  access-key: ${AWS_ACCESS_KEY_ID:s3admin}
+  secret-key: ${AWS_SECRET_ACCESS_KEY:d-XT,YJ.XF3c_WT[}
+  bucket-name: camel-quarkus-datagrid-tester-s3bucket
+  delete-after-read: false # deactivated for the Idempotent Consumer EIP using RHDG demo purposes. Default is usually `true`.
+  next-poll-delay-in-ms: 30000 # Milliseconds before the next poll. Demo default 30000ms; component default is usually `500`.
 
 # Camel
 camel:
@@ -69,10 +72,6 @@ quarkus:
     trust-certs: true
 
   openshift:
-    annotations:
-      # OpenShift web console visual connection to the ftp-server
-      app.openshift.io/connects-to: >-
-        [{"apiVersion":"apps/v1","kind":"Deployment","name":"minio"}]
     # The kind of the deployment resource to use. Supported values are 'Deployment', 'StatefulSet', 'Job', 'CronJob' and 'DeploymentConfig' defaulting to the latter.
     deployment-kind: Deployment
     # Part of the `RHAF-CEQ-Demo` Application Group
@@ -86,6 +85,10 @@ quarkus:
       cryostat.io/harvester-template: Continuous
       cryostat.io/harvester-period: 15m
       cryostat.io/max-files: '3'
+    # Inject ObjectBucketClaim credentials (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY)
+    env:
+      secrets:
+        - camel-quarkus-datagrid-tester-s3bucket
     # The build config strategy to use
     build-strategy: DOCKER
     # The default Dockerfile to use for jvm builds
@@ -173,7 +176,7 @@ quarkus:
     # large, eviction of previously selected resources could be triggered
     # with <code>excludePatterns</code>.
     resources:
-      includes: META-INF/*,minio-test-files/*,tls-keys/*
+      includes: META-INF/*,s3-test-files/*,tls-keys/*
 
 # Only when running in prod profile
 "%prod":

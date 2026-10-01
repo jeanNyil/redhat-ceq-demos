@@ -1,0 +1,14 @@
+# Namespace for Multicloud Object Gateway (NooBaa) and optional LVM Storage.
+#
+# SKIP this file when openshift-storage already exists (common when
+# LVM Storage or OpenShift Data Foundation created it):
+#   oc get ns openshift-storage
+#
+# If the namespace already exists, optionally ensure the monitoring label:
+#   oc label namespace openshift-storage openshift.io/cluster-monitoring=true --overwrite
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-storage
+  labels:
+    openshift.io/cluster-monitoring: "true"

@@ -90,14 +90,14 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{service_base_url}}/api/v1/minio-file-uploader-service/csv",
+					"raw": "{{service_base_url}}/api/v1/s3-file-uploader-service/csv",
 					"host": [
 						"{{service_base_url}}"
 					],
 					"path": [
 						"api",
 						"v1",
-						"minio-file-uploader-service",
+						"s3-file-uploader-service",
 						"csv"
 					]
 				}
@@ -110,14 +110,14 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{service_base_url}}/api/v1/minio-file-uploader-service/json",
+					"raw": "{{service_base_url}}/api/v1/s3-file-uploader-service/json",
 					"host": [
 						"{{service_base_url}}"
 					],
 					"path": [
 						"api",
 						"v1",
-						"minio-file-uploader-service",
+						"s3-file-uploader-service",
 						"json"
 					]
 				}
@@ -130,14 +130,14 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{service_base_url}}/api/v1/minio-file-uploader-service/xml",
+					"raw": "{{service_base_url}}/api/v1/s3-file-uploader-service/xml",
 					"host": [
 						"{{service_base_url}}"
 					],
 					"path": [
 						"api",
 						"v1",
-						"minio-file-uploader-service",
+						"s3-file-uploader-service",
 						"xml"
 					]
 				}

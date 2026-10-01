@@ -1,0 +1,17 @@
+# Object Bucket Claim for the Camel Quarkus Data Grid tester idempotent-consumer demo.
+# Requires Multicloud Object Gateway (NooBaa) Ready in openshift-storage:
+#   oc get noobaa -n openshift-storage
+# and StorageClass openshift-storage.noobaa.io.
+#
+# The claim creates a Secret and ConfigMap named after metadata.name (not bucketName).
+# Do not commit those runtime credentials.
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: camel-quarkus-datagrid-tester-s3bucket
+  namespace: ceq-services-jvm
+  labels:
+    app: camel-quarkus-datagrid-tester
+spec:
+  bucketName: camel-quarkus-datagrid-tester-s3bucket
+  storageClassName: openshift-storage.noobaa.io

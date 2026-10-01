@@ -10,12 +10,12 @@ The following REST endpoints are exposed:
     - `POST` adds a fruit in the list of fruits.
 - `/api/v1/fruits-and-legumes-api/legumes` :
     - Only `GET` method is supported. Returns a list of hard-coded legumes
-- `/api/v1/minio-file-uploader-service/csv` :
-    - Only `POST` method is supported. Uploads the fruits.csv file to MinIO server.
-- `/api/v1/minio-file-uploader-service/json` :
-    - Only `POST` method is supported. Uploads the fruits.json file to MinIO server.
-- `/api/v1/minio-file-uploader-service/xml` :
-    - Only `POST` method is supported. Uploads the fruits.xml file to MinIO server.
+- `/api/v1/s3-file-uploader-service/csv` :
+    - Only `POST` method is supported. Uploads the fruits.csv file to S3-compatible object storage.
+- `/api/v1/s3-file-uploader-service/json` :
+    - Only `POST` method is supported. Uploads the fruits.json file to S3-compatible object storage.
+- `/api/v1/s3-file-uploader-service/xml` :
+    - Only `POST` method is supported. Uploads the fruits.xml file to S3-compatible object storage.
 - `/q/openapi` _on a separate management interface (port **9876**)_ : returns the Open API Schema document of the service.
 - `/q/swagger-ui` _on a separate management interface (port **9876**)_ :  opens the Open API UI.
 - `/observe/health` _on a separate management interface (port **9876**)_ : returns the _Camel Quarkus MicroProfile_ health checks.
@@ -30,25 +30,60 @@ The following REST endpoints are exposed:
     >_**NOTE**_: The [`config/datagrid`](./config/datagrid) folder contains OpenShift _Cache Custom Resources_ to be created. For instance, the following command line would create the `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` replicated caches if the _Red Hat Data Grid_ cluster is deployed in the `datagrid-cluster` namespace: `oc -n datagrid-cluster apply -f ./config/datagrid`
     - [`fruits-legumes-replicated-cache-definition`](./config/datagrid/fruits-legumes-replicated-cache_cr.yaml) : `fruits-legumes-replicated-cache` used by the [`FruitsAndLegumesAPI`](./src/main/java/io/jeannyil/routes/FruitsAndLegumesApiRoute.java).
     - [`idempotency-replicated-cache-definition`](./config/datagrid/idempotency-replicated-cache_cr.yaml) : `idempotency-replicated-cache` used for idempotency purposes by the [`FilePollerRoute`](./src/main/java/io/jeannyil/routes/FilePollerRoute.java).
-- A running [MinIO](https://min.io/) server to provide object storage used by the idempotent consumer route.
-    >_**NOTE**_: The [`config/minio`](./config/minio/) folder contains resources to deploy a simple MinIO server in the `ceq-services-jvm` namespace on OpenShift.
-    - You can run a simple MinIO server locally in container with the following `podman` instructions:
-        1. Create the podman volume to persist MinIO data:
-            ```shell
-            podman volume create minio-data
-            ```
-        2. Run the MinIO container:
-            ```shell
-            podman run -d --name minio \
-            -p 9000:9000 \
-            -p 9090:9090 \
-            -v minio-data:/data \
-            -e "MINIO_ROOT_USER=minioadmin" \
-            -e "MINIO_ROOT_PASSWORD=d-XT,YJ.XF3c_WT[" \
-            quay.io/minio/minio server /data --console-address ":9090"
-            ```
-            - The MinIO administration web console is then available at http://localhost:9090/login
-            - The MinIO API endpoint is also available at http://localhost:9000
+- S3-compatible object storage for the idempotent consumer route, provided on OpenShift by **[Multicloud Object Gateway](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.22/html/managing_hybrid_and_multicloud_resources/about-the-multicloud-object-gateway)** (NooBaa). The app uses the supported [`camel-quarkus-aws2-s3`](https://docs.redhat.com/en/documentation/red_hat_build_of_apache_camel/4.18/html-single/red_hat_build_of_apache_camel_for_quarkus_reference/camel-quarkus-extensions-reference#extensions-aws2-s3) extension.
+    >_**NOTE**_: For laptop / `quarkus:dev`, see [Local S3 for dev mode](#local-s3-for-dev-mode). Do not use the old MinIO Podman snippet.
+
+    ### [Multicloud Object Gateway](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.22/html/managing_hybrid_and_multicloud_resources/about-the-multicloud-object-gateway) (OpenShift)
+
+    Manifests live under [`config/mcg-objectstorage`](./config/mcg-objectstorage/) (operator + ObjectBucketClaim). Requires `cluster-admin` for the operator install and a default StorageClass (for example `lvms-vg1`). This path does **not** install `odf-operator`, Rook/Ceph, or the ODF console object browser.
+
+    **1. [Multicloud Object Gateway](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.22/html/managing_hybrid_and_multicloud_resources/about-the-multicloud-object-gateway) already installed**
+
+    ```shell
+    oc get noobaa -n openshift-storage
+    ```
+
+    When the `PHASE` is `Ready`, skip the operator install (`00`–`03`) and continue with the ObjectBucketClaim below.
+
+    **2. [Multicloud Object Gateway](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.22/html/managing_hybrid_and_multicloud_resources/about-the-multicloud-object-gateway) not installed**
+
+    ```shell
+    # Skip 00-namespace.yaml when openshift-storage already exists (LVM Storage often created it).
+    oc apply -f ./config/mcg-objectstorage/00-namespace.yaml
+    # Skip 01-operatorgroup.yaml when an OperatorGroup already exists in that namespace.
+    # Do NOT create a second OperatorGroup:
+    #   oc get operatorgroup -n openshift-storage
+    oc apply -f ./config/mcg-objectstorage/01-operatorgroup.yaml
+    oc apply -f ./config/mcg-objectstorage/02-subscription.yaml
+    # Wait until the CSV is Succeeded (channel stable-4.22 matches OpenShift 4.22;
+    # on another minor, edit the Subscription channel to stable-4.<minor>).
+    oc get csv -n openshift-storage | grep mcg-operator
+    oc apply -f ./config/mcg-objectstorage/03-noobaa.yaml
+    oc get noobaa -n openshift-storage -w
+    ```
+
+    **3. ObjectBucketClaim (every cluster)**
+
+    ```shell
+    oc apply -f ./config/mcg-objectstorage/04-camel-quarkus-datagrid-tester-s3bucket.yaml
+    oc get obc camel-quarkus-datagrid-tester-s3bucket -n ceq-services-jvm -w
+    ```
+
+    Wait until the claim is `Bound`. The claim creates a Secret and ConfigMap named `camel-quarkus-datagrid-tester-s3bucket` (from `metadata.name`) with S3 credentials for that bucket. Do not commit those keys.
+
+    **Browse buckets (no MinIO console on this install)**
+
+    Use the AWS CLI against the external S3 route. Replace `<apps-domain>` (for example `apps.sno.jnyilimb.eu`):
+
+    ```shell
+    export AWS_ACCESS_KEY_ID="$(oc get secret camel-quarkus-datagrid-tester-s3bucket -n ceq-services-jvm -o jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 -d)"
+    export AWS_SECRET_ACCESS_KEY="$(oc get secret camel-quarkus-datagrid-tester-s3bucket -n ceq-services-jvm -o jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' | base64 -d)"
+    aws --endpoint-url https://s3-openshift-storage.apps.<apps-domain> \
+      s3 ls s3://camel-quarkus-datagrid-tester-s3bucket/ --no-verify-ssl
+    unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+    ```
+
+    In-cluster S3 endpoint used by the app: `https://s3.openshift-storage.svc:443`.
 - A truststore containing the [_Red Hat Data Grid v8.5_](https://docs.redhat.com/en/documentation/red_hat_data_grid/8.5) server public certificate. Below are sample command lines to generate one:
     ```shell
     # Use the Java cacerts as the basis for the truststore
@@ -74,6 +109,30 @@ Before running locally (dev mode, `java -jar`, or a native executable), replace 
 - `username` / `password`: Data Grid user credentials from the cluster
 
 Leave `client-intelligence: BASIC` as-is for access via the OpenShift route from a laptop. The truststore path and password are already documented in [Prerequisites](#prerequisites).
+
+## Local S3 for dev mode
+
+`./mvnw quarkus:dev`, `java -jar`, and the native executable use `s3.endpoint: http://localhost:9000` from [`application.yml`](./src/main/resources/application.yml). The routes do not create the bucket, so start a local S3 server that already has `camel-quarkus-datagrid-tester-s3bucket`.
+
+MinIO community edition is [source-only](https://github.com/minio/minio#source-only-distribution) and no longer publishes container images ([minio/minio#21647](https://github.com/minio/minio/issues/21647)). Pulls of the historical `quay.io/minio/minio` image fail with `unauthorized` ([IBM: MinIO image removal from Quay](https://www.ibm.com/support/pages/minio-image-removal-quay-registry)). For a laptop, run [local-s3](https://github.com/shyim/local-s3):
+
+1. Create a volume for object data:
+    ```shell
+    podman volume create local-s3-data
+    ```
+2. Run the container. The account matches the `s3admin` default in `application.yml`, and `S3_BUCKETS` creates the bucket the routes expect:
+    ```shell
+    podman run -d --name local-s3 \
+      -p 9000:9000 \
+      -v local-s3-data:/data \
+      -e "S3_ACCOUNT_ADMIN=s3admin:d-XT,YJ.XF3c_WT[" \
+      -e "S3_BUCKETS=camel-quarkus-datagrid-tester-s3bucket" \
+      ghcr.io/shyim/local-s3:latest
+    ```
+    - S3 API: http://localhost:9000
+    - Web UI: http://localhost:9000/_ui
+
+OpenShift deploys keep using [Multicloud Object Gateway](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.22/html/managing_hybrid_and_multicloud_resources/about-the-multicloud-object-gateway). Do not use this container there.
 
 ## Running the application in dev mode
 
@@ -116,7 +175,7 @@ Replace the anonymized Data Grid settings in [`src/main/resources/application.ym
 
 - The `fruits-legumes-replicated-cache` and `idempotency-replicated-cache` caches have been created in the _Red Hat Data Grid_ cluster. See the [Prerequisites](#prerequisites) section for cache creation instructions.
 
-- A running [MinIO](https://min.io/) server. See the [Prerequisites](#prerequisites) section for setup instructions.
+- [Multicloud Object Gateway](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.22/html/managing_hybrid_and_multicloud_resources/about-the-multicloud-object-gateway) (NooBaa) Ready and the ObjectBucketClaim Bound. See [Multicloud Object Gateway (OpenShift)](#multicloud-object-gateway-openshift) under [Prerequisites](#prerequisites).
 
 ### Instructions
 
@@ -130,9 +189,12 @@ Replace the anonymized Data Grid settings in [`src/main/resources/application.ym
     oc new-project ceq-services-jvm --display-name="Red Hat build of Apache Camel for Quarkus Apps - JVM Mode"
     ```
 
-3. Deploy the simple MinIO server if not already deployed:
+3. Ensure [Multicloud Object Gateway](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.22/html/managing_hybrid_and_multicloud_resources/about-the-multicloud-object-gateway) is Ready and apply the ObjectBucketClaim if not already Bound:
     ```shell
-    oc apply -f ./config/minio
+    oc get noobaa -n openshift-storage
+    # If NooBaa is missing, follow config/mcg-objectstorage steps in Prerequisites, then:
+    oc apply -f ./config/mcg-objectstorage/04-camel-quarkus-datagrid-tester-s3bucket.yaml
+    oc get obc camel-quarkus-datagrid-tester-s3bucket -n ceq-services-jvm
     ```
 
 4. Create an `allInOne` Jaeger instance.
@@ -199,9 +261,9 @@ Replace the anonymized Data Grid settings in [`src/main/resources/application.ym
 
 6. Replace anonymized Data Grid settings in [`src/main/kubernetes/openshift.yml`](./src/main/kubernetes/openshift.yml)
 
-    In the **prod** profile, the [Quarkus Kubernetes Config](https://quarkus.io/guides/kubernetes-config) extension loads the `camel-quarkus-datagrid-tester-config` ConfigMap and `camel-quarkus-datagrid-tester-secret` Secret defined in that file. The Secret overrides Infinispan (and MinIO) settings at runtime.
+    In the **prod** profile, the [Quarkus Kubernetes Config](https://quarkus.io/guides/kubernetes-config) extension loads the `camel-quarkus-datagrid-tester-config` ConfigMap and `camel-quarkus-datagrid-tester-secret` Secret defined in that file. The Quarkus OpenShift extension deploys both on `./mvnw ... -Dquarkus.openshift.deploy=true`. S3 credentials (`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`) come from the ObjectBucketClaim Secret `camel-quarkus-datagrid-tester-s3bucket`, injected as environment variables on the Deployment.
 
-    Replace the `<CHANGEME_*>` keys in the Secret `stringData` **before** deploying so the generated Secret is correct on first apply:
+    Replace the `<CHANGEME_*>` keys in the Secret `stringData` **before** deploying so the generated Secret is correct on first apply (a deploy with placeholders still present overwrites the live Secret):
 
     - `quarkus.infinispan-client.hosts`: in-cluster Hot Rod service hostname and port. E.g.: `datagrid-cluster.datagrid-cluster.svc:11222` (namespace `datagrid-cluster` as in [Prerequisites](#prerequisites))
     - `quarkus.infinispan-client.sni-host-name`: in-cluster service hostname **without** the port. E.g.: `datagrid-cluster.datagrid-cluster.svc`

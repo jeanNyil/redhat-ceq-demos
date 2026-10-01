@@ -9,7 +9,7 @@ spec:
   description: >-
     This API product tests the integration of Red Hat''s build of Apache Camel for Quarkus with Red Hat Data Grid. 
     It exposes two backend services: fruits-and-legumes-api, which demonstrates CRUD operations on Red Hat Data Grid using Camel; 
-    and minio-file-uploader-service, which tests the Idempotent Consumer EIP with Red Hat Data Grid as a remote idempotent repository. 
+    and s3-file-uploader-service, which tests the Idempotent Consumer EIP with Red Hat Data Grid as a remote idempotent repository. 
     The API validates integration patterns between Camel, Quarkus, and Red Hat Data Grid.
   mappingRules:
   - httpMethod: GET
@@ -28,17 +28,17 @@ spec:
     increment: 1
     last: false
   - httpMethod: POST
-    pattern: "/v1/minio-file-uploader-service/csv$"
+    pattern: "/v1/s3-file-uploader-service/csv$"
     metricMethodRef: upload-csv-file
     increment: 1
     last: false
   - httpMethod: POST
-    pattern: "/v1/minio-file-uploader-service/json$"
+    pattern: "/v1/s3-file-uploader-service/json$"
     metricMethodRef: upload-json-file
     increment: 1
     last: false
   - httpMethod: POST
-    pattern: "/v1/minio-file-uploader-service/xml$"
+    pattern: "/v1/s3-file-uploader-service/xml$"
     metricMethodRef: upload-xml-file
     increment: 1
     last: false
@@ -223,8 +223,8 @@ spec:
   backendUsages:
     fruits-and-legumes-api-backend:
       path: "/v1/fruits-and-legumes-api"
-    minio-file-uploader-service-backend:
-      path: "/v1/minio-file-uploader-service"
+    s3-file-uploader-service-backend:
+      path: "/v1/s3-file-uploader-service"
   deployment:
     apicastSelfManaged:
       authentication:
@@ -256,10 +256,10 @@ spec:
 apiVersion: capabilities.3scale.net/v1beta1
 kind: Backend
 metadata:
-  name: minio-file-uploader-service-backend
+  name: s3-file-uploader-service-backend
 spec:
-  name: minio-file-uploader-service Backend
-  systemName: minio-file-uploader-service-backend
-  privateBaseURL: http://camel-quarkus-datagrid-tester.ceq-services-jvm.svc/api/v1/minio-file-uploader-service
+  name: s3-file-uploader-service Backend
+  systemName: s3-file-uploader-service-backend
+  privateBaseURL: http://camel-quarkus-datagrid-tester.ceq-services-jvm.svc/api/v1/s3-file-uploader-service
   description: >-
-    A service that triggers the MinIO upload operation for three fruits files (JSON, XML, CSV).
+    A service that triggers the S3 upload operation for three fruits files (JSON, XML, CSV).

@@ -1,0 +1,19 @@
+# Multicloud Object Gateway (NooBaa) operator -- ObjectBucketClaim S3 for the demo.
+# Installs into openshift-storage (shared with LVM Storage when present).
+#
+# Channel matches OpenShift 4.22 (stable-4.22). On another cluster major, set
+# channel to stable-4.<minor>, for example stable-4.18.
+#
+# Operator pod resources use the CSV defaults (no config resourceOverrides).
+# Requires cluster-admin. A default StorageClass must exist.
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: mcg-operator
+  namespace: openshift-storage
+spec:
+  channel: stable-4.22
+  installPlanApproval: Automatic
+  name: mcg-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace

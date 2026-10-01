@@ -5,8 +5,9 @@ info:
     description: >-
         This API product tests the integration of Red Hat's build of Apache Camel for Quarkus with Red Hat
         Data Grid. It exposes two backend services: fruits-and-legumes-api, which demonstrates some CRUD
-        operations on Red Hat Data Grid using Camel; and minio-file-uploader-service, which tests the
-        Idempotent Consumer EIP with Red Hat Data Grid as a remote idempotent repository. The API validates
+        operations on Red Hat Data Grid using Camel; and s3-file-uploader-service, which tests the
+        Idempotent Consumer EIP with Red Hat Data Grid as a remote idempotent repository (S3 uploads via
+        Multi-Cloud Object Gateway / NooBaa on OpenShift). The API validates
         integration patterns between Camel, Quarkus, and Red Hat Data Grid.
     contact:
         name: Jean Nyilimbibi
@@ -155,10 +156,10 @@ paths:
             operationId: getLegumes
             summary: Returns a list of hard-coded legumes
             description: Returns a list of hard-coded legumes
-    /minio-file-uploader-service/json:
+    /s3-file-uploader-service/json:
         post:
             tags:
-                - MinIO Upload
+                - S3-compatible object storage upload
             responses:
                 '201':
                     content:
@@ -168,7 +169,7 @@ paths:
                                 properties:
                                     message:
                                         type: string
-                                        example: fruits.json uploaded to MinIO server successfully
+                                        example: fruits.json uploaded to S3-compatible object storage successfully
                             examples:
                                 fruits.json:
                                     value:
@@ -187,7 +188,7 @@ paths:
                                 properties:
                                     error:
                                         type: string
-                                        example: Error while uploading fruits.json to MinIO server
+                                        example: Error while uploading fruits.json to S3-compatible object storage
                             examples:
                                 internalServerError:
                                     value:
@@ -196,11 +197,11 @@ paths:
                                         message: 'java.lang.Exception: mocked error'
                     description: Error during the JSON file upload process
             operationId: uploadJsonFile
-            summary: Upload the fruits.json file to MinIO server
-    /minio-file-uploader-service/xml:
+            summary: Upload the fruits.json file to S3-compatible object storage
+    /s3-file-uploader-service/xml:
         post:
             tags:
-                - MinIO Upload
+                - S3-compatible object storage upload
             responses:
                 '201':
                     content:
@@ -210,7 +211,7 @@ paths:
                                 properties:
                                     message:
                                         type: string
-                                        example: fruits.xml uploaded to MinIO server successfully
+                                        example: fruits.xml uploaded to S3-compatible object storage successfully
                             examples:
                                 fruits.xml:
                                     value:
@@ -230,7 +231,7 @@ paths:
                                 properties:
                                     error:
                                         type: string
-                                        example: Error while uploading fruits.xml to MinIO server
+                                        example: Error while uploading fruits.xml to S3-compatible object storage
                             examples:
                                 internalServerError:
                                     value:
@@ -239,11 +240,11 @@ paths:
                                         message: 'java.lang.Exception: mocked error'
                     description: Error during the XML file upload process
             operationId: uploadXmlFile
-            summary: Upload the fruits.xml file to MinIO server
-    /minio-file-uploader-service/csv:
+            summary: Upload the fruits.xml file to S3-compatible object storage
+    /s3-file-uploader-service/csv:
         post:
             tags:
-                - MinIO Upload
+                - S3-compatible object storage upload
             responses:
                 '201':
                     content:
@@ -269,7 +270,7 @@ paths:
                                 properties:
                                     error:
                                         type: string
-                                        example: Error while uploading fruits.csv to MinIO server
+                                        example: Error while uploading fruits.csv to S3-compatible object storage
                             examples:
                                 internalServerError:
                                     value:
@@ -278,7 +279,7 @@ paths:
                                         message: 'java.lang.Exception: mocked error'
                     description: Error during the CSV file upload process
             operationId: uploadCsvFile
-            summary: Upload the fruits.csv file to MinIO server
+            summary: Upload the fruits.csv file to S3-compatible object storage
 components:
     schemas:
         Fruit:

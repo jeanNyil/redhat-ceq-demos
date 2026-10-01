@@ -1,0 +1,32 @@
+# Standalone NooBaa / Multi-Cloud Object Gateway on the cluster default StorageClass.
+# Apply only after the mcg-operator CSV is Succeeded:
+#   oc get csv -n openshift-storage | grep mcg-operator
+#
+# Does not install odf-operator, Rook/Ceph, or the ODF console object browser.
+# Backing store defaults to ~50Gi (enough for this demo).
+#
+# dbResources / coreResources are container requests, not PVC sizes.
+# endpoints.minCount=maxCount=1 keeps a single endpoint pod (SNO-friendly).
+# Use millicore form (100m), not "0.1".
+apiVersion: noobaa.io/v1alpha1
+kind: NooBaa
+metadata:
+  name: noobaa
+  namespace: openshift-storage
+spec:
+  dbType: postgres
+  dbResources:
+    requests:
+      cpu: 100m
+      memory: 4Gi
+  coreResources:
+    requests:
+      cpu: 100m
+      memory: 1Gi
+  endpoints:
+    minCount: 1
+    maxCount: 1
+    resources:
+      requests:
+        cpu: 20m
+        memory: 2Gi
