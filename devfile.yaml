@@ -26,6 +26,21 @@ components:
         #   (none set)      -> Java 17 (default)
         - name: USE_JAVA21
           value: "true"
+        # OpenCode config/data persistence: override the AI-injector wrapper's
+        # /tmp/opencode-home defaults so configuration and the OpenCode
+        # database (MCP OAuth credentials) survive workspace restarts with
+        # persistUserHome. Reference:
+        # https://github.com/jeanNyil/my-openshift-lab/blob/main/openshift-devspaces/README.md#persistent-configuration-rules-and-skills
+        - name: XDG_CONFIG_HOME
+          value: /home/user/.config
+        - name: XDG_DATA_HOME
+          value: /home/user/.local/share
+        # Restore UDI tool directories; keep local binaries ahead of system ones.
+        # AI injection prepends its own directory to this literal PATH.
+        # Refresh on UDI upgrades; see
+        # https://github.com/jeanNyil/my-openshift-lab/blob/main/openshift-devspaces/README.md#ai-injection-and-tooling-path
+        - name: PATH
+          value: "/home/tooling/.local/bin:/home/user/.local/bin:/home/user/.java/current/bin:/home/user/node_modules/.bin:/home/user/.npm-global/bin:/opt/app-root/src/.npm-global/bin:/usr/share/maven/bin:/home/user/go/bin:/home/tooling/.java/current/bin:/home/tooling/node_modules/.bin:/home/tooling/.npm-global/bin:/home/tooling/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         # Bind Quarkus HTTP and management interfaces so DevSpaces routes can reach them
         - name: QUARKUS_HTTP_HOST
           value: "0.0.0.0"
@@ -62,13 +77,58 @@ commands:
       component: tools
       workingDir: ${PROJECT_SOURCE}
       commandLine: |
+        # postStart failure semantics (Dev Spaces 3.31 / DevWorkspace
+        # Operator): DWO groups all postStart commands of a component into one
+        # hook script `{ cd <dir>; <cmd>; ... } 1>/tmp/poststart-stdout.txt
+        # 2>/tmp/poststart-stderr.txt` WITHOUT set -e.
+        # - Only the exit code of the LAST postStart event becomes the hook
+        #   result, so an uncaught failure in any earlier step is silently
+        #   masked by later success (sync-agent-home runs after this command).
+        # - An explicit `exit` — the `|| exit 1` handlers below — terminates
+        #   the whole hook shell immediately: the hook fails and the
+        #   workspace never reaches RUNNING. Fail-fast is intended here: the
+        #   camel CLI is core tooling for these demos.
+        # - Debugging: K8s 1.26+ hides hook output from FailedPostStartHook
+        #   events. Annotate the DevWorkspace with
+        #   controller.devfile.io/debug-start: "true" to keep the pod alive
+        #   and read /tmp/poststart-stderr.txt.
+        #
         # Absolute path: the image ENV PATH includes /home/tooling/.local/bin,
         # but Dev Spaces / kubelet postStart exec may not inherit it.
-        /home/tooling/.local/bin/jbang trust add -o https://github.com/apache
-        /home/tooling/.local/bin/jbang app install --verbose --name=camel /home/tooling/CamelJBang.java
-        mkdir -p "${HOME}/.local/bin"
-        ln -sfn "${HOME}/.jbang/bin/camel" "${HOME}/.local/bin/camel"
-        "${HOME}/.jbang/bin/camel" plugin add kubernetes
+        /home/tooling/.local/bin/jbang trust add -o https://github.com/apache \
+          || { echo "ERROR: jbang trust add failed" >&2; exit 1; }
+        /home/tooling/.local/bin/jbang app install --verbose --name=camel /home/tooling/CamelJBang.java \
+          || { echo "ERROR: jbang camel app install failed" >&2; exit 1; }
+        mkdir -p "${HOME}/.local/bin" \
+          || { echo "ERROR: mkdir ${HOME}/.local/bin failed" >&2; exit 1; }
+        ln -sfn "${HOME}/.jbang/bin/camel" "${HOME}/.local/bin/camel" \
+          || { echo "ERROR: camel symlink failed" >&2; exit 1; }
+        "${HOME}/.jbang/bin/camel" plugin add kubernetes \
+          || { echo "ERROR: camel plugin add kubernetes failed" >&2; exit 1; }
+  - id: sync-agent-home
+    exec:
+      label: Sync agent-home (OpenCode config, rules, skills)
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: |
+        # Warn-and-skip, NOT fail-fast: this is a public repository, and
+        # jeanNyil/agent-home is private — outside users have no GitHub access
+        # to it. A failing postStart event terminates the workspace pod, so an
+        # auth failure here would stop every workspace created from this repo
+        # (see openshift-devspaces README "postStart failure semantics" in the
+        # my-openshift-lab repository for the exact semantics).
+        # Workspaces with GitHub access get the normal clone/pull + bootstrap
+        # behavior; bootstrap.sh failures still fail the workspace (broken
+        # config must be visible). The lab devfile uses the strict fail-fast
+        # variant instead.
+        if [ ! -d "$HOME/myGit/agent-home/.git" ]; then
+          git clone https://github.com/jeanNyil/agent-home.git "$HOME/myGit/agent-home" \
+            || { echo "WARN: cannot clone agent-home (no access to the private repo) — skipping OpenCode config sync" >&2; exit 0; }
+        else
+          git -C "$HOME/myGit/agent-home" pull --ff-only \
+            || { echo "WARN: agent-home pull failed — keeping existing checkout" >&2; exit 0; }
+        fi
+        "$HOME/myGit/agent-home/bootstrap.sh"
   - id: quarkus-dev-xmlvalidation
     exec:
       label: "quarkus:dev — xmlvalidation-api"
@@ -110,5 +170,10 @@ commands:
         kind: run
         isDefault: false
 events:
+  # Ordering: the postStart hook result is the LAST event's exit code, and an
+  # explicit `exit` inside a command terminates the whole hook shell (see the
+  # note in install-camel-cli-and-k8s-plugin). sync-agent-home is
+  # warn-and-skip for unauthenticated users (agent-home is a private repo).
   postStart:
     - install-camel-cli-and-k8s-plugin
+    - sync-agent-home
